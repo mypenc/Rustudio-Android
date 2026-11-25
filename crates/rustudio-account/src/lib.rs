@@ -9,6 +9,10 @@
 //!
 //! Place saves and publishes also use the signed-in session.
 
+// Browser build: the real `ureq` has no sockets to use; this shim keeps its API.
+#[cfg(target_arch = "wasm32")]
+extern crate ureq_wasm as ureq;
+
 pub mod api;
 mod asset_upload;
 pub mod assets_cloud;

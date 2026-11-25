@@ -49,7 +49,7 @@ draco-core = { version = "2.3", default-features = false, features = ["decoder",
 ureq = "3"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-ureq = { package = "ureq-wasm", path = "../../shims/ureq" }
+ureq-wasm = { path = "../../shims/ureq" }
 getrandom02 = { package = "getrandom", version = "0.2", features = ["js"] }
 getrandom03 = { package = "getrandom", version = "0.3", features = ["wasm_js"] }
 getrandom04 = { package = "getrandom", version = "0.4", features = ["wasm_js"] }

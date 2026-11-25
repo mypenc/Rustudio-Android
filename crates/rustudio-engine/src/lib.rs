@@ -11,6 +11,10 @@
 //! `cargo test -p rustudio-engine` builds without egui-wgpu's surface or the
 //! editor.
 
+// Browser build: the real `ureq` has no sockets to use; this shim keeps its API.
+#[cfg(target_arch = "wasm32")]
+extern crate ureq_wasm as ureq;
+
 pub mod lua_bridge;
 pub mod bytecode_cache;
 pub mod env_probe;

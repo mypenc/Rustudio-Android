@@ -9,10 +9,6 @@
 //! physics, anything that only the editor or the player needs, and any
 //! reference to the crates above this one — they do not compile.
 
-// Browser build: the real `ureq` has no sockets to use; this shim keeps its API.
-#[cfg(target_arch = "wasm32")]
-extern crate ureq_wasm as ureq;
-
 /// A property name interned once per call site. `ustr` hashes the name and
 /// looks it up in the global table on every call, which showed up as ~5% of
 /// the Play thread in per-frame joint reads (a large test place, round 4).

@@ -21,10 +21,6 @@
 //! kind of system has is behind `#[cfg(target_os = "android")]` /
 //! `#[cfg(not(target_os = "android"))]`.
 
-// Browser build: the real `ureq` has no sockets to use; this shim keeps its API.
-#[cfg(target_arch = "wasm32")]
-extern crate ureq_wasm as ureq;
-
 pub mod asset_manager;
 pub mod plugin_store;
 pub mod toolbox;

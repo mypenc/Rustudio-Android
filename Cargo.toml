@@ -208,4 +208,4 @@ rapier3d = { version = "0.36", features = ["parallel", "profiler"] }
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 ureq-wasm = { path = "shims/ureq" }
 tungstenite = "0.30"
-rapier3d = { version = "0.36", features = ["profiler"] }
+rapier3d = { version = "0.36", features = ["parallel", "profiler"] }

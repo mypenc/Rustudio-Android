@@ -478,6 +478,7 @@ pub mod gpu_check {
         let mut r = Renderer::with_caps(&device, &queue, &caps);
         let rs = egui_wgpu::RenderState {
             adapter: adapter.clone(),
+            #[cfg(not(target_arch = "wasm32"))]
             available_adapters: vec![adapter.clone()],
             instance: instance.clone(),
             device: device.clone(),

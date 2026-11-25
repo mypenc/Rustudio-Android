@@ -34,4 +34,4 @@ gilrs = "0.11"
 rapier3d = { version = "0.36", features = ["parallel", "profiler"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-rapier3d = { version = "0.36", features = ["profiler"] }
+rapier3d = { version = "0.36", features = ["parallel", "profiler"] }

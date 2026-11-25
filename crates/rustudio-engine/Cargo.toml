@@ -58,5 +58,5 @@ mlua = { version = "0.12", features = ["luau", "luau-jit"] }
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 ureq-wasm = { path = "../../shims/ureq" }
 tungstenite = "0.30"
-rapier3d = { version = "0.36", features = ["profiler"] }
+rapier3d = { version = "0.36", features = ["parallel", "profiler"] }
 mlua = { version = "0.12", features = ["luau"] }

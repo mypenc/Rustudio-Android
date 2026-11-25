@@ -1,0 +1,42 @@
+name: WASM probe
+
+on:
+  push:
+    branches: [web-port]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  WASI_SDK_VERSION: "25"
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        crate: [rustudio-core, rustudio-physics, rustudio-render, rustudio-account, rustudio-engine, rustudio-player, rustudio-net, rustudio]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: probe-${{ matrix.crate }}
+      - name: Install wasi-sdk (libc / libc++ headers for the C and C++ deps)
+        run: |
+          curl -sSL "https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASI_SDK_VERSION}/wasi-sdk-${WASI_SDK_VERSION}.0-x86_64-linux.tar.gz" | sudo tar xz -C /opt
+          sudo mv /opt/wasi-sdk-${WASI_SDK_VERSION}.0-x86_64-linux /opt/wasi-sdk
+          find /opt/wasi-sdk/share/wasi-sysroot/include -maxdepth 1
+      - name: cargo check (wasm32-unknown-unknown)
+        env:
+          CC_wasm32_unknown_unknown: /opt/wasi-sdk/bin/clang
+          CXX_wasm32_unknown_unknown: /opt/wasi-sdk/bin/clang++
+          AR_wasm32_unknown_unknown: /opt/wasi-sdk/bin/llvm-ar
+          CFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot
+          CXXFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot
+          RUSTFLAGS: --cfg getrandom_backend="wasm_js"
+        run: cargo check -p ${{ matrix.crate }} --target wasm32-unknown-unknown --keep-going --message-format short 2>&1 | tail -n 300

@@ -31,10 +31,20 @@ pub mod live;
 pub mod matchmaker;
 pub mod model;
 pub mod replicator;
+#[cfg(not(target_arch = "wasm32"))]
 pub mod rtcio;
+/// The browser build has no Team Create transport; the byte counters the
+/// profiler reads stay (at zero).
+#[cfg(target_arch = "wasm32")]
+pub mod rtcio {
+    pub static BYTES_SENT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+    pub static BYTES_RECEIVED: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+}
+#[cfg(not(target_arch = "wasm32"))]
 pub mod rupp;
 pub mod scripts;
 pub mod sessioncrypto;
+#[cfg(not(target_arch = "wasm32"))]
 pub mod transport;
 pub mod writer;
 

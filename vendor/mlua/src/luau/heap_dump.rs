@@ -26,24 +26,34 @@ impl HeapDump {
                 .unwrap_or(cstr!("unknown"))
         }
 
-        let mut buf = Vec::new();
-        unsafe {
-            let file = libc::tmpfile();
-            if file.is_null() {
-                return None;
+        #[cfg(target_arch = "wasm32")]
+        let buf: Vec<u8> = {
+            // No C stdio `tmpfile` in the browser build: no heap dumps.
+            let _ = (state, category_name);
+            return None;
+        };
+        #[cfg(not(target_arch = "wasm32"))]
+        let buf: Vec<u8> = {
+            let mut buf = Vec::new();
+            unsafe {
+                let file = libc::tmpfile();
+                if file.is_null() {
+                    return None;
+                }
+                ffi::lua_memorydump(state, file as *mut _, Some(category_name));
+                libc::fseek(file, 0, libc::SEEK_END);
+                let len = libc::ftell(file);
+                libc::rewind(file);
+                if len > 0 {
+                    let len = len as usize;
+                    buf.reserve(len);
+                    let n = libc::fread(buf.as_mut_ptr() as *mut _, 1, len, file);
+                    buf.set_len(n);
+                }
+                libc::fclose(file);
             }
-            ffi::lua_memorydump(state, file as *mut _, Some(category_name));
-            libc::fseek(file, 0, libc::SEEK_END);
-            let len = libc::ftell(file);
-            libc::rewind(file);
-            if len > 0 {
-                let len = len as usize;
-                buf.reserve(len);
-                let n = libc::fread(buf.as_mut_ptr() as *mut _, 1, len, file);
-                buf.set_len(n);
-            }
-            libc::fclose(file);
-        }
+            buf
+        };
 
         let buf = String::from_utf8(buf).ok()?.into_boxed_str();
         let data = json::parse(unsafe { mem::transmute::<&str, &'static str>(&buf) }).ok()?;

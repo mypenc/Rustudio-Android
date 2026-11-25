@@ -536,7 +536,7 @@ pub trait ResponseExt {
 }
 impl<T> ResponseExt for http::Response<T> {
     fn get_uri(&self) -> &http::Uri {
-        static EMPTY: http::Uri = http::Uri::from_static("/");
-        &EMPTY
+        static EMPTY: std::sync::OnceLock<http::Uri> = std::sync::OnceLock::new();
+        EMPTY.get_or_init(|| http::Uri::from_static("/"))
     }
 }

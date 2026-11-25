@@ -36,3 +36,6 @@ tungstenite = { version = "0.30", features = ["rustls-tls-native-roots", "rustls
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 ureq-wasm = { path = "../../shims/ureq" }
 tungstenite = "0.30"
+getrandom02 = { package = "getrandom", version = "0.2", features = ["js"] }
+getrandom03 = { package = "getrandom", version = "0.3", features = ["wasm_js"] }
+getrandom04 = { package = "getrandom", version = "0.4", features = ["wasm_js"] }

@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   WASI_SDK_VERSION: "25"
@@ -32,6 +32,7 @@ jobs:
           sudo mv /opt/wasi-sdk-${WASI_SDK_VERSION}.0-x86_64-linux /opt/wasi-sdk
           find /opt/wasi-sdk/share/wasi-sysroot/include -maxdepth 1
       - name: cargo check (wasm32-unknown-unknown)
+        shell: bash
         env:
           CC_wasm32_unknown_unknown: /opt/wasi-sdk/bin/clang
           CXX_wasm32_unknown_unknown: /opt/wasi-sdk/bin/clang++
@@ -39,4 +40,35 @@ jobs:
           CFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot
           CXXFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot
           RUSTFLAGS: --cfg getrandom_backend="wasm_js"
-        run: cargo check -p ${{ matrix.crate }} --target wasm32-unknown-unknown --keep-going --message-format short 2>&1 | tail -n 300
+        run: |
+          mkdir -p out
+          set +e
+          cargo check -p ${{ matrix.crate }} --target wasm32-unknown-unknown --keep-going --message-format short > out/${{ matrix.crate }}.log 2>&1
+          echo "exit=$?" >> out/${{ matrix.crate }}.log
+          tail -n 40 out/${{ matrix.crate }}.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: log-${{ matrix.crate }}
+          path: out/
+
+  collect:
+    needs: probe
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: logs
+          pattern: log-*
+          merge-multiple: true
+      - name: Publish logs to the ci-logs branch
+        run: |
+          cd logs
+          git init -q -b ci-logs
+          git config user.name "mypenc"
+          git config user.email "338947253+mypenc@users.noreply.github.com"
+          mkdir -p probe && mv *.log probe/ 2>/dev/null || true
+          echo "run ${{ github.run_id }} @ ${{ github.sha }}" > probe/RUN
+          git add -A && git commit -q -m "probe logs ${{ github.sha }}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" ci-logs

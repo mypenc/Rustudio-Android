@@ -15,7 +15,6 @@ rustudio-render = { path = "../rustudio-render" }
 rustudio-account = { path = "../rustudio-account" }
 # luau-jit: Luau's code generator for --!native scripts (vendor mlua: only
 # those, as Roblox; RUSTUDIO_NO_NATIVE=1 turns it off).
-mlua = { version = "0.12", features = ["luau", "luau-jit"] }
 # theme.rs's dock_style and gui.rs's paint callback take egui's (and the dock's)
 # types; gui.rs hands the renderer egui_wgpu's RenderState.
 egui = "0.36"
@@ -34,9 +33,7 @@ rustc-hash = "2"
 image = { version = "0.25", default-features = false, features = ["png", "jpeg"] }
 flate2 = "1"
 # services domain: HttpService (real HTTP), EncodingService (zstd, hashes).
-ureq = "3"
 # HttpService:CreateWebStreamClient (WebSocket type).
-tungstenite = { version = "0.30", features = ["rustls-tls-native-roots"] }
 zstd = "0.13"
 sha2 = "0.10"
 sha1 = "0.10"
@@ -45,10 +42,21 @@ blake2 = "0.10"
 blake3 = "1"
 chrono = { version = "0.4.35", default-features = false, features = ["clock"] }
 # audio / audio_capture / audio_dsp.
-rodio = { version = "0.23", default-features = false, features = ["playback", "vorbis", "mp3", "wav", "flac"] }
 libc = "0.2"
 # geometry_ops' convex hull (rapier's parry).
-rapier3d = { version = "0.36", features = ["parallel", "profiler"] }
 
 [dev-dependencies]
 rustudio-physics = { path = "../rustudio-physics", features = ["test-support"] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+ureq = "3"
+tungstenite = { version = "0.30", features = ["rustls-tls-native-roots"] }
+rodio = { version = "0.23", default-features = false, features = ["playback", "vorbis", "mp3", "wav", "flac"] }
+rapier3d = { version = "0.36", features = ["parallel", "profiler"] }
+mlua = { version = "0.12", features = ["luau", "luau-jit"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+ureq = { package = "ureq-wasm", path = "../../shims/ureq" }
+tungstenite = "0.30"
+rapier3d = { version = "0.36", features = ["profiler"] }
+mlua = { version = "0.12", features = ["luau"] }

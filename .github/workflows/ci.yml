@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     # (branches as well as tags: a filter on one alone stops runs for the other)
-    branches: ['**']
+    branches: ['**', '!web-port']
     tags: ['v*']
     paths-ignore: ['**.md', 'docs/**']
   pull_request:

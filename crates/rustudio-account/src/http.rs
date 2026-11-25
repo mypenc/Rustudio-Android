@@ -11,14 +11,23 @@
 //! IPv6 addresses that remain. (`ureq::unversioned` is ureq's "may change
 //! in a minor release" API; Cargo.lock pins the version.)
 
+#[cfg(not(target_arch = "wasm32"))]
 use ureq::config::Config;
+#[cfg(not(target_arch = "wasm32"))]
 use ureq::unversioned::resolver::{DefaultResolver, ResolvedSocketAddrs, Resolver};
+#[cfg(not(target_arch = "wasm32"))]
 use ureq::unversioned::transport::{DefaultConnector, NextTimeout};
+#[cfg(not(target_arch = "wasm32"))]
 use ureq::Agent;
+#[cfg(target_arch = "wasm32")]
+use ureq::{config::Config, Agent};
 
+#[cfg(not(target_arch = "wasm32"))]
 #[derive(Debug, Default)]
+#[cfg(not(target_arch = "wasm32"))]
 struct V4First(DefaultResolver);
 
+#[cfg(not(target_arch = "wasm32"))]
 impl Resolver for V4First {
     fn resolve(&self, uri: &ureq::http::Uri, config: &Config, timeout: NextTimeout) -> Result<ResolvedSocketAddrs, ureq::Error> {
         let mut addrs = self.0.resolve(uri, config, timeout)?;
@@ -28,12 +37,14 @@ impl Resolver for V4First {
     }
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 /// An agent for `config` (`ureq::Agent::config_builder()…build()`), with
 /// the resolver above. In place of `Agent::from(config)`.
 pub fn agent(config: Config) -> Agent {
     Agent::with_parts(config, DefaultConnector::default(), V4First::default())
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 /// One line on how `url`'s host is reached, phase by phase — DNS, a TCP
 /// connect to its first IPv4 and its first IPv6 address (5 s each), then
 /// an HTTPS GET with the agent above — with the time each took. For the
@@ -95,6 +106,7 @@ pub fn probe(url: &str) -> Result<String, String> {
     }
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -122,4 +134,16 @@ mod tests {
         let line = line.unwrap();
         assert!(line.contains("DNS") && line.contains("HTTPS GET 200"), "{line}");
     }
+}
+
+/// The browser build has no connector or resolver to configure.
+#[cfg(target_arch = "wasm32")]
+pub fn agent(config: Config) -> Agent {
+    Agent::from(config)
+}
+
+/// There is no socket-level network probe in the browser.
+#[cfg(target_arch = "wasm32")]
+pub fn probe(_url: &str) -> Result<String, String> {
+    Err("network probe is not available in the browser build".into())
 }

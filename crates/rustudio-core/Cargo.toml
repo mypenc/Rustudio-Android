@@ -30,7 +30,6 @@ serde_json = { version = "1", features = ["preserve_order"] }
 rustc-hash = "2"
 draco-core = { version = "2.3", default-features = false, features = ["decoder", "edgebreaker_valence_decode", "legacy_bitstream_decode"] }
 # Studio content download (studio_content.rs)
-ureq = "3"
 dirs = "6"
 chrono = { version = "0.4.35", default-features = false, features = ["clock"] }
 
@@ -45,3 +44,12 @@ objc2-foundation = { version = "0.3", default-features = false, features = ["std
 [dev-dependencies]
 # mesh.rs's tests encode a mesh (the root crate's dev-dependency).
 draco-core = { version = "2.3", default-features = false, features = ["decoder", "encoder"] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+ureq = "3"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+ureq = { package = "ureq-wasm", path = "../../shims/ureq" }
+getrandom02 = { package = "getrandom", version = "0.2", features = ["js"] }
+getrandom03 = { package = "getrandom", version = "0.3", features = ["wasm_js"] }
+getrandom04 = { package = "getrandom", version = "0.4", features = ["wasm_js"] }

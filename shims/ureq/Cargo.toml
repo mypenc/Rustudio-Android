@@ -1,0 +1,15 @@
+[package]
+name = "ureq-wasm"
+version = "3.0.0"
+edition = "2021"
+description = "API-compatible stand-in for ureq 3 on wasm32 (the browser has no sockets; every request reports a connection failure)"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[lib]
+name = "ureq"
+
+[dependencies]
+http = "1"
+serde = "1"
+serde_json = "1"

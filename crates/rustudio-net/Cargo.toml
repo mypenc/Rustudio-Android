@@ -15,9 +15,7 @@ serde_json = { version = "1", features = ["preserve_order"] }
 # RbxTransport (QUIC). quinn + rustls (ring provider); the transport seam in
 # transport.rs is wired to these once the capture pins ALPN / cert pinning /
 # the SessionCrypto-over-TLS layer.
-quinn = { version = "0.11", default-features = false, features = ["runtime-tokio", "rustls-ring"] }
 rustls = { version = "0.23", default-features = false, features = ["ring", "std"] }
-tokio = { version = "1", features = ["rt", "net", "time", "macros"] }
 # replicator payloads (schema, initial-stream chunks, instance batches) are zstd frames
 zstd = "0.13"
 base64 = "0.23"
@@ -31,3 +29,10 @@ md-5 = "0.10"
 
 [dev-dependencies]
 rbx_binary = "3"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+quinn = { version = "0.11", default-features = false, features = ["runtime-tokio", "rustls-ring"] }
+tokio = { version = "1", features = ["rt", "net", "time", "macros"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+tokio = { version = "1", features = ["rt", "time", "macros"] }

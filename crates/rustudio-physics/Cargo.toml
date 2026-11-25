@@ -16,9 +16,14 @@ rustc-hash = "2"
 # The Studio solver port steps rapier's collision detection and its own
 # solver; `parallel` gives the rayon pool the world step and the joints fan
 # out on, `profiler` the per-stage timing the bench reads.
-rapier3d = { version = "0.36", features = ["parallel", "profiler"] }
 # solver_ticks reads its scene files as JSON.
 serde_json = { version = "1", features = ["preserve_order"] }
 # solver_ticks reads Studio's recorded ticks, physics_mesh its blob frames.
 flate2 = "1"
 zstd = "0.13"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+rapier3d = { version = "0.36", features = ["parallel", "profiler"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+rapier3d = { version = "0.36", features = ["profiler"] }

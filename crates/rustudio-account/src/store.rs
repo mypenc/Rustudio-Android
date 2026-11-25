@@ -60,6 +60,62 @@ mod keyring {
     }
 }
 
+/// Browser build: there is no system keyring. Entries live in this page's
+/// memory for its lifetime (nothing secret is written to disk or to web
+/// storage).
+#[cfg(target_arch = "wasm32")]
+mod keyring {
+    use std::collections::HashMap;
+    use std::sync::{Mutex, OnceLock};
+
+    #[derive(Debug)]
+    pub enum Error {
+        NoEntry,
+        Other(String),
+    }
+
+    impl std::fmt::Display for Error {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            match self {
+                Error::NoEntry => f.write_str("no matching entry"),
+                Error::Other(s) => f.write_str(s),
+            }
+        }
+    }
+
+    impl std::error::Error for Error {}
+
+    fn map() -> &'static Mutex<HashMap<String, Vec<u8>>> {
+        static MAP: OnceLock<Mutex<HashMap<String, Vec<u8>>>> = OnceLock::new();
+        MAP.get_or_init(Default::default)
+    }
+
+    pub struct Entry(String);
+
+    impl Entry {
+        pub fn new(service: &str, user: &str) -> Result<Entry, Error> {
+            Ok(Entry(format!("{service}\u{0}{user}")))
+        }
+        pub fn get_secret(&self) -> Result<Vec<u8>, Error> {
+            map().lock().unwrap().get(&self.0).cloned().ok_or(Error::NoEntry)
+        }
+        pub fn set_secret(&self, secret: &[u8]) -> Result<(), Error> {
+            map().lock().unwrap().insert(self.0.clone(), secret.to_vec());
+            Ok(())
+        }
+        pub fn get_password(&self) -> Result<String, Error> {
+            let v = self.get_secret()?;
+            String::from_utf8(v).map_err(|e| Error::Other(e.to_string()))
+        }
+        pub fn set_password(&self, password: &str) -> Result<(), Error> {
+            self.set_secret(password.as_bytes())
+        }
+        pub fn delete_credential(&self) -> Result<(), Error> {
+            map().lock().unwrap().remove(&self.0).map(|_| ()).ok_or(Error::NoEntry)
+        }
+    }
+}
+
 const SERVICE: &str = "rustudio";
 const API_KEY_USER: &str = "roblox-open-cloud-api-key";
 /// Left behind by OAuth sign-in before the cookie session; removed on sight.

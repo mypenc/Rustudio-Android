@@ -149,6 +149,9 @@ pub mod config {
         pub fn https_only(self, _v: bool) -> Self {
             self
         }
+        pub fn max_redirects_will_error(self, _v: bool) -> Self {
+            self
+        }
         pub fn max_redirects(mut self, v: u32) -> Self {
             self.config.max_redirects = v;
             self
@@ -446,6 +449,12 @@ impl Agent {
         self.req(http::Method::PATCH, uri)
     }
 
+    /// `agent.configure_request(req).timeout_global(..).build()`: the request
+    /// again, with per-request settings applied (ignored here).
+    pub fn configure_request<B>(&self, request: http::Request<B>) -> HttpRequestConfig<B> {
+        HttpRequestConfig { request }
+    }
+
     /// Runs a prepared request. Always fails here (see the crate docs).
     pub fn run<B: AsSendBody>(&self, request: http::Request<B>) -> Result<http::Response<Body>, Error> {
         let _ = request.into_body().into_send_bytes();
@@ -488,6 +497,7 @@ impl<B> RequestConfig<B> {
     forward!(
         http_status_as_error(v: bool),
         max_redirects(v: u32),
+        max_redirects_will_error(v: bool),
         timeout_global(v: Option<Duration>),
         timeout_per_call(v: Option<Duration>),
         timeout_connect(v: Option<Duration>),
@@ -538,5 +548,39 @@ impl<T> ResponseExt for http::Response<T> {
     fn get_uri(&self) -> &http::Uri {
         static EMPTY: std::sync::OnceLock<http::Uri> = std::sync::OnceLock::new();
         EMPTY.get_or_init(|| http::Uri::from_static("/"))
+    }
+}
+
+/// Per-request settings for an `http::Request` (see [`Agent::configure_request`]).
+pub struct HttpRequestConfig<B> {
+    request: http::Request<B>,
+}
+impl<B> HttpRequestConfig<B> {
+    pub fn http_status_as_error(self, _v: bool) -> Self {
+        self
+    }
+    pub fn max_redirects(self, _v: u32) -> Self {
+        self
+    }
+    pub fn max_redirects_will_error(self, _v: bool) -> Self {
+        self
+    }
+    pub fn timeout_global(self, _v: Option<Duration>) -> Self {
+        self
+    }
+    pub fn timeout_per_call(self, _v: Option<Duration>) -> Self {
+        self
+    }
+    pub fn timeout_connect(self, _v: Option<Duration>) -> Self {
+        self
+    }
+    pub fn timeout_recv_response(self, _v: Option<Duration>) -> Self {
+        self
+    }
+    pub fn timeout_recv_body(self, _v: Option<Duration>) -> Self {
+        self
+    }
+    pub fn build(self) -> http::Request<B> {
+        self.request
     }
 }

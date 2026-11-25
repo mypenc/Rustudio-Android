@@ -19,6 +19,7 @@ impl Connection {
     pub fn timeout(&mut self, duration: std::time::Duration) {
         match self.socket.get_mut() {
             MaybeTlsStream::Plain(s)=>{let _=s.set_read_timeout(Some(duration));},
+            #[cfg(not(target_arch = "wasm32"))]
             MaybeTlsStream::Rustls(s)=>{let _=s.sock.set_read_timeout(Some(duration));},
             _=>{}
         }

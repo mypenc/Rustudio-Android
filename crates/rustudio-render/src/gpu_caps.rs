@@ -285,7 +285,8 @@ pub fn depth_sample_type(device: &wgpu::Device) -> wgpu::TextureSampleType {
 /// becomes the studs sampler.
 pub fn shader_for(device: &wgpu::Device, src: &str) -> String {
     let src = if depth_loads_as_float(device) { gl_shader(src) } else { src.to_owned() };
-    if uniform_arrays(device) { uniform_array_shader(device, &src) } else { src }
+    let src = if uniform_arrays(device) { uniform_array_shader(device, &src) } else { src };
+    chunk_mat_params(device, &src)
 }
 
 /// WebGL2 (GLES 3.0) has no storage buffers: `max_storage_buffers_per_shader_stage`
@@ -318,6 +319,68 @@ pub fn array_binding(device: &wgpu::Device) -> wgpu::BufferBindingType {
 /// Buffer usage matching [`array_binding`].
 pub fn array_usage(device: &wgpu::Device) -> wgpu::BufferUsages {
     (if uniform_arrays(device) { wgpu::BufferUsages::UNIFORM } else { wgpu::BufferUsages::STORAGE }) | wgpu::BufferUsages::COPY_DST
+}
+
+/// shader.wgsl's `mat_params` table: 2560 vec4s.
+const MAT_PARAMS_BYTES: u64 = 2560 * 16;
+
+/// Bytes of the material table bound per uniform block (a multiple of 256, the
+/// offset alignment, and at most the backend's uniform binding limit).
+pub fn mat_chunk_bytes(device: &wgpu::Device) -> u64 {
+    (device.limits().max_uniform_buffer_binding_size as u64 & !255).clamp(256, MAT_PARAMS_BYTES)
+}
+
+/// How many uniform blocks the material table needs (1 except on WebGL2).
+pub fn mat_chunks(device: &wgpu::Device) -> u32 {
+    MAT_PARAMS_BYTES.div_ceil(mat_chunk_bytes(device)) as u32
+}
+
+/// Binding `chunk` of the material table: the whole buffer, or one sub-range of it.
+pub fn mat_chunk_binding<'a>(device: &wgpu::Device, buf: &'a wgpu::Buffer, chunk: u32) -> wgpu::BindingResource<'a> {
+    if mat_chunks(device) == 1 {
+        return buf.as_entire_binding();
+    }
+    let bytes = mat_chunk_bytes(device);
+    let offset = chunk as u64 * bytes;
+    let size = bytes.min(MAT_PARAMS_BYTES.saturating_sub(offset)).max(16);
+    wgpu::BindingResource::Buffer(wgpu::BufferBinding { buffer: buf, offset, size: std::num::NonZeroU64::new(size) })
+}
+
+/// Splits `mat_params` into one uniform array per chunk (bindings 18, 30, 31, ...)
+/// behind `mat_param(i)`.
+fn chunk_mat_params(device: &wgpu::Device, src: &str) -> String {
+    let chunks = mat_chunks(device);
+    if chunks <= 1 {
+        return src.to_owned();
+    }
+    let per = (mat_chunk_bytes(device) / 16) as u32;
+    let total = (MAT_PARAMS_BYTES / 16) as u32;
+    let decl_old = "@group(0) @binding(18) var<uniform> mat_params: array<vec4<f32>, 2560>;";
+    let mut decl = String::new();
+    let mut body = String::new();
+    for c in 0..chunks {
+        let binding = if c == 0 { 18 } else { 29 + c };
+        let len = per.min(total - c * per);
+        decl.push_str(&format!("@group(0) @binding({binding}) var<uniform> mat_params{c}: array<vec4<f32>, {len}>;\n"));
+        body.push_str(&format!("    if i < {}u {{ return mat_params{c}[i - {}u]; }}\n", (c + 1) * per, c * per));
+    }
+    decl.push_str(&format!("fn mat_param(i: u32) -> vec4<f32> {{\n{body}    return mat_params{}[0];\n}}", chunks - 1));
+    let re_index = |s: &str| -> String {
+        let mut out = String::with_capacity(s.len());
+        let mut rest = s;
+        while let Some(i) = rest.find("mat_params[") {
+            out.push_str(&rest[..i]);
+            let after = &rest[i + "mat_params[".len()..];
+            let end = after.find(']').unwrap_or(0);
+            out.push_str("mat_param(");
+            out.push_str(&after[..end]);
+            out.push(')');
+            rest = &after[end + 1..];
+        }
+        out.push_str(rest);
+        out
+    };
+    re_index(&src.replace(decl_old, &decl))
 }
 
 /// The WGSL for [`uniform_arrays`]: `var<storage, read> x: array<T>` becomes

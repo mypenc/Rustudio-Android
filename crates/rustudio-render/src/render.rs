@@ -3219,7 +3219,10 @@ impl Renderer {
                         min_binding_size: None,
                     },
                 ),
-            ], |e| e.binding),
+                // (WebGL2: the rest of the material table, in further uniform blocks)
+                frag(30, wgpu::BindingType::Buffer { ty: wgpu::BufferBindingType::Uniform, has_dynamic_offset: false, min_binding_size: None }),
+                frag(31, wgpu::BindingType::Buffer { ty: wgpu::BufferBindingType::Uniform, has_dynamic_offset: false, min_binding_size: None }),
+            ], |e| e.binding).into_iter().filter(|e| e.binding < 30 || e.binding < 29 + crate::gpu_caps::mat_chunks(device)).collect::<Vec<_>>(),
         });
         let shadow_bgl = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
             label: Some("shadow globals"),
@@ -4269,14 +4272,16 @@ impl Renderer {
                 },
                 wgpu::BindGroupEntry {
                     binding: 18,
-                    resource: materials.params_buf.as_entire_binding(),
+                    resource: crate::gpu_caps::mat_chunk_binding(device, &materials.params_buf, 0),
                 },
+                wgpu::BindGroupEntry { binding: 30, resource: crate::gpu_caps::mat_chunk_binding(device, &materials.params_buf, 1) },
+                wgpu::BindGroupEntry { binding: 31, resource: crate::gpu_caps::mat_chunk_binding(device, &materials.params_buf, 2) },
                 wgpu::BindGroupEntry { binding: 20, resource: B::TextureView(localgrid) },
                 wgpu::BindGroupEntry {
                     binding: 19,
                     resource: B::TextureView(&materials.emission_view),
                 },
-            ], |e| e.binding),
+            ], |e| e.binding).into_iter().filter(|e| e.binding < 30 || e.binding < 29 + crate::gpu_caps::mat_chunks(device)).collect::<Vec<_>>(),
         })
     }
 

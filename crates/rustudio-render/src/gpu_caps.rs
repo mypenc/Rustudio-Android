@@ -285,7 +285,7 @@ pub fn depth_sample_type(device: &wgpu::Device) -> wgpu::TextureSampleType {
 /// becomes the studs sampler.
 pub fn shader_for(device: &wgpu::Device, src: &str) -> String {
     let src = if depth_loads_as_float(device) { gl_shader(src) } else { src.to_owned() };
-    let src = if uniform_arrays(device) { uniform_array_shader(device, &src) } else { src };
+    let src = if uniform_arrays(device) { num_levels_as_size(&uniform_array_shader(device, &src)) } else { src };
     chunk_mat_params(device, &src)
 }
 
@@ -319,6 +319,23 @@ pub fn array_binding(device: &wgpu::Device) -> wgpu::BufferBindingType {
 /// Buffer usage matching [`array_binding`].
 pub fn array_usage(device: &wgpu::Device) -> wgpu::BufferUsages {
     (if uniform_arrays(device) { wgpu::BufferUsages::UNIFORM } else { wgpu::BufferUsages::STORAGE }) | wgpu::BufferUsages::COPY_DST
+}
+
+/// GLSL ES 3.00 (WebGL2) has no `textureQueryLevels`: `textureNumLevels(t)` becomes
+/// the length of a full mip chain for the texture's width (the prefiltered cubes
+/// that call it carry one).
+fn num_levels_as_size(src: &str) -> String {
+    let mut out = String::with_capacity(src.len());
+    let mut rest = src;
+    while let Some(i) = rest.find("textureNumLevels(") {
+        out.push_str(&rest[..i]);
+        let after = &rest[i + "textureNumLevels(".len()..];
+        let end = after.find(')').unwrap_or(0);
+        out.push_str(&format!("(u32(log2(f32(textureDimensions({}).x))) + 1u)", &after[..end]));
+        rest = &after[end + 1..];
+    }
+    out.push_str(rest);
+    out
 }
 
 /// shader.wgsl's `mat_params` table: 2560 vec4s.

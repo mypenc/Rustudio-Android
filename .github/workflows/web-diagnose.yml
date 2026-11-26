@@ -1,6 +1,9 @@
 name: Web diagnose
 
 on:
+  push:
+    branches: [web-port]
+    paths: ['tools/webdiag/**', '.github/workflows/web-diagnose.yml']
   workflow_dispatch:
     inputs:
       url:
@@ -30,8 +33,8 @@ jobs:
       - name: Load the page
         working-directory: tools/webdiag
         env:
-          URL: ${{ inputs.url }}
-          SECS: ${{ inputs.secs }}
+          URL: ${{ inputs.url || 'https://mypenc.github.io/Rustudio-Android/' }}
+          SECS: ${{ inputs.secs || '150' }}
         run: node run.js
       - name: Publish to ci-logs
         if: always()

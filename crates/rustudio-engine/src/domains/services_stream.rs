@@ -394,7 +394,11 @@ fn ws_run(id: u64, req: Request, rx: Receiver<Cmd>, cancel: &Cancel) {
     let _ = sock.set_read_timeout(Some(Duration::from_millis(15)));
     let _ = sock.set_write_timeout(Some(WRITE_TIMEOUT));
     let started = Instant::now();
+    #[cfg(not(target_arch = "wasm32"))]
     let mut hs = tungstenite::client_tls_with_config(r, Tick(sock), None, None);
+    // The browser build has no TLS stack here (and no sockets: `ws_connect` fails first).
+    #[cfg(target_arch = "wasm32")]
+    let mut hs = tungstenite::client(r, tungstenite::stream::MaybeTlsStream::Plain(Tick(sock)));
     let (mut ws, resp) = loop {
         match hs {
             Ok(x) => break x,

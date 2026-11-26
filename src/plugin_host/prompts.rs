@@ -459,7 +459,12 @@ enum Pick {
 struct ObjJob(String);
 
 /// Opens the dialog `d` describes: rfd's, awaited on a worker thread.
-#[cfg(not(target_os = "android"))]
+#[cfg(target_arch = "wasm32")]
+fn spawn(_ctx: &egui::Context, _id: u64, _d: crate::file_dialog::Request, _pick: Pick, _job: Option<ObjJob>) {
+    // No file picker in the browser build yet (src/file_dialog.rs).
+}
+
+#[cfg(all(not(target_os = "android"), not(target_arch = "wasm32")))]
 fn spawn(ctx: &egui::Context, id: u64, d: crate::file_dialog::Request, pick: Pick, job: Option<ObjJob>) {
     let d = d.into_rfd();
     type Fut = std::pin::Pin<Box<dyn std::future::Future<Output = Vec<PathBuf>> + Send>>;

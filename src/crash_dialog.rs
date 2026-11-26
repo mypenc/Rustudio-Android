@@ -279,7 +279,7 @@ impl CrashDialogState {
                 .spawn(move || {
                     let result = match pollster::block_on(dialog.save_file()) {
                         Some(handle) => {
-                            let path = handle.path().to_path_buf();
+                            let path = crate::file_dialog::handle_path(&handle);
                             match std::fs::write(&path, content.as_bytes()) {
                                 Ok(()) => Ok(format!("Saved crash report to {}", path.display())),
                                 Err(e) => Err(Some(format!(

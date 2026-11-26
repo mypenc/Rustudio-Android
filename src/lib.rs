@@ -34,7 +34,7 @@ pub mod macos;
 pub mod cloud_ui;
 pub mod join_ui;
 pub mod app;
-#[cfg(not(target_os = "android"))]
+#[cfg(all(not(target_os = "android"), not(target_arch = "wasm32")))]
 mod native_loop;
 #[cfg(target_os = "android")]
 pub mod android;
@@ -619,6 +619,7 @@ pub(crate) fn wgpu_setup(mut setup: egui_wgpu::WgpuSetupCreateNew) -> egui_wgpu:
 /// The whole program: parse the command line and run the editor, a tool
 /// command or a harness run (`src/main.rs` calls this; the Android app
 /// starts in `android::run` instead, with no command line).
+#[cfg(not(target_arch = "wasm32"))]
 pub fn run() -> eframe::Result<()> {
     // `rustudio mcp`: the stdio MCP bridge to the open windows (src/mcp/
     // bridge.rs). No window, nothing else on stdout.
@@ -674,6 +675,7 @@ pub fn run() -> eframe::Result<()> {
                 .map(|h| h.join());
         }
         // SAFETY: deliberately faults, to test the signal report.
+        #[cfg(not(target_arch = "wasm32"))]
         Ok("segv") => unsafe { libc::raise(libc::SIGSEGV); },
         _ => {}
     }
@@ -1451,4 +1453,37 @@ pub fn run() -> eframe::Result<()> {
         std::process::exit(code);
     }
     r
+}
+
+/// Browser entry (wasm32): starts the editor on the page's `the_canvas_id`
+/// canvas (index.html). The desktop path is `run` above.
+#[cfg(target_arch = "wasm32")]
+pub fn web_start() {
+    use wasm_bindgen::JsCast;
+    wasm_bindgen_futures::spawn_local(async {
+        let canvas = web_sys::window()
+            .and_then(|w| w.document())
+            .and_then(|d| d.get_element_by_id("the_canvas_id"))
+            .and_then(|e| e.dyn_into::<web_sys::HtmlCanvasElement>().ok())
+            .expect("index.html has no #the_canvas_id canvas");
+        let created = Box::new(
+            move |cc: &eframe::CreationContext<'_>| -> Result<
+                Box<dyn eframe::App>,
+                Box<dyn std::error::Error + Send + Sync>,
+            > {
+                Ok(Box::new(app::RustudioApp::new(
+                    cc,
+                    None,
+                    app::Harness::interactive(),
+                    false,
+                )))
+            },
+        );
+        if let Err(e) = eframe::WebRunner::new()
+            .start(canvas, eframe::WebOptions::default(), created)
+            .await
+        {
+            log::error!("rustudio did not start: {e:?}");
+        }
+    });
 }

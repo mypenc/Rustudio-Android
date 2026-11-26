@@ -76,6 +76,9 @@ blake2 = "0.10"
 blake3 = "1"
 dirs = "6"
 chrono = { version = "0.4.35", default-features = false, features = ["clock"] }
+# Project file watching (src/project_sync.rs). notify has a null fallback on
+# targets without a native backend, so the web build compiles it too.
+notify = "8"
 
 [profile.dev]
 opt-level = 1
@@ -202,7 +205,6 @@ winresource = "0.1.34"
 ureq = "3"
 tungstenite = { version = "0.30", features = ["rustls-tls-native-roots", "rustls-tls-webpki-roots"] }
 rodio = { version = "0.23", default-features = false, features = ["playback", "vorbis", "mp3", "wav", "flac"] }
-notify = "8"
 rapier3d = { version = "0.36", features = ["parallel", "profiler"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
@@ -210,3 +212,8 @@ rodio = { version = "0.23", default-features = false, features = ["playback", "v
 ureq-wasm = { path = "shims/ureq" }
 tungstenite = "0.30"
 rapier3d = { version = "0.36", features = ["parallel", "profiler"] }
+# Browser entry (src/main.rs on wasm, lib.rs web_start): the canvas, and the
+# wasm-bindgen glue to reach it.
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+web-sys = { version = "0.3", features = ["Window", "Document", "HtmlCanvasElement", "Element"] }

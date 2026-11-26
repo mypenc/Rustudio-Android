@@ -460,8 +460,13 @@ impl RustudioApp {
         demo: bool,
     ) -> Self {
         // (whether the cursor can truly lock: mouse_lock::platform_locks)
-        use eframe::egui_wgpu::wgpu::rwh::{HasWindowHandle, RawWindowHandle};
-        let wayland = cc.window_handle().ok().map(|h| matches!(h.as_raw(), RawWindowHandle::Wayland(_)));
+        #[cfg(not(target_arch = "wasm32"))]
+        let wayland = {
+            use eframe::egui_wgpu::wgpu::rwh::{HasWindowHandle, RawWindowHandle};
+            cc.window_handle().ok().map(|h| matches!(h.as_raw(), RawWindowHandle::Wayland(_)))
+        };
+        #[cfg(target_arch = "wasm32")]
+        let wayland: Option<bool> = None;
         let mut app = Self::new_in(&cc.egui_ctx, cc.wgpu_render_state.clone(), wayland, open, harness, demo);
         app.ed.plugins.set_repaint_context(cc.egui_ctx.clone());
         rustudio_core::load_trace::mark("app created");

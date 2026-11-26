@@ -18,7 +18,7 @@
 //! Callers describe the dialog with a [`Request`], the same on every system.
 
 use std::path::PathBuf;
-#[cfg(not(target_os = "android"))]
+#[cfg(all(not(target_os = "android"), not(target_arch = "wasm32")))]
 use std::sync::mpsc::{channel, Receiver, TryRecvError};
 
 use rbx_dom_weak::types::Ref;
@@ -103,7 +103,7 @@ impl Request {
         self.filters.iter().any(|(_, exts)| exts.iter().any(|e| e.eq_ignore_ascii_case(&ext)))
     }
 
-    #[cfg(not(target_os = "android"))]
+    #[cfg(all(not(target_os = "android"), not(target_arch = "wasm32")))]
     pub(crate) fn into_rfd(self) -> rfd::AsyncFileDialog {
         let mut d = rfd::AsyncFileDialog::new();
         if let Some(t) = &self.title {
@@ -125,9 +125,9 @@ impl Request {
 
 #[derive(Default)]
 pub struct Dialogs {
-    #[cfg(not(target_os = "android"))]
+    #[cfg(all(not(target_os = "android"), not(target_arch = "wasm32")))]
     pending: Option<(Purpose, Receiver<Option<PathBuf>>)>,
-    #[cfg(not(target_os = "android"))]
+    #[cfg(all(not(target_os = "android"), not(target_arch = "wasm32")))]
     pending_multi: Option<(Purpose, Receiver<Vec<PathBuf>>)>,
     /// (the picker, and whether it was asked for several files: `poll_multi`)
     #[cfg(target_os = "android")]
@@ -144,7 +144,7 @@ impl Dialogs {
     /// A dialog is open.
     #[allow(dead_code)]
     pub fn busy(&self) -> bool {
-        #[cfg(not(target_os = "android"))]
+        #[cfg(all(not(target_os = "android"), not(target_arch = "wasm32")))]
         {
             self.pending.is_some() || self.pending_multi.is_some()
         }
@@ -155,7 +155,7 @@ impl Dialogs {
     }
 
     /// Opens the dialog; false (and nothing happens) while another is open.
-    #[cfg(not(target_os = "android"))]
+    #[cfg(all(not(target_os = "android"), not(target_arch = "wasm32")))]
     pub fn start(&mut self, purpose: Purpose, request: Request, kind: Kind) -> bool {
         if self.busy() {
             return false;
@@ -184,7 +184,7 @@ impl Dialogs {
     }
 
     /// Opens a multi-file picker dialog.
-    #[cfg(not(target_os = "android"))]
+    #[cfg(all(not(target_os = "android"), not(target_arch = "wasm32")))]
     pub fn start_multi(&mut self, purpose: Purpose, request: Request) -> bool {
         if self.busy() {
             return false;
@@ -209,7 +209,7 @@ impl Dialogs {
     }
 
     /// The finished dialog's purpose and path (None: cancelled).
-    #[cfg(not(target_os = "android"))]
+    #[cfg(all(not(target_os = "android"), not(target_arch = "wasm32")))]
     pub fn poll(&mut self) -> Option<(Purpose, Option<PathBuf>)> {
         let (_, rx) = self.pending.as_ref()?;
         let path = match rx.try_recv() {
@@ -221,7 +221,7 @@ impl Dialogs {
     }
 
     /// The finished multi-file dialog's purpose and chosen paths (empty: cancelled).
-    #[cfg(not(target_os = "android"))]
+    #[cfg(all(not(target_os = "android"), not(target_arch = "wasm32")))]
     pub fn poll_multi(&mut self) -> Option<(Purpose, Vec<PathBuf>)> {
         let (_, rx) = self.pending_multi.as_ref()?;
         let paths = match rx.try_recv() {
@@ -286,6 +286,40 @@ impl Dialogs {
         }
         let done = picker.show_multi(&ctx)?;
         self.pending.take().map(|(purpose, _, _)| (purpose, done))
+    }
+}
+
+/// The chosen file's path. rfd reports one on native platforms only.
+#[cfg(not(target_os = "android"))]
+pub(crate) fn handle_path(handle: &rfd::FileHandle) -> PathBuf {
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        handle.path().to_path_buf()
+    }
+    #[cfg(target_arch = "wasm32")]
+    {
+        PathBuf::from(handle.file_name())
+    }
+}
+
+/// The browser build has no file picker yet: dialogs never open, so every
+/// caller takes its cancelled path.
+#[cfg(target_arch = "wasm32")]
+impl Dialogs {
+    pub fn busy(&self) -> bool {
+        false
+    }
+    pub fn start(&mut self, _purpose: Purpose, _request: Request, _kind: Kind) -> bool {
+        false
+    }
+    pub fn start_multi(&mut self, _purpose: Purpose, _request: Request) -> bool {
+        false
+    }
+    pub fn poll(&mut self) -> Option<(Purpose, Option<PathBuf>)> {
+        None
+    }
+    pub fn poll_multi(&mut self) -> Option<(Purpose, Vec<PathBuf>)> {
+        None
     }
 }
 

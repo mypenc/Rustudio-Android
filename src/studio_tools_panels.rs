@@ -1904,7 +1904,7 @@ impl Editor {
                 .set_title("Run Luau Script")
                 .add_filter("Luau Scripts", &["luau", "lua", "txt"]);
             std::thread::spawn(move || {
-                let picked = pollster::block_on(dlg.pick_file()).map(|h| h.path().to_path_buf());
+                let picked = pollster::block_on(dlg.pick_file()).map(|h| crate::file_dialog::handle_path(&h));
                 let _ = tx.send(picked);
                 ctx.request_repaint();
             });

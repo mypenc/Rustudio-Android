@@ -15,6 +15,7 @@
 #[global_allocator]
 static ALLOC: rustudio_core::profiler::alloc::CountingAlloc = rustudio_core::profiler::alloc::CountingAlloc;
 
+#[cfg(not(target_arch = "wasm32"))]
 fn main() -> eframe::Result<()> {
     rustudio_core::profiler::alloc::CountingAlloc::mark_installed();
     rustudio_core::profiler::set_build(option_env!("RUSTUDIO_GIT_SHA").unwrap_or(""));
@@ -24,4 +25,10 @@ fn main() -> eframe::Result<()> {
         Err(error) => log::error!("RusTudio startup or event loop failed: {error}"),
     }
     result
+}
+
+/// The browser build starts the same editor on the page's canvas.
+#[cfg(target_arch = "wasm32")]
+fn main() {
+    rustudio::web_start();
 }

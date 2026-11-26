@@ -653,8 +653,8 @@ mod tests {
     /// in StarterPlayerScripts (a fork) keeps the classic layout around it.
     #[test]
     fn player_scripts_layout_follows_the_rollout_flag() {
-        let unique = web_time::SystemTime::now()
-            .duration_since(web_time::UNIX_EPOCH).unwrap().as_nanos();
+        let unique = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default())
+            .duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
         let root = std::env::temp_dir().join(format!("rustudio-player-layout-{}-{unique}", std::process::id()));
         install_with_both_layouts(&root);
         let classic = ["PlayerScriptsLoader", "PlayerModule", "RbxCharacterSounds"];
@@ -727,8 +727,8 @@ mod tests {
     /// "you won't get the new system if you forked the old one").
     #[test]
     fn own_character_sounds_keep_roblox_s_out() {
-        let unique = web_time::SystemTime::now()
-            .duration_since(web_time::UNIX_EPOCH).unwrap().as_nanos();
+        let unique = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default())
+            .duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
         let root = std::env::temp_dir().join(format!("rustudio-own-sounds-{}-{unique}", std::process::id()));
         install_with_both_layouts(&root);
         // A place whose `holder` (one of StarterPlayer's children) holds an
@@ -783,8 +783,8 @@ mod tests {
 
     #[test]
     fn custom_player_module_coexists_with_the_input_action_system() {
-        let unique = web_time::SystemTime::now()
-            .duration_since(web_time::UNIX_EPOCH)
+        let unique = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default())
+            .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_nanos();
         let root = std::env::temp_dir().join(format!("rustudio-custom-player-{unique}"));
@@ -841,8 +841,8 @@ mod tests {
 
     #[test]
     fn project_imports_input_contexts_with_properties_and_rejects_missing_sources() {
-        let unique = web_time::SystemTime::now()
-            .duration_since(web_time::UNIX_EPOCH).unwrap().as_nanos();
+        let unique = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default())
+            .duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
         let root = std::env::temp_dir().join(format!("rustudio-player-project-{}-{unique}", std::process::id()));
         let base = root.join(PLAYER_SCRIPTS);
         let module = base.join("StarterPlayer/PlayerModule");

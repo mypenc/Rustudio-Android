@@ -22,7 +22,8 @@
 use std::sync::OnceLock;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
-use web_time::{Instant, SystemTime, UNIX_EPOCH};
+use std::time::{SystemTime, UNIX_EPOCH};
+use web_time::Instant;
 
 struct Fixed {
     dt: f64,
@@ -64,7 +65,7 @@ fn sim_secs(f: &Fixed) -> f64 {
 }
 
 fn wall_epoch() -> f64 {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_secs_f64()).unwrap_or(0.0)
+    (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default()).duration_since(UNIX_EPOCH).map(|d| d.as_secs_f64()).unwrap_or(0.0)
 }
 
 /// `Instant::now()`, or the start plus simulated time.

@@ -345,8 +345,8 @@ fn retryable_http(status: u16) -> bool {
 fn new_attempt_id() -> String {
     // A v4-looking id from the system clock and address entropy. The server
     // only needs it unique per attempt; it is not a credential.
-    use web_time::{SystemTime, UNIX_EPOCH};
-    let n = SystemTime::now()
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let n = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default())
         .duration_since(UNIX_EPOCH)
         .map(|d| d.as_nanos())
         .unwrap_or(0);

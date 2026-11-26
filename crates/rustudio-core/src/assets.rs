@@ -15,7 +15,8 @@ use std::path::{Component, Path, PathBuf};
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::sync::{Arc, Condvar, LazyLock, Mutex};
 use std::time::Duration;
-use web_time::{Instant, SystemTime};
+use std::time::SystemTime;
+use web_time::Instant;
 
 use rustudio_account::api::{public_asset_typed, AssetDownloadError};
 
@@ -159,8 +160,8 @@ fn ledger_path(id: u64) -> Option<PathBuf> {
     let sources = std::env::var("RUSTUDIO_ASSET_SOURCES")
         .map(PathBuf::from)
         .unwrap_or_else(|_| data.join("rustudio/asset-sources.json"));
-    static LEDGER: Mutex<Option<(web_time::SystemTime, HashMap<u64, PathBuf>)>> = Mutex::new(None);
-    static SOURCES: Mutex<Option<(web_time::SystemTime, HashMap<u64, PathBuf>)>> = Mutex::new(None);
+    static LEDGER: Mutex<Option<(std::time::SystemTime, HashMap<u64, PathBuf>)>> = Mutex::new(None);
+    static SOURCES: Mutex<Option<(std::time::SystemTime, HashMap<u64, PathBuf>)>> = Mutex::new(None);
     path_map(&LEDGER, &ledger, id)
         .or_else(|| path_map(&SOURCES, &sources, id))
 }
@@ -169,7 +170,7 @@ fn ledger_path(id: u64) -> Option<PathBuf> {
 /// either the ledger's shape (objects with `assetId` + `path`) or plain
 /// `"id": "path"` pairs. Only files that exist count.
 fn path_map(
-    cache: &Mutex<Option<(web_time::SystemTime, HashMap<u64, PathBuf>)>>,
+    cache: &Mutex<Option<(std::time::SystemTime, HashMap<u64, PathBuf>)>>,
     file: &std::path::Path,
     id: u64,
 ) -> Option<PathBuf> {
@@ -985,7 +986,7 @@ impl AssetDownloads {
             let delay = retry_after
                 .as_ref()
                 .and_then(|header| header.to_str().ok())
-                .and_then(|value| retry_after_delay(value, SystemTime::now()))
+                .and_then(|value| retry_after_delay(value, (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default())))
                 .map_or(backoff, |delay| backoff.max(delay));
             ready_at = Instant::now() + delay;
             if *status == 429 {

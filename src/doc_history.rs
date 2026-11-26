@@ -474,8 +474,8 @@ impl Document {
         }
         // "recording_" + a decimal u64, as Studio's (random-looking).
         self.history.seq = self.history.seq.wrapping_add(1);
-        let t = web_time::SystemTime::now()
-            .duration_since(web_time::UNIX_EPOCH)
+        let t = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default())
+            .duration_since(std::time::UNIX_EPOCH)
             .map(|d| d.as_nanos() as u64)
             .unwrap_or(0);
         let mut x = t ^ (self.id << 32) ^ self.history.seq.wrapping_mul(0x9E37_79B9_7F4A_7C15);

@@ -38,7 +38,7 @@
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, Weak};
-use web_time::SystemTime;
+use std::time::SystemTime;
 
 use rbx_dom_weak::types::{Ref, Variant};
 use rbx_dom_weak::{InstanceBuilder, WeakDom};

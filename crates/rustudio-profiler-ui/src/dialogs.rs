@@ -115,7 +115,7 @@ fn export_name(chrome: bool) -> (String, &'static str, &'static str) {
 
 /// "20261119-2315" from the system clock (UTC; just to make names unique).
 fn chrono_like_stamp() -> String {
-    let secs = web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
+    let secs = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default()).duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
     let days = secs / 86_400;
     let (y, m, d) = civil(days as i64);
     let hm = secs % 86_400;

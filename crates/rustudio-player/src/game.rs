@@ -247,8 +247,8 @@ impl Game {
 
 fn timestamp() -> String {
     // Studio's Output timestamp: HH:MM:SS.mmm in local time.
-    let ms = web_time::SystemTime::now()
-        .duration_since(web_time::UNIX_EPOCH)
+    let ms = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default())
+        .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_millis() as u64)
         .unwrap_or(0);
     let secs = (ms / 1000) as i64;

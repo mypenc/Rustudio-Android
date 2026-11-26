@@ -13,7 +13,8 @@ use std::sync::{
     mpsc, Arc, Mutex,
 };
 use std::time::Duration;
-use web_time::{Instant, SystemTime, UNIX_EPOCH};
+use std::time::{SystemTime, UNIX_EPOCH};
+use web_time::Instant;
 
 
 fn templates() -> (ProtocolSyncTemplate, TicketTemplate) {
@@ -584,7 +585,7 @@ async fn run(
                     }
                 }
                 if last_ping.elapsed() >= Duration::from_secs(1) {
-                    let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_micros() as u64;
+                    let timestamp = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default()).duration_since(UNIX_EPOCH).unwrap_or_default().as_micros() as u64;
                     rtcio::send(&mut ping, &rtcio::ping_message(timestamp)).await?;
                     if control_started { rtcio::send(&mut replication, &REP_CONTROL).await?; }
                     last_ping = Instant::now();
@@ -873,7 +874,7 @@ fn save_unknown_frame(schema: &[u8], frame: &[u8], kinds: &str) -> Option<std::p
             }
         }
     }
-    let stamp = web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).map(|d| d.as_millis()).unwrap_or(0);
+    let stamp = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default()).duration_since(std::time::UNIX_EPOCH).map(|d| d.as_millis()).unwrap_or(0);
     let path = dir.join(format!("{stamp}-item-{kinds}.stream"));
     let mut options = std::fs::OpenOptions::new();
     options.write(true).create(true).truncate(true);

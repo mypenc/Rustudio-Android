@@ -25,7 +25,8 @@ use std::sync::{
     mpsc, Arc, Mutex,
 };
 use std::time::Duration;
-use web_time::{Instant, SystemTime, UNIX_EPOCH};
+use std::time::{SystemTime, UNIX_EPOCH};
+use web_time::Instant;
 
 const REP_CONTROL: [u8; 7] = [0x83, 0x23, 0, 0, 0, 0, 0];
 // Studio grants an initial instance quota when the streaming join completes.

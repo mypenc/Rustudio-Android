@@ -13,7 +13,7 @@
 
 use std::path::PathBuf;
 use std::time::Duration;
-use web_time::{SystemTime, UNIX_EPOCH};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::{session::session_agent, AccountConfig, Result};
 
@@ -155,7 +155,7 @@ impl QuickLogin {
         if let Some(dir) = path.parent() {
             std::fs::create_dir_all(dir)?;
         }
-        let started = SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
+        let started = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default()).duration_since(UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
         let text = serde_json::json!({ "code": self.code, "privateKey": self.private_key, "started": started }).to_string();
         write_private(&path, &text)
     }
@@ -174,7 +174,7 @@ impl QuickLogin {
             let started = v.get("started").and_then(|x| x.as_u64())?;
             Some((field("code")?, field("privateKey")?, started))
         });
-        let now = SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
+        let now = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default()).duration_since(UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
         match parsed {
             Some((code, private_key, started)) if now.saturating_sub(started) <= PENDING_FOR.as_secs() => {
                 Some(QuickLogin { code, private_key })

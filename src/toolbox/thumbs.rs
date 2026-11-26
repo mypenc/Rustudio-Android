@@ -9,7 +9,8 @@ use std::path::PathBuf;
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::sync::{Arc, Condvar, Mutex};
 use std::time::Duration;
-use web_time::{Instant, SystemTime};
+use std::time::SystemTime;
+use web_time::Instant;
 
 use super::api::{self, Http};
 use super::model;
@@ -243,7 +244,7 @@ fn worker(q: Arc<(Mutex<Queue>, Condvar)>, tx: Sender<Decoded>, http: Arc<Mutex<
             let fresh = std::fs::metadata(&p)
                 .ok()
                 .and_then(|m| m.modified().ok())
-                .and_then(|t| SystemTime::now().duration_since(t).ok())
+                .and_then(|t| (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default()).duration_since(t).ok())
                 .is_some_and(|age| age < DISK_TTL);
             if fresh {
                 if let Some(img) = std::fs::read(&p).ok().and_then(|b| decode(&b)) {

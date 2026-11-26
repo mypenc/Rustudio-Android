@@ -10,7 +10,7 @@ use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::{LazyLock, Mutex};
 use std::time::Duration;
-use web_time::SystemTime;
+use std::time::SystemTime;
 
 use egui::{CornerRadius, Rect};
 use rustudio_engine::theme;
@@ -65,7 +65,7 @@ fn load(ctx: &egui::Context, host: &str, dir: &Path, ids: &[u64]) {
         let fresh = std::fs::metadata(&path)
             .and_then(|m| m.modified())
             .ok()
-            .and_then(|t| SystemTime::now().duration_since(t).ok())
+            .and_then(|t| (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default()).duration_since(t).ok())
             .is_some_and(|age| age < DISK_TTL);
         let shown = std::fs::read(&path).is_ok_and(|b| push(id, &b));
         if !(shown && fresh) {

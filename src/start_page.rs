@@ -1602,8 +1602,8 @@ fn creator(e: &Experience) -> String {
 }
 
 fn unix_now() -> u64 {
-    web_time::SystemTime::now()
-        .duration_since(web_time::UNIX_EPOCH)
+    (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default())
+        .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_secs())
         .unwrap_or(0)
 }

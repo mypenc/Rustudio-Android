@@ -27,7 +27,7 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
 use std::time::Duration;
-use web_time::SystemTime;
+use std::time::SystemTime;
 
 pub const URL: &str = "https://clientsettingscdn.roblox.com/v2/settings/application/PCDesktopClient";
 /// How old the kept copy may get before Play fetches it again (Roblox's
@@ -143,7 +143,7 @@ fn override_file() -> PathBuf {
 /// then the override file. Returns a line for Output.
 pub fn load() -> String {
     let file = cache_file();
-    let age = std::fs::metadata(&file).and_then(|m| m.modified()).ok().and_then(|t| SystemTime::now().duration_since(t).ok());
+    let age = std::fs::metadata(&file).and_then(|m| m.modified()).ok().and_then(|t| (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default()).duration_since(t).ok());
     let mut note;
     let mut flags = match age {
         Some(a) if a < MAX_AGE => {

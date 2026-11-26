@@ -695,8 +695,8 @@ impl Editor {
             "screenshot" => {
                 let dir = rustudio_core::paths::pictures();
                 let _ = std::fs::create_dir_all(&dir);
-                let secs = web_time::SystemTime::now()
-                    .duration_since(web_time::UNIX_EPOCH)
+                let secs = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default())
+                    .duration_since(std::time::UNIX_EPOCH)
                     .map(|d| d.as_secs())
                     .unwrap_or(0);
                 self.pending_user_shot = Some(dir.join(format!("rustudio-{secs}.png")));

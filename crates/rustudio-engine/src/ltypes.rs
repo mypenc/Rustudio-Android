@@ -1634,8 +1634,8 @@ pub fn install(lua: &Lua, g: &Table) -> LResult<()> {
         })?,
     )?;
     let random_brick = lua.create_function(|lua, ()| {
-        let nanos = web_time::SystemTime::now()
-            .duration_since(web_time::UNIX_EPOCH)
+        let nanos = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default())
+            .duration_since(std::time::UNIX_EPOCH)
             .map(|d| d.subsec_nanos())
             .unwrap_or(0);
         let n = (crate::lua_bridge::seed(lua, nanos as u64) % 200) as u16 + 1;
@@ -2446,8 +2446,8 @@ impl LRandom {
         let t = if rbx_dom_weak::deterministic() {
             0
         } else {
-            web_time::SystemTime::now()
-                .duration_since(web_time::UNIX_EPOCH)
+            (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default())
+                .duration_since(std::time::UNIX_EPOCH)
                 .map(|d| d.as_nanos() as u64)
                 .unwrap_or(0)
         };
@@ -2628,7 +2628,7 @@ impl LDateTime {
         let ms = if rustudio_core::sim_clock::on() {
             (rustudio_core::sim_clock::epoch_secs() * 1000.0).floor() as i64
         } else {
-            match web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH) {
+            match (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default()).duration_since(std::time::UNIX_EPOCH) {
                 Ok(d) => d.as_millis() as i64,
                 Err(e) => -(e.duration().as_millis() as i64),
             }

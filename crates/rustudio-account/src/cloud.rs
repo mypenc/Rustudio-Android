@@ -1254,8 +1254,8 @@ impl PlaceCache {
     pub fn remember(&self, origin: &CloudOrigin) -> Result<()> {
         let mut list = self.recent();
         list.retain(|r| r.origin.place_id != origin.place_id);
-        let now = web_time::SystemTime::now()
-            .duration_since(web_time::UNIX_EPOCH)
+        let now = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default())
+            .duration_since(std::time::UNIX_EPOCH)
             .map(|d| d.as_secs())
             .unwrap_or(0);
         list.insert(

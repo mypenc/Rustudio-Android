@@ -67,6 +67,19 @@ jobs:
           CXXSTDLIB_wasm32_unknown_unknown: c++
           RUSTFLAGS: --cfg getrandom_backend="wasm_js" -L native=/opt/wasi-sdk/share/wasi-sysroot/lib/wasm32-wasip1 -C link-arg=-lc++abi -C link-arg=-lc -C link-arg=-lsetjmp -C link-arg=-lwasi-emulated-process-clocks
         run: trunk build --release --public-url /Rustudio-Android/ --dist dist
+      - name: Run C++ static constructors once (wasm-ld command-model wrappers re-run them per call)
+        run: |
+          f=$(ls dist/*_bg.wasm)
+          python3 tools/wasmfix/patch.py "$f" "$f.new" && mv "$f.new" "$f"
+          python3 - "$f" <<'PY'
+          import sys, re, glob, hashlib, base64, os
+          f = sys.argv[1]; name = os.path.basename(f)
+          h = 'sha384-' + base64.b64encode(hashlib.sha384(open(f, 'rb').read()).digest()).decode()
+          p = 'dist/index.html'; s = open(p).read()
+          s, n = re.subn(r'(href="[^"]*%s"[^>]*integrity=")sha384-[^"]*(")' % re.escape(name), r'\g<1>%s\g<2>' % h, s)
+          s = re.sub(r'(integrity=")sha384-[^"]*("[^>]*href="[^"]*%s")' % re.escape(name), r'\g<1>%s\g<2>' % h, s)
+          open(p, 'w').write(s); print('integrity refreshed', n)
+          PY
       - name: Publish to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:

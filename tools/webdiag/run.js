@@ -36,14 +36,15 @@ const race = (p, ms, tag) => Promise.race([p, new Promise(r => setTimeout(() => 
   await p.goto(URL, { waitUntil: 'commit', timeout: 60000 }).catch(e => add('goto: ' + e));
   for (let t = 10; t <= SECS; t += 10) {
     await new Promise(r => setTimeout(r, 10000));
-    if (t >= 20 && t <= 80 && t % 10 === 0) cdp.send('Debugger.pause').catch(() => {});
+    if (t === 30) { await p.mouse.click(336, 243).catch(() => {}); add('[click] Baseplate'); }
+    if (false && t >= 20 && t <= 80 && t % 10 === 0) cdp.send('Debugger.pause').catch(() => {});
     const info = await race(p.evaluate(() => ({
       status: (document.getElementById('status') || {}).textContent || '',
       canvas: (() => { const c = document.querySelector('canvas'); return c ? `${c.width}x${c.height}` : 'none'; })(),
       sab: typeof SharedArrayBuffer, coi: self.crossOriginIsolated, gpu: !!navigator.gpu,
     })), 5000, 'evaluate');
     add(`[probe] ${typeof info === 'string' ? info : JSON.stringify(info).replace(/\\n/g, ' | ').slice(0, 400)}`);
-    if (t % 30 === 0) await race(p.screenshot({ path: `out/shot-${String(t).padStart(3, '0')}.png`, timeout: 8000 }).catch(() => {}), 10000, 'screenshot');
+    if (t % 30 === 0 || t === 40) await race(p.screenshot({ path: `out/shot-${String(t).padStart(3, '0')}.png`, timeout: 8000 }).catch(() => {}), 10000, 'screenshot');
   }
   add('[done]');
   process.exit(0);

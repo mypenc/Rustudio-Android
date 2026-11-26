@@ -98,7 +98,12 @@
       const show = (m) => { const e = s(); if (e) { e.style.color = "#f66"; e.textContent += "\n" + m; } };
       window.addEventListener("error", (ev) => show("error: " + (ev.message || ev.error)));
       window.addEventListener("unhandledrejection", (ev) => show("rejected: " + (ev.reason && (ev.reason.stack || ev.reason))));
-      window.addEventListener("TrunkApplicationStarted", () => { const e = s(); if (e) e.textContent = "RusTudio: module started, waiting for the first frame…"; });
+      window.addEventListener("TrunkApplicationStarted", () => {
+        const e = s(); if (e) e.textContent = "RusTudio: module started, waiting for the first frame…";
+        // Nothing reports the first frame, so clear the notice once the app has had time to draw
+        // (an error message appended to it stays visible).
+        setTimeout(() => { const x = s(); if (x && x.textContent.indexOf("error") < 0) x.textContent = ""; }, 3000);
+      });
     })();
   </script>
 </body>

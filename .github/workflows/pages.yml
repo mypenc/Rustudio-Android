@@ -53,10 +53,10 @@ jobs:
       - name: Publish release build log to ci-logs
         if: always()
         run: |
-          cd pages-log && git init -q -b ci-logs && git config user.name mypenc && git config user.email 338947253+mypenc@users.noreply.github.com
+          cd pages-log && git init -q -b pages-logs && git config user.name mypenc && git config user.email 338947253+mypenc@users.noreply.github.com
           echo "run ${{ github.run_id }} @ ${{ github.sha }}" > RUN
           git add -A && git commit -q -m "pages build log ${{ github.sha }}"
-          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" ci-logs
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" pages-logs
       - name: trunk build (release)
         env:
           CC_wasm32_unknown_unknown: /opt/wasi-sdk/bin/clang

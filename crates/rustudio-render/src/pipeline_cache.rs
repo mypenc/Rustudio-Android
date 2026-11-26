@@ -130,7 +130,7 @@ pub fn save(force: bool) {
         if let Some(parent) = c.path.parent() {
             std::fs::create_dir_all(parent)?;
         }
-        let tmp = c.path.with_extension(format!("tmp{}", std::process::id()));
+        let tmp = c.path.with_extension(format!("tmp{}", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
         std::fs::write(&tmp, &data)?;
         std::fs::rename(&tmp, &c.path)
     };

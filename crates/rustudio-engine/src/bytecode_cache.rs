@@ -101,7 +101,7 @@ pub fn get(source: &str) -> Option<Arc<Vec<u8>>> {
             let b = compiler().compile(source).ok().filter(|b| b.first().is_some_and(|v| *v != 0))?;
             if disk {
                 let _ = std::fs::create_dir_all(dir());
-                let tmp = file.with_extension(format!("tmp{}", std::process::id()));
+                let tmp = file.with_extension(format!("tmp{}", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
                 if std::fs::write(&tmp, &b).is_ok() {
                     let _ = std::fs::rename(&tmp, &file);
                 }

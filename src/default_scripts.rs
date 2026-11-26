@@ -574,7 +574,7 @@ mod tests {
     fn player_scripts_layout_follows_the_rollout_flag() {
         let unique = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default())
             .duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
-        let root = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-player-layout-{}-{unique}", std::process::id()));
+        let root = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-player-layout-{}-{unique}", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
         install_with_both_layouts(&root);
         let classic = ["PlayerScriptsLoader", "PlayerModule", "RbxCharacterSounds"];
         let check = |mut d: Document, expect: &[&str], classic_tree: bool| {
@@ -636,7 +636,7 @@ mod tests {
     fn project_imports_input_contexts_with_properties_and_rejects_missing_sources() {
         let unique = (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default())
             .duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
-        let root = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-player-project-{}-{unique}", std::process::id()));
+        let root = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-player-project-{}-{unique}", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
         let base = root.join(PLAYER_SCRIPTS);
         let module = base.join("StarterPlayer/PlayerModule");
         std::fs::create_dir_all(&module).unwrap();

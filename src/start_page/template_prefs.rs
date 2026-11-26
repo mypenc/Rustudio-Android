@@ -299,7 +299,7 @@ mod tests {
 
     #[test]
     fn order_hide_add_remove() {
-        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-tpl-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-tpl-{}", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
         std::fs::create_dir_all(&dir).unwrap();
         // SAFETY: only this test reads the variable.
         unsafe { std::env::set_var("RUSTUDIO_TEMPLATE_PREFS", dir.join("templates.json")) };

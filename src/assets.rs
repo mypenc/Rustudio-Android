@@ -2562,7 +2562,7 @@ mod tests {
         // (Against an empty content folder: a Studio content download that
         // still ships one of them, as the Windows one does SwordTexture.png,
         // wins over the table.)
-        let empty = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-legacy-empty-{}", std::process::id()));
+        let empty = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-legacy-empty-{}", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
         let _ = std::fs::create_dir_all(&empty);
         let table = legacy_table(&empty);
         let id = |s: &str| legacy_lookup(&table, s.strip_prefix("rbxasset://").unwrap());
@@ -2586,7 +2586,7 @@ mod tests {
     /// folder and generated images still load, and Edit keeps local files.
     #[test]
     fn local_place_content_is_not_loaded_while_scripts_run() {
-        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-play-content-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-play-content-{}", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("private.png");
         let mut png = std::io::Cursor::new(Vec::new());
@@ -2643,7 +2643,7 @@ mod tests {
     #[test]
     fn marked_place_folder_is_play_content() {
         // canonicalize: macOS temp dirs sit behind the /var → /private/var link.
-        let root = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).canonicalize().unwrap().join(format!("rs-local-content-{}", std::process::id()));
+        let root = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).canonicalize().unwrap().join(format!("rs-local-content-{}", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
         let marked = root.join("marked");
         let plain = root.join("plain");
         std::fs::create_dir_all(marked.join("meshes")).unwrap();

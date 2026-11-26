@@ -34,7 +34,7 @@ pub fn init() {
     // SAFETY: set before any other thread starts (first thing in main).
     std::env::set_var("RUSTUDIO_LOAD_T0", format!("{t:.6}"));
     let who = if std::env::var_os("RUSTUDIO_HEADLESS_CHILD").is_some() { "child" } else { "main" };
-    mark(&format!("process start ({who}, pid {})", std::process::id()));
+    mark(&format!("process start ({who}, pid {})", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
 }
 
 pub fn mark(what: &str) {

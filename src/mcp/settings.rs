@@ -208,7 +208,7 @@ pub fn new_token() -> String {
         let seed = format!(
             "{:?}{}{:p}",
             (std::time::UNIX_EPOCH + web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default()),
-            std::process::id(),
+            (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() }),
             &bytes as *const _
         );
         bytes.copy_from_slice(&sha2::Sha256::digest(seed.as_bytes())[..16]);
@@ -232,7 +232,7 @@ mod tests {
 
     #[test]
     fn settings_round_trip_through_the_file() {
-        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-mcp-settings-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-mcp-settings-{}", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
         let file = dir.join("mcp.json");
         let mut s = McpSettings::load(None);
         s.enabled = true;

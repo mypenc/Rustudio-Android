@@ -65,7 +65,7 @@ fn header(kind: &str) -> String {
         "rustudio {} ({}) crashed: {kind}\npid {}\nargs: {}\n\n",
         env!("CARGO_PKG_VERSION"),
         option_env!("RUSTUDIO_GIT").unwrap_or("unknown commit"),
-        std::process::id(),
+        (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() }),
         args_line()
     )
 }
@@ -108,7 +108,7 @@ fn notes_block() -> String {
 fn write_report(body: &str) -> Option<PathBuf> {
     let d = dir();
     std::fs::create_dir_all(&d).ok()?;
-    let path = d.join(format!("{}-{}.txt", stamp(), std::process::id()));
+    let path = d.join(format!("{}-{}.txt", stamp(), (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
     let mut f = std::fs::File::create(&path).ok()?;
     f.write_all(body.as_bytes()).ok()?;
     if let Ok(mut l) = LAST_REPORT.lock() {
@@ -132,7 +132,7 @@ pub fn last_report() -> Option<PathBuf> {
 
 /// Install the panic hook and the fatal-signal handlers. Call first in main.
 pub fn install() {
-    let path = dir().join(format!("{}-{}.txt", stamp(), std::process::id()));
+    let path = dir().join(format!("{}-{}.txt", stamp(), (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
     let _ = SIGNAL_PATH.set(CString::new(path.to_string_lossy().as_bytes()).unwrap_or_default());
 
     let default_hook = std::panic::take_hook();

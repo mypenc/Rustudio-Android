@@ -239,7 +239,7 @@ impl CrashContext {
             self.target_os,
             self.target_arch,
             self.build_profile,
-            std::process::id(),
+            (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() }),
             self.gpu_info,
             self.device_info.format_lines(),
         )

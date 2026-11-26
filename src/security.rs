@@ -953,7 +953,7 @@ mod tests {
     /// reaches the script.
     #[test]
     fn content_ids_do_not_read_local_files() {
-        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-content-ids-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-content-ids-{}", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
         std::fs::create_dir_all(&dir).unwrap();
         let png = dir.join("private.png");
         image::RgbaImage::from_pixel(1, 1, image::Rgba([12, 34, 56, 255]))

@@ -115,7 +115,7 @@ impl SelfTest {
                 if ed.game.play.is_some() {
                     ed.stop_play();
                 }
-                let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-selftest-project-{}", std::process::id()));
+                let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-selftest-project-{}", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
                 let _ = std::fs::create_dir_all(&dir);
                 self.pj = ProjectTest { started: f, dir: dir.clone(), ok: true, ..Default::default() };
                 if let Err(e) = write_fixture(&dir) {

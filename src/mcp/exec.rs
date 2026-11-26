@@ -131,7 +131,7 @@ impl Editor {
 
     fn mcp_session_info(&self) -> ToolResult {
         let doc = &self.game.doc;
-        let me = std::process::id() as u64;
+        let me = (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() }) as u64;
         let others: Vec<J> = sessions::list().into_iter().filter(|v| v.get("pid").and_then(|p| p.as_u64()) != Some(me)).collect();
         let groups: Vec<&str> = super::settings::Group::ALL.iter().filter(|g| self.mcp.settings.groups.allows(**g)).map(|g| g.key()).collect();
         let live = self.mcp_live_activity().map(|l| if l.joined { "connected" } else { "joining" });

@@ -60,7 +60,7 @@ fn create_session() -> io::Result<Session> {
     }
 
     let stamp = chrono::Utc::now().format("%Y%m%d-%H%M%S-%3f");
-    let path = dir.join(format!("rustudio-{stamp}-{}.log", std::process::id()));
+    let path = dir.join(format!("rustudio-{stamp}-{}.log", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
     let mut options = OpenOptions::new();
     options.write(true).create_new(true);
     #[cfg(unix)]

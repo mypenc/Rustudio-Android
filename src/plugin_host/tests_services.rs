@@ -232,7 +232,7 @@ fn script_documents_follow_the_editor() {
 #[test]
 fn prompts_answer_plugin_dialogs() {
     temp_data();
-    let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-prompt-test-{}", std::process::id()));
+    let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-prompt-test-{}", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
     let _ = std::fs::create_dir_all(&dir);
     let txt = dir.join("hello.txt");
     std::fs::write(&txt, b"hi there").unwrap();
@@ -327,7 +327,7 @@ pub(super) fn fbxanim_case_matches(studio: &str, got: &[String], label: &str) ->
 fn import_fbx_animation_matches_studio() {
     temp_data();
     let fixtures = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("checks/plugins/services/fixtures/fbxanim");
-    let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-fbxanim-test-{}", std::process::id()));
+    let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-fbxanim-test-{}", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
     let _ = std::fs::create_dir_all(&dir);
     let txt = dir.join("notes.txt");
     std::fs::write(&txt, b"not a model\n").unwrap();

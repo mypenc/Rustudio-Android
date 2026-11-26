@@ -2179,7 +2179,7 @@ mod curve_tests {
     /// don't load, even with their samples already decoded and cached.
     #[test]
     fn local_audio_is_denied_even_if_pcm_is_cached() {
-        let path = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-private-audio-{}.wav", std::process::id()));
+        let path = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-private-audio-{}.wav", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
         let path = path.to_string_lossy().into_owned();
         for id in [format!("file://{path}"), path.clone(), "private.wav".to_string()] {
             pcm_store(&id, Arc::new(Pcm { rate: 8000, chans: vec![vec![0.25, -0.25]] }));

@@ -1542,7 +1542,7 @@ mod tests {
             return;
         }
 
-        let path = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-sleep-{}.json", std::process::id()));
+        let path = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-sleep-{}.json", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
         for (allow_sleep, awake) in [(false, "1"), (true, "0")] {
             std::fs::write(&path, format!(r#"{{"PhysicsSettings.AllowSleep":{allow_sleep}}}"#)).unwrap();
             let output = std::process::Command::new(std::env::current_exe().unwrap())

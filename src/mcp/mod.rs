@@ -512,7 +512,7 @@ impl crate::app::Editor {
             return;
         }
         if let Some(dir) = sessions::dir() {
-            let file = dir.join(format!("{}.json", std::process::id()));
+            let file = dir.join(format!("{}.json", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
             if std::fs::create_dir_all(&dir).is_ok() && std::fs::write(&file, &text).is_ok() {
                 self.mcp.session_file = Some(file);
                 self.mcp.session_json = text;
@@ -533,7 +533,7 @@ impl crate::app::Editor {
         let doc = &self.game.doc;
         let live = self.live_team_create_ids();
         json!({
-            "pid": std::process::id(),
+            "pid": (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() }),
             "port": port,
             "url": format!("http://127.0.0.1:{port}/mcp"),
             "title": doc.title,

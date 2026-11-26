@@ -617,7 +617,7 @@ mod tests {
     /// A project mapping ServerScriptService.Game to src/server and a place
     /// that has Game with Main (old source), Stale (no file) and a Part.
     fn fixture(tag: &str) -> Fixture {
-        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-filesync-{tag}-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-filesync-{tag}-{}", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(dir.join("src/server/Lib")).unwrap();
         std::fs::write(

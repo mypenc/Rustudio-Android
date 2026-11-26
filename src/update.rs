@@ -493,7 +493,7 @@ fn install(r: &Release, progress: &Progress) -> Result<PathBuf, String> {
         return Err(format!("{name}: checksum mismatch, nothing was changed"));
     }
     // Unpack next to the install so the final renames stay on one disk.
-    let stage = root.parent().ok_or("no folder above the install")?.join(format!(".rustudio-update-{}", std::process::id()));
+    let stage = root.parent().ok_or("no folder above the install")?.join(format!(".rustudio-update-{}", (if cfg!(target_arch = "wasm32") { 1u32 } else { std::process::id() })));
     let _ = std::fs::remove_dir_all(&stage);
     std::fs::create_dir_all(&stage).map_err(|e| format!("can't write next to {}: {e}", root.display()))?;
     let result = unpack_and_swap(&data, &name, &stage, &root);

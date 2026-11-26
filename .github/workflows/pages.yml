@@ -40,13 +40,14 @@ jobs:
           AR_wasm32_unknown_unknown: /opt/wasi-sdk/bin/llvm-ar
           CFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot
           CXXFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot
-          RUSTFLAGS: --cfg getrandom_backend="wasm_js"
+          CXXSTDLIB_wasm32_unknown_unknown: c++
+          RUSTFLAGS: --cfg getrandom_backend="wasm_js" -L native=/opt/wasi-sdk/share/wasi-sysroot/lib/wasm32-wasip1 -C link-arg=-lc++abi -C link-arg=-lc
         run: |
           mkdir -p pages-log
           cargo build --release --target wasm32-unknown-unknown --bin rustudio > pages-log/full.log 2>&1
           echo "exit=$?" >> pages-log/full.log
-          sed 's/\x1b\[[0-9;]*m//g' pages-log/full.log | grep -a -n 'wasm-ld\|rust-lld\|undefined\|error:' | cut -c1-300 | head -300 > pages-log/build.log
-          sed 's/\x1b\[[0-9;]*m//g' pages-log/full.log | grep -a -A60 'linking with' | cut -c1-1500 | head -120 >> pages-log/build.log
+          sed 's/\x1b\[[0-9;]*m//g' pages-log/full.log | grep -a -n 'wasm-ld\|rust-lld\|undefined\|error:' | cut -c1-300 | head -300 > pages-log/build.log || true
+          sed 's/\x1b\[[0-9;]*m//g' pages-log/full.log | grep -a -A60 'linking with' | cut -c1-1500 | head -120 >> pages-log/build.log || true
           rm pages-log/full.log
           tail -n 40 pages-log/build.log
       - name: Publish release build log to ci-logs
@@ -63,7 +64,8 @@ jobs:
           AR_wasm32_unknown_unknown: /opt/wasi-sdk/bin/llvm-ar
           CFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot
           CXXFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot
-          RUSTFLAGS: --cfg getrandom_backend="wasm_js"
+          CXXSTDLIB_wasm32_unknown_unknown: c++
+          RUSTFLAGS: --cfg getrandom_backend="wasm_js" -L native=/opt/wasi-sdk/share/wasi-sysroot/lib/wasm32-wasip1 -C link-arg=-lc++abi -C link-arg=-lc
         run: trunk build --release --public-url /Rustudio-Android/ --dist dist
       - name: Publish to gh-pages
         uses: peaceiris/actions-gh-pages@v4

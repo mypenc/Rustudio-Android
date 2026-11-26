@@ -32,6 +32,27 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: trunk
+      - name: Release build log (kept on ci-logs)
+        continue-on-error: true
+        env:
+          CC_wasm32_unknown_unknown: /opt/wasi-sdk/bin/clang
+          CXX_wasm32_unknown_unknown: /opt/wasi-sdk/bin/clang++
+          AR_wasm32_unknown_unknown: /opt/wasi-sdk/bin/llvm-ar
+          CFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot
+          CXXFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot
+          RUSTFLAGS: --cfg getrandom_backend="wasm_js"
+        run: |
+          mkdir -p pages-log
+          cargo build --release --target wasm32-unknown-unknown --bin rustudio --message-format short > pages-log/build.log 2>&1
+          echo "exit=$?" >> pages-log/build.log
+          tail -n 60 pages-log/build.log
+      - name: Publish release build log to ci-logs
+        if: always()
+        run: |
+          cd pages-log && git init -q -b ci-logs && git config user.name mypenc && git config user.email 338947253+mypenc@users.noreply.github.com
+          echo "run ${{ github.run_id }} @ ${{ github.sha }}" > RUN
+          git add -A && git commit -q -m "pages build log ${{ github.sha }}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" ci-logs
       - name: trunk build (release)
         env:
           CC_wasm32_unknown_unknown: /opt/wasi-sdk/bin/clang

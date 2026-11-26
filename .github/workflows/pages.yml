@@ -43,9 +43,12 @@ jobs:
           RUSTFLAGS: --cfg getrandom_backend="wasm_js"
         run: |
           mkdir -p pages-log
-          cargo build --release --target wasm32-unknown-unknown --bin rustudio --message-format short > pages-log/build.log 2>&1
-          echo "exit=$?" >> pages-log/build.log
-          tail -n 60 pages-log/build.log
+          cargo build --release --target wasm32-unknown-unknown --bin rustudio > pages-log/full.log 2>&1
+          echo "exit=$?" >> pages-log/full.log
+          sed 's/\x1b\[[0-9;]*m//g' pages-log/full.log | grep -a -n 'wasm-ld\|rust-lld\|undefined\|error:' | cut -c1-300 | head -300 > pages-log/build.log
+          sed 's/\x1b\[[0-9;]*m//g' pages-log/full.log | grep -a -A60 'linking with' | cut -c1-1500 | head -120 >> pages-log/build.log
+          rm pages-log/full.log
+          tail -n 40 pages-log/build.log
       - name: Publish release build log to ci-logs
         if: always()
         run: |

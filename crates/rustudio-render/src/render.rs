@@ -7819,7 +7819,9 @@ impl Renderer {
         // same order: f32::total_cmp is the order of these bits.
         // The row (the order the draws came in) last makes every key
         // distinct, so an unstable sort of these gives the stable order.
-        let packable = keys.iter().all(|k| k.key.0 < 1 << 31 && k.key.1 < 1 << 32) && rows.len() < 1 << 32;
+        // (compared as u64: on wasm32 a usize is 32 bits, and `1 << 32` would overflow)
+        let packable = keys.iter().all(|k| (k.key.0 as u64) < 1u64 << 31 && (k.key.1 as u64) < 1u64 << 32)
+            && (rows.len() as u64) < 1u64 << 32;
         if packable {
             let mut packed: Vec<(u64, u64, u64)> = keys
                 .iter()

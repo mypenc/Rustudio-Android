@@ -87,11 +87,11 @@ impl LightShadows {
             min_filter: wgpu::FilterMode::Linear,
             ..Default::default()
         });
-        let n = rustudio_core::mech::LSHADOW_MAX_LIGHTS.max(1);
+        let n = crate::gpu_caps::max_lshadow(device).max(1);
         let slots_buf = device.create_buffer(&wgpu::BufferDescriptor {
             label: Some("light shadow slots"),
             size: (n * (6 * 64 + 16)) as u64,
-            usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
+            usage: crate::gpu_caps::array_usage(device),
             mapped_at_creation: false,
         });
         let face_buf = device.create_buffer(&wgpu::BufferDescriptor {
@@ -3075,7 +3075,7 @@ impl Renderer {
                 frag(
                     1,
                     wgpu::BindingType::Buffer {
-                        ty: wgpu::BufferBindingType::Storage { read_only: true },
+                        ty: crate::gpu_caps::array_binding(device),
                         has_dynamic_offset: false,
                         min_binding_size: None,
                     },
@@ -3190,7 +3190,7 @@ impl Renderer {
                 frag(
                     17,
                     wgpu::BindingType::Buffer {
-                        ty: wgpu::BufferBindingType::Storage { read_only: true },
+                        ty: crate::gpu_caps::array_binding(device),
                         has_dynamic_offset: false,
                         min_binding_size: None,
                     },
@@ -3230,8 +3230,8 @@ impl Renderer {
         });
         let lights_buf = device.create_buffer(&wgpu::BufferDescriptor {
             label: Some("lights"),
-            size: (rustudio_core::mech::MAX_LIGHTS.max(1) * std::mem::size_of::<LightRaw>()) as u64,
-            usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
+            size: (crate::gpu_caps::max_lights(device).max(1) * std::mem::size_of::<LightRaw>()) as u64,
+            usage: crate::gpu_caps::array_usage(device),
             mapped_at_creation: false,
         });
         let shadow_tex = device.create_texture(&wgpu::TextureDescriptor {
@@ -5696,7 +5696,7 @@ impl Renderer {
         }
 
         drop(r_scope);
-        let n_lights = frame.lights.len().min(rustudio_core::mech::MAX_LIGHTS);
+        let n_lights = frame.lights.len().min(crate::gpu_caps::max_lights(&self.device));
         self.gui_n_lights = n_lights as u32;
         if n_lights > 0 {
             queue.write_buffer(
@@ -5976,7 +5976,7 @@ impl Renderer {
                 .iter()
                 .filter(|l| l.extra[3] >= 0.0)
                 .map(|light| (light.extra[3] as usize, light))
-                .filter(|(slot, _)| *slot < rustudio_core::mech::LSHADOW_MAX_LIGHTS)
+                .filter(|(slot, _)| *slot < crate::gpu_caps::max_lshadow(&self.device))
                 .collect();
             let key = {
                 use std::hash::{Hash, Hasher};
@@ -5996,7 +5996,7 @@ impl Renderer {
             // (the reduced binding set has no light shadow atlas to read)
             if !self.reduced && !slots.is_empty() && self.lshadow.key != Some(key) {
                 self.lshadow.key = Some(key);
-                let n = rustudio_core::mech::LSHADOW_MAX_LIGHTS;
+                let n = crate::gpu_caps::max_lshadow(&self.device);
                 let mut slot_data = vec![0f32; n * 100];
                 let mut face_data = vec![0u8; n * 6 * LSHADOW_FACE_STRIDE as usize];
                 let mut slot_faces = Vec::with_capacity(slots.len());

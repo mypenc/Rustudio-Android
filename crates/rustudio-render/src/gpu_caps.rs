@@ -284,7 +284,47 @@ pub fn depth_sample_type(device: &wgpu::Device) -> wgpu::TextureSampleType {
 /// in one entry point): the materials' low-quality sampler (anisotropy 2)
 /// becomes the studs sampler.
 pub fn shader_for(device: &wgpu::Device, src: &str) -> String {
-    if depth_loads_as_float(device) { gl_shader(src) } else { src.to_owned() }
+    let src = if depth_loads_as_float(device) { gl_shader(src) } else { src.to_owned() };
+    if uniform_arrays(device) { uniform_array_shader(device, &src) } else { src }
+}
+
+/// WebGL2 (GLES 3.0) has no storage buffers: `max_storage_buffers_per_shader_stage`
+/// is 0. The read-only light arrays then become fixed-size uniform arrays.
+pub fn uniform_arrays(device: &wgpu::Device) -> bool {
+    device.limits().max_storage_buffers_per_shader_stage == 0
+}
+
+/// Size of one `Light` (6 x vec4) and one `ShadowSlot` (6 x mat4x4 + vec4), in bytes.
+const LIGHT_BYTES: usize = 96;
+const SLOT_BYTES: usize = 6 * 64 + 16;
+
+/// Local lights drawn per frame: the full set, or what one uniform block holds.
+pub fn max_lights(device: &wgpu::Device) -> usize {
+    let full = rustudio_core::mech::MAX_LIGHTS;
+    if uniform_arrays(device) { full.min(device.limits().max_uniform_buffer_binding_size as usize / LIGHT_BYTES) } else { full }
+}
+
+/// Shadow-casting local lights at once: likewise.
+pub fn max_lshadow(device: &wgpu::Device) -> usize {
+    let full = rustudio_core::mech::LSHADOW_MAX_LIGHTS;
+    if uniform_arrays(device) { full.min(device.limits().max_uniform_buffer_binding_size as usize / SLOT_BYTES) } else { full }
+}
+
+/// Binding type for the light arrays: storage where it exists, else uniform.
+pub fn array_binding(device: &wgpu::Device) -> wgpu::BufferBindingType {
+    if uniform_arrays(device) { wgpu::BufferBindingType::Uniform } else { wgpu::BufferBindingType::Storage { read_only: true } }
+}
+
+/// Buffer usage matching [`array_binding`].
+pub fn array_usage(device: &wgpu::Device) -> wgpu::BufferUsages {
+    (if uniform_arrays(device) { wgpu::BufferUsages::UNIFORM } else { wgpu::BufferUsages::STORAGE }) | wgpu::BufferUsages::COPY_DST
+}
+
+/// The WGSL for [`uniform_arrays`]: `var<storage, read> x: array<T>` becomes
+/// `var<uniform> x: array<T, N>` for the light and shadow-slot arrays.
+fn uniform_array_shader(device: &wgpu::Device, src: &str) -> String {
+    src.replace("var<storage, read> lights: array<Light>;", &format!("var<uniform> lights: array<Light, {}>;", max_lights(device).max(1)))
+        .replace("var<storage, read> lshadow_slots: array<ShadowSlot>;", &format!("var<uniform> lshadow_slots: array<ShadowSlot, {}>;", max_lshadow(device).max(1)))
 }
 
 /// [`shader_for`]'s OpenGL rewrite.

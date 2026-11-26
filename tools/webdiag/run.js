@@ -22,6 +22,7 @@ const race = (p, ms, tag) => Promise.race([p, new Promise(r => setTimeout(() => 
   p.on('requestfailed', r => add(`[reqfail] ${r.url()} ${r.failure()?.errorText}`));
   p.on('response', r => { if (r.status() >= 400) add(`[http ${r.status()}] ${r.url()}`); });
   p.on('crash', () => add('[CRASH] page crashed'));
+  await ctx.addInitScript(() => { Error.stackTraceLimit = 200; });
   const cdp = await ctx.newCDPSession(p);
   await cdp.send('Debugger.enable');
   let samples = 0;

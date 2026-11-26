@@ -82,9 +82,10 @@ pub const LUA_MINSTACK: c_int = 20;
 pub type lua_Number = c_double;
 
 /// A Lua integer, usually equivalent to `i64`
-#[cfg(target_pointer_width = "32")]
+// rustudio assumes 64-bit integers; the browser (wasm32) build keeps them.
+#[cfg(all(target_pointer_width = "32", not(target_arch = "wasm32")))]
 pub type lua_Integer = i32;
-#[cfg(target_pointer_width = "64")]
+#[cfg(any(target_pointer_width = "64", target_arch = "wasm32"))]
 pub type lua_Integer = i64;
 
 /// A Lua unsigned integer, equivalent to `u32`.

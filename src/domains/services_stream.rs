@@ -460,6 +460,7 @@ fn ws_run(id: u64, req: Request, rx: Receiver<Cmd>, cancel: &Cancel) {
                         MaybeTlsStream::Plain(s) => {
                             let _ = s.0.set_write_timeout(Some(Duration::from_secs(1)));
                         }
+                        #[cfg(not(target_arch = "wasm32"))]
                         MaybeTlsStream::Rustls(s) => {
                             let _ = s.sock.0.set_write_timeout(Some(Duration::from_secs(1)));
                         }

@@ -6134,6 +6134,7 @@ impl Runtime {
         // interpreted). RUSTUDIO_NO_NATIVE=1: everything interpreted.
         let native_on = !std::env::var_os("RUSTUDIO_NO_NATIVE").is_some_and(|v| v != "0");
         if !native_on {
+            #[cfg(not(target_arch = "wasm32"))]
             lua.enable_jit(false);
         }
         // Their native code is built in the frames after they load
@@ -8012,6 +8013,7 @@ fn native_drain(lua: &Lua) {
     let t0 = std::time::Instant::now();
     q.frames += 1;
     while let Some((f, bytes)) = q.items.pop() {
+        #[cfg(not(target_arch = "wasm32"))]
         lua.compile_native(&f);
         q.built += 1;
         q.bytes += bytes;
@@ -8068,6 +8070,7 @@ fn compile_script(lua: &Lua, r: Ref, shared: &Table) -> mlua::Result<Function> {
     // the frames after)
     let defer = native && lua.app_data_ref::<NativeQueue>().is_some_and(|q| q.on);
     if defer {
+        #[cfg(not(target_arch = "wasm32"))]
         lua.enable_jit(false);
     }
     let f = match cached {
@@ -8081,6 +8084,7 @@ fn compile_script(lua: &Lua, r: Ref, shared: &Table) -> mlua::Result<Function> {
             .into_function(),
     };
     if defer {
+        #[cfg(not(target_arch = "wasm32"))]
         lua.enable_jit(true);
         if let (Ok(f), Some(mut q)) = (&f, lua.app_data_mut::<NativeQueue>()) {
             q.items.push((f.clone(), bytes));

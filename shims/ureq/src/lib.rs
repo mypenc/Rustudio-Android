@@ -421,6 +421,8 @@ impl Agent {
     pub fn config(&self) -> &Config {
         &self.config
     }
+    /// Closes pooled connections (there are none here).
+    pub fn shutdown(&self) {}
 
     fn req<B>(&self, method: http::Method, uri: impl AsRef<str>) -> RequestBuilder<B> {
         RequestBuilder {

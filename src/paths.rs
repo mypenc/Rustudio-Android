@@ -69,7 +69,7 @@ pub fn cache() -> PathBuf {
     #[cfg(all(unix, not(any(target_os = "macos", target_os = "android"))))]
     return xdg("XDG_CACHE_HOME", ".cache");
     #[cfg(not(all(unix, not(target_os = "macos"))))]
-    return dirs::cache_dir().unwrap_or_else(std::env::temp_dir);
+    return dirs::cache_dir().unwrap_or_else(|| if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() });
 }
 
 /// Where screenshots go: `~/Pictures` on Linux, the Pictures folder elsewhere.

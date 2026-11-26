@@ -1462,6 +1462,13 @@ pub fn run() -> eframe::Result<()> {
 #[cfg(target_arch = "wasm32")]
 pub fn web_start() {
     use wasm_bindgen::JsCast;
+    // Nothing else installs a logger or reports a panic in the browser, so a
+    // failure here would otherwise be a silent blank page.
+    std::panic::set_hook(Box::new(|info| {
+        web_sys::console::error_1(&format!("rustudio panic: {info}").into());
+    }));
+    let _ = eframe::WebLogger::init(log::LevelFilter::Debug);
+    web_sys::console::log_1(&"rustudio: web_start".into());
     wasm_bindgen_futures::spawn_local(async {
         let canvas = web_sys::window()
             .and_then(|w| w.document())
@@ -1481,11 +1488,13 @@ pub fn web_start() {
                 )))
             },
         );
-        if let Err(e) = eframe::WebRunner::new()
+        web_sys::console::log_1(&"rustudio: canvas found, starting eframe".into());
+        match eframe::WebRunner::new()
             .start(canvas, eframe::WebOptions::default(), created)
             .await
         {
-            log::error!("rustudio did not start: {e:?}");
+            Ok(()) => web_sys::console::log_1(&"rustudio: eframe started".into()),
+            Err(e) => web_sys::console::error_1(&format!("rustudio did not start: {e:?}").into()),
         }
     });
 }

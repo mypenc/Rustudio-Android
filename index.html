@@ -89,6 +89,17 @@
   </style>
 </head>
 <body>
+  <div id="status" style="position:fixed;left:8px;top:8px;right:8px;color:#ccc;font:13px/1.4 monospace;white-space:pre-wrap;z-index:2;pointer-events:none">Loading RusTudio… (the first load downloads about 17 MB)</div>
   <canvas id="the_canvas_id"></canvas>
+  <script>
+    // Show uncaught errors on the page, not only in the console.
+    (function () {
+      const s = () => document.getElementById("status");
+      const show = (m) => { const e = s(); if (e) { e.style.color = "#f66"; e.textContent += "\n" + m; } };
+      window.addEventListener("error", (ev) => show("error: " + (ev.message || ev.error)));
+      window.addEventListener("unhandledrejection", (ev) => show("rejected: " + (ev.reason && (ev.reason.stack || ev.reason))));
+      window.addEventListener("TrunkApplicationStarted", () => { const e = s(); if (e) e.textContent = "RusTudio: module started, waiting for the first frame…"; });
+    })();
+  </script>
 </body>
 </html>

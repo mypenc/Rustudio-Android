@@ -2625,11 +2625,11 @@ impl RustudioApp {
     pub fn frame(&mut self, ui: &mut egui::Ui) {
         // A display frame ends here and the next begins (the profiler gathers
         // every thread's records at this boundary).
-        #[cfg(not(target_os = "android"))]
+        #[cfg(all(not(target_os = "android"), not(target_arch = "wasm32")))]
         let native_frames = crate::native_loop::NATIVE_FRAMES.load(std::sync::atomic::Ordering::Relaxed);
         // (the Android activity runs eframe's own loop, src/android/mod.rs:
         // no native_loop to mark the frames, so they are marked here)
-        #[cfg(target_os = "android")]
+        #[cfg(any(target_os = "android", target_arch = "wasm32"))]
         let native_frames = false;
         if !native_frames {
             rustudio_core::profiler::frame(rustudio_core::profiler::FrameKind::Render);

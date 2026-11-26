@@ -152,6 +152,10 @@ impl Dialogs {
         {
             self.pending.is_some()
         }
+        #[cfg(target_arch = "wasm32")]
+        {
+            false
+        }
     }
 
     /// Opens the dialog; false (and nothing happens) while another is open.
@@ -306,9 +310,6 @@ pub(crate) fn handle_path(handle: &rfd::FileHandle) -> PathBuf {
 /// caller takes its cancelled path.
 #[cfg(target_arch = "wasm32")]
 impl Dialogs {
-    pub fn busy(&self) -> bool {
-        false
-    }
     pub fn start(&mut self, _purpose: Purpose, _request: Request, _kind: Kind) -> bool {
         false
     }

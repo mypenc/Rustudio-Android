@@ -627,7 +627,7 @@ impl Renderer {
     ) {
         profiling::function_scope!();
         // (rustudio: RUSTUDIO_ATLAS_TRACE reports slow texture updates)
-        struct Slow(std::time::Instant, [usize; 2], bool, bool);
+        struct Slow(web_time::Instant, [usize; 2], bool, bool);
         impl Drop for Slow {
             fn drop(&mut self) {
                 let ms = self.0.elapsed().as_secs_f64() * 1000.0;
@@ -636,7 +636,7 @@ impl Renderer {
                 }
             }
         }
-        let _slow = Slow(std::time::Instant::now(), image_delta.image.size(), image_delta.pos.is_none(), image_delta.grown.is_some());
+        let _slow = Slow(web_time::Instant::now(), image_delta.image.size(), image_delta.pos.is_none(), image_delta.grown.is_some());
 
         let width = image_delta.image.width() as u32;
         let height = image_delta.image.height() as u32;

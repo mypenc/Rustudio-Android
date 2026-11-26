@@ -54,7 +54,8 @@ pub fn agent(config: Config) -> Agent {
 pub fn probe(url: &str) -> Result<String, String> {
     use std::fmt::Write as _;
     use std::net::{TcpStream, ToSocketAddrs};
-    use std::time::{Duration, Instant};
+    use std::time::Duration;
+use web_time::Instant;
 
     let uri: ureq::http::Uri = url.parse().map_err(|e| format!("{url}: {e}"))?;
     let host = uri.host().ok_or_else(|| format!("{url}: no host"))?.to_string();

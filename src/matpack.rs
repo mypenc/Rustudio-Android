@@ -506,7 +506,7 @@ fn store() -> &'static Store {
                     };
                     // (at most 3 s: maps nothing uploads, as in tests or with
                     // their parts gone, must not hold up the rest)
-                    let t0 = std::time::Instant::now();
+                    let t0 = web_time::Instant::now();
                     while !cfg!(test) && HELD.load(Ordering::Relaxed) >= HELD_LIMIT && t0.elapsed().as_secs() < 3 {
                         std::thread::sleep(std::time::Duration::from_millis(5));
                     }
@@ -635,7 +635,7 @@ pub fn generation() -> u64 {
 /// Blocks until a pack is ready or failed (tests).
 #[cfg(test)]
 pub fn wait(e: &Entry, timeout: std::time::Duration) -> Lookup {
-    let t0 = std::time::Instant::now();
+    let t0 = web_time::Instant::now();
     loop {
         match maps(e) {
             Lookup::Pending if t0.elapsed() < timeout => {
@@ -924,7 +924,7 @@ mod net_tests {
     #[ignore]
     fn loads_brick_2022_4k() {
         let e = entry(848, true).unwrap();
-        let t0 = std::time::Instant::now();
+        let t0 = web_time::Instant::now();
         match wait(e, std::time::Duration::from_secs(300)) {
             Lookup::Ready(m) => {
                 eprintln!(

@@ -14,7 +14,8 @@ use std::collections::{HashMap, HashSet};
 use std::path::{Component, Path, PathBuf};
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::sync::{Arc, Condvar, LazyLock, Mutex};
-use std::time::{Duration, Instant, SystemTime};
+use std::time::Duration;
+use web_time::{Instant, SystemTime};
 
 use rustudio_account::api::{public_asset_typed, AssetDownloadError};
 
@@ -158,8 +159,8 @@ fn ledger_path(id: u64) -> Option<PathBuf> {
     let sources = std::env::var("RUSTUDIO_ASSET_SOURCES")
         .map(PathBuf::from)
         .unwrap_or_else(|_| data.join("rustudio/asset-sources.json"));
-    static LEDGER: Mutex<Option<(std::time::SystemTime, HashMap<u64, PathBuf>)>> = Mutex::new(None);
-    static SOURCES: Mutex<Option<(std::time::SystemTime, HashMap<u64, PathBuf>)>> = Mutex::new(None);
+    static LEDGER: Mutex<Option<(web_time::SystemTime, HashMap<u64, PathBuf>)>> = Mutex::new(None);
+    static SOURCES: Mutex<Option<(web_time::SystemTime, HashMap<u64, PathBuf>)>> = Mutex::new(None);
     path_map(&LEDGER, &ledger, id)
         .or_else(|| path_map(&SOURCES, &sources, id))
 }
@@ -168,7 +169,7 @@ fn ledger_path(id: u64) -> Option<PathBuf> {
 /// either the ledger's shape (objects with `assetId` + `path`) or plain
 /// `"id": "path"` pairs. Only files that exist count.
 fn path_map(
-    cache: &Mutex<Option<(std::time::SystemTime, HashMap<u64, PathBuf>)>>,
+    cache: &Mutex<Option<(web_time::SystemTime, HashMap<u64, PathBuf>)>>,
     file: &std::path::Path,
     id: u64,
 ) -> Option<PathBuf> {
@@ -438,7 +439,7 @@ pub fn session_ready(client: Option<SharedClient>) {
 /// download made right at Play start sees the session (LoadAsset in a
 /// server script's first frame).
 pub fn wait_for_session(max: std::time::Duration) -> bool {
-    let t0 = std::time::Instant::now();
+    let t0 = web_time::Instant::now();
     while CHECKING.load(std::sync::atomic::Ordering::SeqCst) && t0.elapsed() < max {
         std::thread::sleep(std::time::Duration::from_millis(20));
     }
@@ -1113,13 +1114,13 @@ impl AssetStore {
     /// has finished (at most `max`), so an asset asked for in one frame is
     /// handed out by the next `poll`, however slow the network or machine.
     pub fn wait_pending(&mut self, max: std::time::Duration) {
-        let until = std::time::Instant::now() + max;
+        let until = web_time::Instant::now() + max;
         let mut left: HashSet<AssetRef> = self.pending.clone();
         for (a, _) in &self.early {
             left.remove(a);
         }
         while !left.is_empty() {
-            let now = std::time::Instant::now();
+            let now = web_time::Instant::now();
             if now >= until {
                 break;
             }
@@ -1572,7 +1573,7 @@ impl TextureCache {
             None => None,
             Some(result) => match result {
                 Ok((img, mips, _waiting)) => {
-                    let t0 = std::time::Instant::now();
+                    let t0 = web_time::Instant::now();
                     // (the chain holds level 0 too; made in add_texture otherwise)
                     self.upload_bytes += mips.as_ref().map_or(img.pixels.len() * 4 / 3, |m| m.len());
                     let index = crate::render::with_mips(&img.pixels, mips, || upload(&img));

@@ -290,8 +290,8 @@ fn days_of(iso: &str) -> Option<i64> {
 pub fn identity(uid: i64) -> Job {
     Box::new(move |c| {
         let u = get_json(c, &format!("https://users.roblox.com/v1/users/{uid}"))?;
-        let now_days = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
+        let now_days = web_time::SystemTime::now()
+            .duration_since(web_time::UNIX_EPOCH)
             .map(|d| d.as_secs() as i64 / 86400)
             .unwrap_or(0);
         let age = u["created"].as_str().and_then(days_of).map(|d| (now_days - d).max(0)).unwrap_or(0);

@@ -9,6 +9,7 @@ license.workspace = true
 test-support = []
 
 [dependencies]
+web-time = "1"
 rustudio-core = { path = "../rustudio-core" }
 glam = { version = "0.30", features = ["bytemuck"] }
 rbx_dom_weak = "4"

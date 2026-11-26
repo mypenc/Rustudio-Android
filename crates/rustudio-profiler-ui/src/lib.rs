@@ -20,7 +20,7 @@ mod table;
 mod timeline;
 
 use std::collections::HashMap;
-use std::time::Instant;
+use web_time::Instant;
 
 use egui::{Align, Align2, Layout, Pos2, Rect, Sense, Ui, UiBuilder, Vec2};
 use rustudio_core::profiler::{self, analysis, Capture, Cat, FrameKind, FrameRec};

@@ -279,7 +279,7 @@ fn load(lua: &Lua, id: &str) -> mlua::Result<(Option<Rc<Seq>>, bool)> {
     // RUSTUDIO_DETERMINISTIC=1 (test runs): wait for the asset (it arrives on a background
     // thread at wall-clock time), so a track starts on the same frame on every run.
     if rbx_dom_weak::deterministic() {
-        let t0 = std::time::Instant::now();
+        let t0 = web_time::Instant::now();
         while still && matches!(seq, Value::Nil) && t0.elapsed() < std::time::Duration::from_secs(20) {
             std::thread::sleep(std::time::Duration::from_millis(10));
             (seq, still) = f.call(id)?;

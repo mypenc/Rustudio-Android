@@ -163,7 +163,7 @@ impl SelfTest {
             self.r6 = super::R6Test {
                 started: f,
                 notes,
-                t0: Some(std::time::Instant::now()),
+                t0: Some(web_time::Instant::now()),
                 ..Default::default()
             };
             self.r4.phase = phase + 1;

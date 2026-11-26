@@ -368,7 +368,7 @@ pub fn gpu_lost() -> bool {
 /// itself.) Returns true when the frame should draw nothing.
 pub fn gpu_watch(ed: &mut crate::app::Editor) -> bool {
     use std::sync::atomic::Ordering;
-    use std::time::Instant;
+    use web_time::Instant;
     const OOM_PATIENCE: std::time::Duration = std::time::Duration::from_secs(5);
     static LAST_OOM: std::sync::Mutex<(usize, Option<Instant>)> = std::sync::Mutex::new((0, None));
     static HANDLED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
@@ -485,11 +485,11 @@ pub mod touch {
     /// layout.
     pub fn auto_zoom(ed: &mut crate::app::Editor, ctx: &egui::Context) {
         // Throttled hardware KBM hot-plug poll (every ~2s).
-        static LAST_KBM_POLL: std::sync::Mutex<Option<std::time::Instant>> = std::sync::Mutex::new(None);
+        static LAST_KBM_POLL: std::sync::Mutex<Option<web_time::Instant>> = std::sync::Mutex::new(None);
         if let Ok(mut g) = LAST_KBM_POLL.try_lock() {
             let due = g.is_none_or(|t| t.elapsed() >= std::time::Duration::from_secs(2));
             if due {
-                *g = Some(std::time::Instant::now());
+                *g = Some(web_time::Instant::now());
                 if let Ok(hw) = super::jni::hardware_input_devices() {
                     rustudio_engine::touch_input::set_hardware_kbm(hw.keyboard, hw.mouse);
                 }

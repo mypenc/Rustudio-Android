@@ -76,7 +76,7 @@ pub fn studio_headers(mut h: Vec<(String, String)>, place_id: i64) -> Vec<(Strin
     }
     h.push(("Roblox-Id".into(), place_id.to_string()));
     let r = |n: usize| -> String {
-        let mut x = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos()).unwrap_or(0) as u64
+        let mut x = web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).map(|d| d.as_nanos()).unwrap_or(0) as u64
             ^ NEXT.load(Ordering::Relaxed).wrapping_mul(0x9E37_79B9_7F4A_7C15);
         (0..n)
             .map(|i| {

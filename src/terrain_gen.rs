@@ -930,7 +930,7 @@ mod tests {
         let Ok(path) = std::env::var("RUSTUDIO_TERRAIN_DUMP") else { return };
         let o = Options { biomes: Biome::ALL.to_vec(), ..opts() };
         let (lo, size) = ([-128, -32, -128], [256, 64, 256]);
-        let t = std::time::Instant::now();
+        let t = web_time::Instant::now();
         let mut v = Voxels::empty();
         generate(&mut v, lo, size, &o);
         eprintln!("generate: {:?}", t.elapsed());

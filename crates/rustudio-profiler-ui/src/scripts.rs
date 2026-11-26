@@ -9,7 +9,8 @@
 
 use std::collections::HashSet;
 use std::sync::{Arc, Mutex};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use egui::{pos2, vec2, Align2, Color32, CornerRadius, FontId, Rect, Sense, Stroke, StrokeKind, Ui};
 use rustudio_core::profiler::Cat;
@@ -476,7 +477,7 @@ fn toolbar(ui: &mut Ui, bar: Rect, state: &mut ScriptsTabState, snap: &Snapshot,
 fn export(snap: &Snapshot, kind: &str) {
     let dir = rustudio_core::paths::home().join("rustudio-profiles");
     let _ = std::fs::create_dir_all(&dir);
-    let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
+    let stamp = web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
     let (path, body) = match kind {
         "json" => (dir.join(format!("scripts-{stamp}.json")), serde_json::to_string_pretty(snap).unwrap_or_default()),
         "exact" => (dir.join(format!("scripts-{stamp}.exact.folded")), snap.folded_exact()),

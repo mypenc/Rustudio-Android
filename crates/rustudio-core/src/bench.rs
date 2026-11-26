@@ -3,7 +3,7 @@
 
 use std::cell::RefCell;
 use std::path::PathBuf;
-use std::time::Instant;
+use web_time::Instant;
 
 thread_local! {
     static SECTIONS: RefCell<Vec<(&'static str, f64, u64)>> = const { RefCell::new(Vec::new()) };

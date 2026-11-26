@@ -1,12 +1,12 @@
 //! Opt-in consecutive-frame acceptance recorder. No state in ordinary runs.
 use std::sync::{Mutex, OnceLock};
-struct State { started: std::time::Instant, frame: usize }
+struct State { started: web_time::Instant, frame: usize }
 static STATE: OnceLock<Mutex<State>> = OnceLock::new();
 static INDEX: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(usize::MAX);
 pub fn index() -> Option<usize> { let n=INDEX.load(std::sync::atomic::Ordering::Relaxed); (n!=usize::MAX).then_some(n) }
 pub fn tick(cam: &mut crate::camera::Camera, ctx: &egui::Context) {
  let Ok(dir)=std::env::var("RUSTUDIO_GRASS_TEMPORAL") else {return};
- let mut s=STATE.get_or_init(||Mutex::new(State{started:std::time::Instant::now(),frame:0})).lock().unwrap();
+ let mut s=STATE.get_or_init(||Mutex::new(State{started:web_time::Instant::now(),frame:0})).lock().unwrap();
  std::fs::create_dir_all(&dir).unwrap();
  ctx.input(|i| for e in &i.raw.events { if let egui::Event::Screenshot{image,user_data,..}=e { if let Some(n)=user_data.data.as_ref().and_then(|v|v.downcast_ref::<usize>()) { let bytes:Vec<u8>=image.pixels.iter().flat_map(|p|p.to_array()).collect(); image::save_buffer(format!("{dir}/frame-{n:05}.png"),&bytes,image.size[0] as u32,image.size[1] as u32,image::ColorType::Rgba8).unwrap(); } } });
  if s.started.elapsed().as_secs_f32()<8.0 {ctx.request_repaint();return}

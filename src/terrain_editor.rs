@@ -211,7 +211,7 @@ struct BrushStroke {
     plane: Option<(Vec3, Vec3)>,
     plane_y: f32,
     snapshot: Option<Voxels>,
-    last: std::time::Instant,
+    last: web_time::Instant,
     state: brush::StrokeState,
     applied: bool,
 }
@@ -777,7 +777,7 @@ impl Editor {
                 plane,
                 plane_y,
                 snapshot,
-                last: std::time::Instant::now() - std::time::Duration::from_secs(1),
+                last: web_time::Instant::now() - std::time::Duration::from_secs(1),
                 state: brush::StrokeState::default(),
                 applied: false,
             });
@@ -788,7 +788,7 @@ impl Editor {
         if down {
             let ticks = (stroke.last.elapsed().as_secs_f32() / brush::INTERVAL_S).floor().min(4.0) as usize;
             if let (true, Some((p, _))) = (ticks > 0, hit) {
-                stroke.last = std::time::Instant::now();
+                stroke.last = web_time::Instant::now();
                 params.plane_y = stroke.plane_y;
                 let steps = if op == BrushOp::Flatten { ticks * brush::FLATTEN_STEPS_PER_FRAME } else { ticks.min(1) };
                 if let Some((id, r, mut v)) = self.game.terrain_drawn.take() {

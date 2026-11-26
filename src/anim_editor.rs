@@ -8,7 +8,7 @@
 
 use std::collections::HashMap;
 use std::sync::mpsc::{self, Receiver};
-use std::time::Instant;
+use web_time::Instant;
 
 use egui::{Color32, FontId, Pos2, Rect, RichText, Sense, Stroke, Vec2};
 use glam::{Mat3, Quat, Vec3};

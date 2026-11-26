@@ -9,7 +9,8 @@
 //! coroutine and the scheduler here resumes it later.
 
 use std::collections::{HashMap, HashSet, VecDeque};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use glam::Vec3;
 use mlua::thread::ThreadStatus;
@@ -5847,7 +5848,7 @@ impl Runtime {
         };
         // Oldest first; whatever doesn't fit in this frame's budget resumes next frame.
         due.sort_by(|a, b| a.at.total_cmp(&b.at));
-        let started = std::time::Instant::now();
+        let started = web_time::Instant::now();
         let mut due = due.into_iter();
         for t in due.by_ref() {
             let args = t

@@ -3,7 +3,8 @@
 use egui::epaint::TextShape;
 use egui::text::{Fonts, LayoutJob, TextFormat};
 use egui::{FontId, Shape, Stroke};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use super::*;
 use rustudio_core::mech;

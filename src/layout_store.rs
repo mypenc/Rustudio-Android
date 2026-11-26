@@ -13,7 +13,8 @@
 
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use egui_dock::DockState;
 use serde::{Deserialize, Serialize};

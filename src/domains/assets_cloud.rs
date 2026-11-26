@@ -558,9 +558,9 @@ __ac_test_done()
             }).unwrap())
             .unwrap();
         rt.run_script(script);
-        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
+        let deadline = web_time::Instant::now() + std::time::Duration::from_secs(30);
         let mut frames = 0;
-        while (frames < 120 || !done.load(std::sync::atomic::Ordering::SeqCst)) && std::time::Instant::now() < deadline {
+        while (frames < 120 || !done.load(std::sync::atomic::Ordering::SeqCst)) && web_time::Instant::now() < deadline {
             rt.step(1.0 / 60.0);
             frames += 1;
             if frames >= 120 {

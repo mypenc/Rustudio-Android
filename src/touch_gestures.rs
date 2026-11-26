@@ -15,7 +15,8 @@
 //! the GUI (`TouchOut::sunk`).
 
 use std::collections::VecDeque;
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use crate::gui::{TouchOut, TouchState};
 use crate::mech;

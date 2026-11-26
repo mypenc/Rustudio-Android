@@ -969,7 +969,7 @@ impl Gui {
                     }
                     let mut citems: Vec<(Rect, Mesh)> = Vec::with_capacity(items.len());
                     for it in &items {
-                        let t0 = std::time::Instant::now();
+                        let t0 = web_time::Instant::now();
                         let kept = it.tess.get_or_init(|| {
                             let b = canvas_bounds(it)?;
                             let mut mesh = Mesh::default();
@@ -1004,14 +1004,14 @@ impl Gui {
                 if !screen_root && !on_screen(*b) {
                     continue;
                 }
-                let t2 = std::time::Instant::now();
+                let t2 = web_time::Instant::now();
                 let mut mesh = mesh.clone();
                 n_in += mesh.indices.len() as u64 / 3;
                 if perspective {
                     mesh = subdivide(mesh, mech::GUI_SURFACE_AFFINE_ERR_PX, rect, &surface);
                 }
                 n_out += mesh.indices.len() as u64 / 3;
-                let t3 = std::time::Instant::now();
+                let t3 = web_time::Instant::now();
                 t_split += (t3 - t2).as_secs_f64();
                 let mut ok = !mesh.is_empty();
                 let mut depths = Vec::new();
@@ -1278,7 +1278,7 @@ impl Gui {
                     let sunk = top.is_some();
                     self.touch_fingers.insert(
                         t.id,
-                        TouchFinger { x, y, start: (x, y), since: std::time::Instant::now(), sunk, pressed, under: now, began_on: began_on.clone() },
+                        TouchFinger { x, y, start: (x, y), since: web_time::Instant::now(), sunk, pressed, under: now, began_on: began_on.clone() },
                     );
                     out.push(TouchOut { id: t.id, state: t.state, x, y, dx: 0.0, dy: 0.0, sunk, began_on });
                 }

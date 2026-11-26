@@ -36,7 +36,8 @@ use std::collections::VecDeque;
 use std::path::PathBuf;
 use std::sync::mpsc::Sender;
 use std::sync::{Arc, Mutex};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use rustudio_core::log::{Level, LogLine};
 use serde_json::{json, Value as J};

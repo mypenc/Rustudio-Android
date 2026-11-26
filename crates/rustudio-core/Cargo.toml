@@ -9,6 +9,7 @@ license.workspace = true
 test-support = []
 
 [dependencies]
+web-time = "1"
 log = "0.4"
 rustudio-account = { path = "../rustudio-account" }
 libc = "0.2"

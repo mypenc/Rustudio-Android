@@ -15,7 +15,7 @@
 //! ([`super::jni::request_storage_access`]).
 
 use std::path::{Path, PathBuf};
-use std::time::Instant;
+use web_time::Instant;
 
 use crate::file_dialog::{Kind, Request};
 

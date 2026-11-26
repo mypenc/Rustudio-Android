@@ -6,6 +6,7 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
+web-time = "1"
 log = "0.4"
 rustudio-account = { path = "../rustudio-account" }
 rbx_dom_weak = "4"

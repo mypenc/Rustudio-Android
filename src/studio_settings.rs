@@ -22,7 +22,7 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{OnceLock, RwLock};
-use std::time::Instant;
+use web_time::Instant;
 
 use egui::{Color32, FontId, Pos2, Rect, Sense, Vec2};
 

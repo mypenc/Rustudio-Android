@@ -146,8 +146,8 @@ pub fn prepare(h: &dyn Http, job: u64, mut asset: Asset, target: Target, cancel:
             // Test seam: RUSTUDIO_TOOLBOX_INSERT_DELAY_MS holds the download
             // (cancellable) so a check can drag out while it is loading.
             if let Some(ms) = std::env::var("RUSTUDIO_TOOLBOX_INSERT_DELAY_MS").ok().and_then(|v| v.parse::<u64>().ok()) {
-                let until = std::time::Instant::now() + std::time::Duration::from_millis(ms);
-                while std::time::Instant::now() < until {
+                let until = web_time::Instant::now() + std::time::Duration::from_millis(ms);
+                while web_time::Instant::now() < until {
                     if cancel() {
                         return Err(Failure::Cancelled);
                     }

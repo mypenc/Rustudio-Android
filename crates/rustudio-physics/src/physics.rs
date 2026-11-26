@@ -1189,7 +1189,7 @@ impl PhysicsJob {
 
     /// Consume a completed job at the publication boundary.
     pub fn try_join(&self) -> Option<(Box<Physics>, PhysicsFrame)> {
-        let start = std::time::Instant::now();
+        let start = web_time::Instant::now();
         let result = match self.result.try_recv() {
             Ok(result) => result,
             Err(std::sync::mpsc::TryRecvError::Empty) => return None,
@@ -1214,13 +1214,13 @@ impl PhysicsJob {
 
     /// Wait for the world when stopping or reading a final benchmark snapshot.
     pub fn join(self) -> (Box<Physics>, PhysicsFrame) {
-        let start = std::time::Instant::now();
+        let start = web_time::Instant::now();
         let result = self.result.recv().expect("physics worker disconnected");
         Self::finish_join(start, result)
     }
 
     fn finish_join(
-        start: std::time::Instant,
+        start: web_time::Instant,
         result: std::thread::Result<PhysicsJobOutput>,
     ) -> (Box<Physics>, PhysicsFrame) {
         rustudio_core::bench::add("physics_join_wall", start.elapsed().as_secs_f64() * 1000.0, 1);
@@ -1278,7 +1278,7 @@ pub struct Physics {
     /// Off-centre unions' shape offsets (mesh_bvh::union_offset), kept for
     /// teleports.
     union_offsets: HashMap<rp::ColliderHandle, rp::Pose>,
-    mesh_checked: Option<std::time::Instant>,
+    mesh_checked: Option<web_time::Instant>,
     controller: KinematicCharacterController,
     /// The Humanoid's body box mover (no steps, no snapping: the floor
     /// rays and the hip spring do that, as in Studio).
@@ -2247,7 +2247,7 @@ impl Physics {
                 .mesh_checked
                 .is_none_or(|t| t.elapsed().as_secs_f32() > 0.25)
         {
-            self.mesh_checked = Some(std::time::Instant::now());
+            self.mesh_checked = Some(web_time::Instant::now());
             let done: Vec<Ref> = self
                 .mesh_pending
                 .iter()
@@ -3494,7 +3494,7 @@ impl Physics {
         let frame = self.prepare_frame(doc, dt);
         if frame.stepped {
             if let Some(pool) = self.step_pool() {
-                let start = std::time::Instant::now();
+                let start = web_time::Instant::now();
                 let sections = pool.install(|| self.measure_batch(Some(doc), &frame));
                 rustudio_core::bench::add("physics_join_wall", start.elapsed().as_secs_f64() * 1000.0, 1);
                 for (name, work, calls) in sections {
@@ -3551,7 +3551,7 @@ impl Physics {
     }
 
     fn measure_batch(&mut self, doc: Option<&Document>, frame: &PhysicsFrame) -> Vec<(&'static str, f64, u64)> {
-        let start = std::time::Instant::now();
+        let start = web_time::Instant::now();
         let before = self.steps;
         {
             let _worker = rustudio_core::bench::scope("physics_solve_worker");
@@ -3806,7 +3806,7 @@ impl Physics {
             if self.accum <= due {
                 break;
             }
-            let tick_start = std::time::Instant::now();
+            let tick_start = web_time::Instant::now();
             if let Some(sv) = self.studio.as_mut() {
                 let hurried = can_hurry && self.hurry.load(std::sync::atomic::Ordering::Relaxed);
                 let was_throttled = sv.throttled;
@@ -6352,7 +6352,7 @@ mod tests {
         }
         let mut doc = Document::new_place();
         set_smooth_grid(&mut doc, rbx_dom_weak::types::BinaryString::from(b));
-        let t = std::time::Instant::now();
+        let t = web_time::Instant::now();
         let p = Physics::new(&mut doc);
         println!(
             "{} terrain triangles in {} colliders: {:?}",

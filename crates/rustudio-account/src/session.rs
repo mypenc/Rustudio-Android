@@ -12,7 +12,8 @@
 use std::io::Read;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use serde::{Deserialize, Serialize};
 use ureq::ResponseExt;
@@ -901,7 +902,7 @@ impl Session {
         extra: &[(&str, &str)],
         timeout: Option<std::time::Duration>,
     ) -> Result<(u16, String)> {
-        let started = std::time::Instant::now();
+        let started = web_time::Instant::now();
         for _ in 0..=CSRF_MAX_RETRIES {
             let token = self.csrf.lock().ok().and_then(|g| g.clone());
             let mut req = self

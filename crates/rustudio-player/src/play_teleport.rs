@@ -7,7 +7,8 @@
 //! its latest saved version. The old server's player leaves (PlayerRemoving,
 //! BindToClose) about half a second after the client's OnTeleport events.
 use std::sync::mpsc::{self, Receiver, TryRecvError};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use rustudio_core::doc::Document;
 use rustudio_core::log::Level;

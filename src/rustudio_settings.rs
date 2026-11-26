@@ -23,7 +23,7 @@
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU8, Ordering};
 use std::sync::RwLock;
-use std::time::Instant;
+use web_time::Instant;
 
 use serde_json::Value;
 

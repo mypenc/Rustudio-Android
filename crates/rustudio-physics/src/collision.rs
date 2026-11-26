@@ -41,7 +41,7 @@ enum State {
     /// The mesh's bytes weren't there yet (still downloading at spawn: a character's
     /// Head asked before its mesh arrived stayed a box for good): asked again after
     /// a moment.
-    Missing(std::time::Instant),
+    Missing(web_time::Instant),
 }
 
 struct Store {
@@ -304,7 +304,7 @@ pub fn hulls(id: &str, fidelity: u32) -> Lookup {
         if fidelity == FIDELITY_HULL {
             let st = match compute(id, fidelity) {
                 Some(h) => State::Ready(Arc::new(h)),
-                None if rustudio_core::assets::mesh_triangles(id).is_none() => State::Missing(std::time::Instant::now()),
+                None if rustudio_core::assets::mesh_triangles(id).is_none() => State::Missing(web_time::Instant::now()),
                 None => State::Failed,
             };
             states.insert(key, st.clone());
@@ -314,7 +314,7 @@ pub fn hulls(id: &str, fidelity: u32) -> Lookup {
             };
         }
         if rustudio_core::assets::mesh_triangles(id).is_none() {
-            states.insert(key, State::Missing(std::time::Instant::now()));
+            states.insert(key, State::Missing(web_time::Instant::now()));
             return Lookup::Unavailable;
         }
         states.insert(key.clone(), State::Pending);
@@ -327,7 +327,7 @@ pub fn hulls(id: &str, fidelity: u32) -> Lookup {
 /// Waits (up to `timeout`) for a pending decomposition: for tests.
 #[allow(dead_code)]
 pub fn wait_ready(id: &str, fidelity: u32, timeout: std::time::Duration) -> Lookup {
-    let start = std::time::Instant::now();
+    let start = web_time::Instant::now();
     let mut fetched = false;
     loop {
         match hulls(id, fidelity) {

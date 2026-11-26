@@ -1397,7 +1397,7 @@ pub struct Identity {
 /// Fetches `uid`'s identity through the login session (waits up to `max`;
 /// kept for the process). None when signed out or unreachable.
 pub fn account_identity(uid: i64, max: std::time::Duration) -> Option<Identity> {
-    let t0 = std::time::Instant::now();
+    let t0 = web_time::Instant::now();
     loop {
         match web::poll(&format!("identity:{uid}"), web::identity(uid)) {
             web::Poll::Ready(v) => {

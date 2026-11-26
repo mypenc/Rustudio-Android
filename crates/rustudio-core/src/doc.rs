@@ -3,7 +3,8 @@
 
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use glam::Vec3;
 use rbx_dom_weak::types::{CFrame, Color3uint8, Enum, Ref, Variant, Vector3};
@@ -2885,7 +2886,7 @@ pub fn new_script_guid() -> String {
     let mut word = || {
         let mut h = std::collections::hash_map::RandomState::new().build_hasher();
         h.write_u64(COUNTER.fetch_add(1, Ordering::Relaxed));
-        h.write_u128(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_nanos()));
+        h.write_u128(web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).map_or(0, |d| d.as_nanos()));
         h.finish()
     };
     let mut b = [0u8; 16];

@@ -17,11 +17,11 @@ use crate::app::Editor;
 impl Editor {
     /// Once a frame (panel shown or not): session, worker replies, inserts.
     pub fn toolbox_tick(&mut self, ctx: &egui::Context) {
-        let t0 = std::time::Instant::now();
+        let t0 = web_time::Instant::now();
         // The account's client is locked by its own jobs (sign-in, avatar):
         // never wait for it here, and look at most twice a second.
         if self.toolbox.ui.session_checked.is_none_or(|t| t.elapsed().as_millis() > 500) {
-            self.toolbox.ui.session_checked = Some(std::time::Instant::now());
+            self.toolbox.ui.session_checked = Some(web_time::Instant::now());
             if let Some(c) = self.game.account.shared_client() {
                 let got = c.try_lock().ok().map(|g| g.as_ref().map(|c| (c.session.downloader(), c.user_id())));
                 if let Some(s) = got {
@@ -434,7 +434,7 @@ impl Editor {
             // at most `secs` of wall time.
             if self.toolbox.ask.is_none() {
                 let at = self.harness.run.unheld_now();
-                let deadline = std::time::Instant::now() + std::time::Duration::from_secs_f32(secs.max(0.0));
+                let deadline = web_time::Instant::now() + std::time::Duration::from_secs_f32(secs.max(0.0));
                 self.toolbox.ui.await_ask = Some((at, self.harness.run.held, deadline, secs));
             } else {
                 self.toolbox_awaited(0.0);
@@ -683,7 +683,7 @@ impl Editor {
                 self.toolbox.ui.await_ask = None;
                 self.harness.run.held = before + waited;
                 self.toolbox_awaited(waited);
-            } else if std::time::Instant::now() >= deadline {
+            } else if web_time::Instant::now() >= deadline {
                 self.toolbox.ui.await_ask = None;
                 self.harness.run.held = before + waited;
                 let why = format!("await-ask: no prompt within {secs} s (wall clock)");

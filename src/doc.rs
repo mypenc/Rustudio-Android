@@ -3,7 +3,8 @@
 
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use rbx_dom_weak::types::{CFrame, Color3uint8, Enum, Ref, Variant, Vector3};
 use rbx_dom_weak::{ustr, InstanceBuilder, Ustr, WeakDom};

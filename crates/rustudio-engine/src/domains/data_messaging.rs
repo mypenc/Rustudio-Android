@@ -115,9 +115,9 @@ pub fn install_backend(lua:&Lua,local:bool)->mlua::Result<()> {
                 let run=||->Result<(),String>{
                     let session=super::store::session()?;
                     let mut socket=rustudio_account::data::messaging::Connection::connect(&session,context).map_err(|e|e.to_string())?;
-                    socket.timeout(std::time::Duration::from_millis(100));let mut pending=HashMap::new();let mut heartbeat=std::time::Instant::now();
+                    socket.timeout(std::time::Duration::from_millis(100));let mut pending=HashMap::new();let mut heartbeat=web_time::Instant::now();
                     loop {
-                        if heartbeat.elapsed().as_secs()>=15 {socket.keepalive().map_err(|e|e.to_string())?;heartbeat=std::time::Instant::now();}
+                        if heartbeat.elapsed().as_secs()>=15 {socket.keepalive().map_err(|e|e.to_string())?;heartbeat=web_time::Instant::now();}
                         loop {match commands.try_recv(){
                             Ok((id,target,args))=>{let invocation=socket.invoke(&target,args).map_err(|e|e.to_string())?;pending.insert(invocation,id);},
                             Err(mpsc::TryRecvError::Empty)=>break,

@@ -6,7 +6,7 @@
 //! that opens Insert Object for that object, and Studio's context menu.
 
 use std::collections::HashSet;
-use std::time::Instant;
+use web_time::Instant;
 
 use egui::{Color32, Pos2, Rect, RichText, Sense, Stroke, Vec2};
 use rbx_dom_weak::types::Ref;

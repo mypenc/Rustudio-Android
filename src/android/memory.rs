@@ -17,7 +17,8 @@
 //! free heap pages go back at once (`heap::trim`) and a line says so.
 
 use std::sync::Mutex;
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 /// How often the size is read.
 const EVERY: Duration = Duration::from_secs(1);

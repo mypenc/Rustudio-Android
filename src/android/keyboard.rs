@@ -76,7 +76,8 @@
 //! rustudio`: "soft keyboard ...").
 
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use egui::{SafeAreaInsets, epaint::MarginF32};
 

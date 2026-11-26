@@ -1931,7 +1931,7 @@ impl Gui {
                         // (a finger landing stops the canvas gliding)
                         self.events.push(GuiEvent::ScrollDrag(sf, [0.0, 0.0]));
                     }
-                    let now_t = std::time::Instant::now();
+                    let now_t = web_time::Instant::now();
                     self.touch_fingers.insert(
                         t.id,
                         TouchFinger {
@@ -1971,7 +1971,7 @@ impl Gui {
                         // with what came before (a flick is the last few
                         // moves; a finger that stopped before lifting
                         // flings nothing).
-                        let now_t = std::time::Instant::now();
+                        let now_t = web_time::Instant::now();
                         let dt = now_t.duration_since(f.moved_at).as_secs_f32().max(1.0 / 240.0);
                         let (vx, vy) = (dx / dt, dy / dt);
                         let k = mech::GUI_TOUCH_FLING_BLEND;

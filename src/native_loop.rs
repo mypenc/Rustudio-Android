@@ -4,7 +4,8 @@
 
 use std::cell::{Cell, RefCell};
 use std::rc::{Rc, Weak};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use eframe::{egui, App, CreationContext, EframeWinitApplication, NativeOptions, UserEvent};
 use winit::application::ApplicationHandler;

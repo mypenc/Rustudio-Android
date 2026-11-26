@@ -60,7 +60,7 @@ pub struct UiState {
     /// it, the wall-clock deadline). Downloads take wall time while
     /// --fixed-dt frames run as fast as they can, so a dialog that follows
     /// a download has no fixed harness time.
-    pub await_ask: Option<(f32, f32, std::time::Instant, f32)>,
+    pub await_ask: Option<(f32, f32, web_time::Instant, f32)>,
     /// Harness: `toolbox:suggest-pick:<n>` waiting for the autocomplete
     /// reply to the text typed (the action that came before it).
     pub pick_waiting: Option<usize>,
@@ -76,7 +76,7 @@ pub struct UiState {
     pub action_seq: u64,
     pub drawn_seq: u64,
     pub layout_waiting: Vec<String>,
-    pub session_checked: Option<std::time::Instant>,
+    pub session_checked: Option<web_time::Instant>,
     /// Cards / rows drawn this frame (asset id, rect) and the open dialog's
     /// buttons (label, rect): where the harness's `ptr:` actions point.
     pub card_rects: Vec<(u64, Rect)>,
@@ -227,7 +227,7 @@ enum Cmd {
 impl Editor {
     /// The Toolbox panel.
     pub fn toolbox_ui(&mut self, ui: &mut egui::Ui) {
-        let t0 = std::time::Instant::now();
+        let t0 = web_time::Instant::now();
         let mut cmds: Vec<Cmd> = Vec::new();
         self.toolbox.ui.drawn_seq = self.toolbox.ui.action_seq;
         self.toolbox.ui.layout.width = ui.available_width();

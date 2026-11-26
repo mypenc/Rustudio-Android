@@ -11,7 +11,8 @@
 //!   unavailable.
 
 use std::collections::VecDeque;
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use egui::{Color32, FontId, RichText, Stroke};
 

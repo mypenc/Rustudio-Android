@@ -147,7 +147,7 @@ impl TemplatePrefs {
     pub fn add(&mut self, source: &Path) -> Result<String, String> {
         check_place(source)?;
         let ext = source.extension().and_then(|e| e.to_str()).unwrap_or("rbxl").to_lowercase();
-        let id = format!("{:x}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_millis()).unwrap_or(0));
+        let id = format!("{:x}", web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).map(|d| d.as_millis()).unwrap_or(0));
         let dir = store_dir();
         std::fs::create_dir_all(&dir).map_err(|e| format!("{}: {e}", dir.display()))?;
         let file = dir.join(format!("{id}.{ext}"));
@@ -187,7 +187,7 @@ impl TemplatePrefs {
         let img = img.crop_imm((img.width() - side) / 2, (img.height() - side) / 2, side, side).thumbnail(256, 256);
         let c = self.custom_mut(key).ok_or("that template is gone")?;
         // A new name each time: the page keys its texture by path.
-        let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_millis()).unwrap_or(0);
+        let stamp = web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).map(|d| d.as_millis()).unwrap_or(0);
         let out = store_dir().join(format!("{}-thumb-{stamp:x}.png", c.id));
         img.save(&out).map_err(|e| format!("{}: {e}", out.display()))?;
         if let Some(old) = c.thumb.replace(out.clone()) {
@@ -246,7 +246,7 @@ pub fn save_preview(id: &str, w: u32, h: u32, rgba: Vec<u8>) -> Result<Option<Pa
     }
     let dir = store_dir();
     std::fs::create_dir_all(&dir).map_err(|e| format!("{}: {e}", dir.display()))?;
-    let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_millis()).unwrap_or(0);
+    let stamp = web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).map(|d| d.as_millis()).unwrap_or(0);
     let out = dir.join(format!("{id}-preview-{stamp:x}.png"));
     image::DynamicImage::ImageRgba8(small).to_rgb8().save(&out).map_err(|e| format!("{}: {e}", out.display()))?;
     Ok(Some(out))

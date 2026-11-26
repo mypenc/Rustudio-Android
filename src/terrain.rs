@@ -2867,10 +2867,10 @@ mod tests {
             }
         }
         let bytes = encode(&cells);
-        let t = std::time::Instant::now();
+        let t = web_time::Instant::now();
         let v = Voxels::decode(&bytes).unwrap();
         let td = t.elapsed();
-        let t = std::time::Instant::now();
+        let t = web_time::Instant::now();
         let meshes = build_meshes(&v);
         let tm = t.elapsed();
         let tris: usize = meshes.iter().map(|m| m.indices.len() / 3).sum();

@@ -16,12 +16,12 @@ use crate::scene::{enum_u32, f32_of, vec3_of, xform_of};
 /// RUSTUDIO_SHADE_DEBUG: one view (`albedo`), or views by run time
 /// (`light@80,local@85,sun@90`: each from that many seconds after start).
 fn shade_debug() -> Option<String> {
-    static START: std::sync::OnceLock<std::time::Instant> = std::sync::OnceLock::new();
+    static START: std::sync::OnceLock<web_time::Instant> = std::sync::OnceLock::new();
     let v = std::env::var("RUSTUDIO_SHADE_DEBUG").ok()?;
     if !v.contains('@') {
         return Some(v);
     }
-    let t = START.get_or_init(std::time::Instant::now).elapsed().as_secs_f32();
+    let t = START.get_or_init(web_time::Instant::now).elapsed().as_secs_f32();
     let mut cur = None;
     for item in v.split(',') {
         let (m, at) = item.split_once('@')?;
@@ -581,13 +581,13 @@ pub fn globals(
 
     };
     if std::env::var_os("RUSTUDIO_GLOBALS_DEBUG").is_some() {
-        static LAST: std::sync::Mutex<Vec<(u32, std::time::Instant)>> = std::sync::Mutex::new(Vec::new());
+        static LAST: std::sync::Mutex<Vec<(u32, web_time::Instant)>> = std::sync::Mutex::new(Vec::new());
         let mut last = LAST.lock().unwrap();
         let key = (clock * 100.0) as u32 ^ (tech << 24);
         let due = match last.iter_mut().find(|e| e.0 == key) {
             Some(e) if e.1.elapsed().as_secs_f32() < 5.0 => false,
-            Some(e) => { e.1 = std::time::Instant::now(); true }
-            None => { last.push((key, std::time::Instant::now())); true }
+            Some(e) => { e.1 = web_time::Instant::now(); true }
+            None => { last.push((key, web_time::Instant::now())); true }
         };
         if due {
             eprintln!("ATMOS| irr {:?} cube {:?} c0 {:?} c1 {:?}", sky_irr, globals.atmos_cube, c0, c1);

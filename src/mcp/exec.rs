@@ -2,7 +2,8 @@
 //! result at once or an operation the editor polls every frame.
 
 use std::path::{Path, PathBuf};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use rbx_dom_weak::types::{Ref, Variant};
 use rbx_dom_weak::{ustr, InstanceBuilder};

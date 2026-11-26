@@ -260,7 +260,7 @@ struct TouchFinger {
     y: f32,
     /// Where and when it landed (a tap is a quick lift near there).
     start: (f32, f32),
-    since: std::time::Instant,
+    since: web_time::Instant,
     /// An Active object or a text box took it when it landed.
     sunk: bool,
     /// The button it pressed (the top sinking object, when a button).
@@ -348,7 +348,7 @@ pub struct Gui {
     touch_fingers: HashMap<u64, TouchFinger>,
     /// ParticleEmitter2D particles (gui_fx.rs).
     p2d: HashMap<Ref, fx::Emitter>,
-    p2d_clock: Option<std::time::Instant>,
+    p2d_clock: Option<web_time::Instant>,
     p2d_dt: f32,
     pub focus: Option<Ref>,
     pub events: Vec<GuiEvent>,
@@ -369,7 +369,7 @@ pub struct Gui {
     adorn_pg_order: Option<Vec<Ref>>,
     roots_doc: u64,
     /// face_file per (family, weight, italic), with when it was looked up.
-    faces: HashMap<(String, u32, bool), (Option<String>, std::time::Instant)>,
+    faces: HashMap<(String, u32, bool), (Option<String>, web_time::Instant)>,
     /// Each GUI root's layout from its last walk (for frames it is skipped).
     root_boxes: HashMap<Ref, Vec<(Ref, GuiBox)>>,
     /// ScreenGuis drawn as they were last frame (gui_input.rs `RootCache`).
@@ -1178,7 +1178,7 @@ impl Gui {
         for key in due {
             let p = face_file(store, &key.0, key.1, key.2, &self.fonts_failed);
             found |= p.is_some();
-            self.faces.insert(key, (p, std::time::Instant::now()));
+            self.faces.insert(key, (p, web_time::Instant::now()));
         }
         found
     }
@@ -1202,7 +1202,7 @@ impl Gui {
             Some((p, at)) if p.is_some() || at.elapsed().as_secs_f32() < 1.0 => p.clone(),
             _ => {
                 let p = face_file(store, &font.0, font.1, font.2, &self.fonts_failed);
-                self.faces.insert(key, (p.clone(), std::time::Instant::now()));
+                self.faces.insert(key, (p.clone(), web_time::Instant::now()));
                 p
             }
         };

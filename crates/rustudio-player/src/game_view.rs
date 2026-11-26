@@ -942,7 +942,7 @@ impl Game {
                             let base = textures.fetch_pixels(color, dir, assets);
                             if let (Some(base), Some(pixels)) = (&base, maps.pixels()) {
                                 let size = pixels.size;
-                                let start = std::time::Instant::now();
+                                let start = web_time::Instant::now();
                                 // The loose color keeps the original coverage and
                                 // tint mask when the pack uses opaque RGB.
                                 let (w, h, albedo) = if base.pixels.chunks_exact(4).all(|p| p[3] == 255) {
@@ -1031,7 +1031,7 @@ impl Game {
                                         let (mw, mh) = px.iter().take(3).flatten().fold((base.width.max(2), base.height.max(2)), |(w, h), im| (w.max(im.width), h.max(im.height)));
                                         (mw.min(512), mh.min(512))
                                     };
-                                    let t0 = std::time::Instant::now();
+                                    let t0 = web_time::Instant::now();
                                     let est_bytes = (base.pixels.len() + (w as usize * h as usize * 4)) * 4 / 3
                                         + px[3].as_ref().map_or(0, |m| m.pixels.len());
                                     let index = textures.composite(&key, || Some((*base).clone()), &mut |im, slot| {
@@ -1147,7 +1147,7 @@ impl Game {
                         } else {
                             let (mw, mh) = px.iter().take(3).flatten().fold((2u32, 2u32), |(w, h), im| (w.max(im.width), h.max(im.height)));
                             let (w, h) = (mw.min(512), mh.min(512));
-                            let t0 = std::time::Instant::now();
+                            let t0 = web_time::Instant::now();
                             let est_bytes = (w as usize * h as usize * 4) * 4 / 3
                                 + px[3].as_ref().map_or(0, |m| m.pixels.len());
                             let blank = rustudio_core::texture::Rgba { width: 1, height: 1, pixels: vec![0, 0, 0, 0] };
@@ -2266,10 +2266,10 @@ impl Game {
         rect: Rect,
         mut lines: Vec<LineVertex>,
         overlay: &[PartDraw],
-        started: std::time::Instant,
+        started: web_time::Instant,
     ) {
         let playing = self.is_playing();
-        let quality_start = self.quality_profile().map(|_| std::time::Instant::now());
+        let quality_start = self.quality_profile().map(|_| web_time::Instant::now());
         if let Some(now) = quality_start {
             let gpu_ms = rustudio_render::gpu_timing::last_scene_ms();
             if let Some((last, was_playing)) = self.quality_frame_at.replace((now, playing)) {
@@ -2653,7 +2653,7 @@ pub struct LightingState {
     lightgrid_key: Option<([i32; 3], u64)>,
     lightgrid_sun: [i32; 3],
     lightgrid_shown: Option<[i32; 3]>,
-    lightgrid_at: Option<std::time::Instant>,
+    lightgrid_at: Option<web_time::Instant>,
     lightgrid_dirty: bool,
     /// Only parts moved since (refreshed every LIGHTGRID_MOVES_REFRESH_S).
     lightgrid_moves: bool,
@@ -2690,7 +2690,7 @@ pub struct LightingState {
     /// last rebuild, parts changed since, and the worker filling the next.
     lightocc_origin: Option<([i32; 3], f32, u64)>,
     lightocc_shown: Option<([i32; 3], f32)>,
-    lightocc_at: Option<std::time::Instant>,
+    lightocc_at: Option<web_time::Instant>,
     lightocc_dirty: bool,
     lightocc_job: Option<std::sync::mpsc::Receiver<rustudio_render::lightocc::OccGrid>>,
     /// Lights drawn last frame (for the self-test and bench).
@@ -3098,7 +3098,7 @@ impl Game {
             let (tx, rx) = std::sync::mpsc::channel();
             let mut prims = prims;
             std::thread::spawn(move || {
-                let t0 = std::time::Instant::now();
+                let t0 = web_time::Instant::now();
                 // The hull boxes the gather didn't know, as it worked them out.
                 let mut pending = false;
                 let mut learnt: Vec<((String, u32), Vec<(Vec3, Vec3)>)> = Vec::new();
@@ -3160,7 +3160,7 @@ impl Game {
                             let mut locals = st.lightgrid_locals.take().expect("locals");
                             let (tx, rx) = std::sync::mpsc::channel();
                             std::thread::spawn(move || {
-                                let t0 = std::time::Instant::now();
+                                let t0 = web_time::Instant::now();
                                 let patches = locals.update(&occ, &lights, usize::MAX).unwrap_or_default();
                                 let _ = tx.send((locals, patches, t0.elapsed().as_secs_f64() * 1e3));
                             });
@@ -3644,7 +3644,7 @@ pub fn wheel_notches(ctx: &egui::Context) -> f32 {
 }
 
 impl Game {
-    pub fn player_viewport(&mut self, ui: &mut egui::Ui, started: std::time::Instant) {
+    pub fn player_viewport(&mut self, ui: &mut egui::Ui, started: web_time::Instant) {
         let rect = ui.available_rect_before_wrap();
         self.viewport_rect = rect;
         let ctx = ui.ctx().clone();

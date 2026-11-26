@@ -99,8 +99,8 @@ pub(crate) fn held_by_file(kind: FileKind, prop: &str) -> bool {
 
 /// ISO-8601 time for .trashinfo (UTC, seconds).
 fn now_iso() -> String {
-    let secs = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
+    let secs = web_time::SystemTime::now()
+        .duration_since(web_time::UNIX_EPOCH)
         .map(|d| d.as_secs())
         .unwrap_or(0);
     let days = (secs / 86400) as i64;

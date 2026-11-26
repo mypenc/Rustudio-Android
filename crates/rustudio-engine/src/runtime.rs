@@ -9,7 +9,8 @@
 //! coroutine and the scheduler here resumes it later.
 
 use std::collections::{HashMap, HashSet, VecDeque};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use glam::Vec3;
 use mlua::thread::ThreadStatus;
@@ -8010,7 +8011,7 @@ fn native_drain(lua: &Lua) {
     if q.items.is_empty() {
         return;
     }
-    let t0 = std::time::Instant::now();
+    let t0 = web_time::Instant::now();
     q.frames += 1;
     while let Some((f, bytes)) = q.items.pop() {
         #[cfg(not(target_arch = "wasm32"))]
@@ -8063,7 +8064,7 @@ fn compile_script(lua: &Lua, r: Ref, shared: &Table) -> mlua::Result<Function> {
     }
     // Big sources compile once (the other side of Play, the next run):
     // bytecode_cache.rs.
-    let t0 = std::time::Instant::now();
+    let t0 = web_time::Instant::now();
     let cached = crate::bytecode_cache::get(&source);
     let (bytes, was_cached, native) = (source.len(), cached.is_some(), native_marked(&source));
     // (NativeQueue: a --!native script loads interpreted and is built in

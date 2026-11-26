@@ -3,7 +3,7 @@
 //! (physics, GUI, draws, network, Luau heaps) are set where they happen.
 
 use std::sync::Mutex;
-use std::time::Instant;
+use web_time::Instant;
 
 use rustudio_core::profiler::{self, counter, counter_unit, Cat, Unit};
 

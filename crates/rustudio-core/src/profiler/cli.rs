@@ -3,7 +3,7 @@
 //! OUT (`.rsprof` native, anything else Chrome trace JSON), then end the run.
 
 use std::path::PathBuf;
-use std::time::Instant;
+use web_time::Instant;
 
 use super::analysis;
 

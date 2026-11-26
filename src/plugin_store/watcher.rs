@@ -13,7 +13,8 @@
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
-use std::time::{Duration, Instant, SystemTime};
+use std::time::Duration;
+use web_time::{Instant, SystemTime};
 
 use super::runtime::PluginRuntime;
 use super::{scan_local, Store};

@@ -226,13 +226,13 @@ impl<'a> Matchmaker<'a> {
     ) -> Result<JoinResult> {
         use std::sync::atomic::Ordering;
         let sleep_cancellable = |dur: std::time::Duration| -> bool {
-            let end = std::time::Instant::now() + dur;
-            while std::time::Instant::now() < end {
+            let end = web_time::Instant::now() + dur;
+            while web_time::Instant::now() < end {
                 if cancel.load(Ordering::Acquire) {
                     return true;
                 }
                 let step = end
-                    .saturating_duration_since(std::time::Instant::now())
+                    .saturating_duration_since(web_time::Instant::now())
                     .min(std::time::Duration::from_millis(100));
                 if !step.is_zero() {
                     std::thread::sleep(step);
@@ -250,7 +250,7 @@ impl<'a> Matchmaker<'a> {
             };
             std::time::Duration::from_millis(ms)
         };
-        let started = std::time::Instant::now();
+        let started = web_time::Instant::now();
         let total = std::time::Duration::from_secs(90);
         if cancel.load(Ordering::Acquire) {
             return Err(NetError::Other("Cancelled".into()));
@@ -345,7 +345,7 @@ fn retryable_http(status: u16) -> bool {
 fn new_attempt_id() -> String {
     // A v4-looking id from the system clock and address entropy. The server
     // only needs it unique per attempt; it is not a credential.
-    use std::time::{SystemTime, UNIX_EPOCH};
+    use web_time::{SystemTime, UNIX_EPOCH};
     let n = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map(|d| d.as_nanos())

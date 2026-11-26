@@ -39,7 +39,8 @@ use std::net::TcpStream;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::mpsc::{self, Receiver, Sender, TryRecvError};
 use std::sync::{Arc, Mutex, OnceLock};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 /// Bound on name resolution + TCP connect (per address) and on the
 /// WebSocket handshake. A script's Close, its plugin's unload or its VM

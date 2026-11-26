@@ -55,7 +55,7 @@ static THREAD: LazyLock<Option<Thread>> = LazyLock::new(|| {
         // (waits for this initializer to finish)
         let Some(me) = THREAD.as_ref() else { return };
         for job in rx {
-            let t0 = std::time::Instant::now();
+            let t0 = web_time::Instant::now();
             let span = rustudio_core::profiler::scope("render_perform", rustudio_core::profiler::Cat::Render);
             let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(job));
             drop(span);

@@ -46,7 +46,7 @@ const OPERATIONS: &str = "/apis/assets/user-auth/v1/operations";
 pub(super) struct CloudTest {
     stage: u32,
     started: u64,
-    t0: Option<std::time::Instant>,
+    t0: Option<web_time::Instant>,
     notes: Vec<String>,
     ok: bool,
     mark: usize,
@@ -191,7 +191,7 @@ impl SelfTest {
     fn cloud_next(&mut self, f: u64, stage: u32) {
         self.cloud.stage = stage;
         self.cloud.started = f;
-        self.cloud.t0 = Some(std::time::Instant::now());
+        self.cloud.t0 = Some(web_time::Instant::now());
     }
 
     fn cloud_note(&mut self, ok: bool, note: String) {

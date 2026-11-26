@@ -878,7 +878,7 @@ mod tests {
         }
         v.set_many(cells);
         let origin = [-128, -32, -128];
-        let t = std::time::Instant::now();
+        let t = web_time::Instant::now();
         let plane = terrain_plane(&v, origin).unwrap();
         let read = t.elapsed();
         let mut o = Occupancy::new(origin);
@@ -905,12 +905,12 @@ mod tests {
         let v = Voxels::from_dom(&doc.dom).and_then(|r| r.ok());
         let place = follow(None, Vec3::new(at[0], at[1], at[2]));
         let origin = [place[0] * 32, place[1] * 16, place[2] * 32];
-        let t = std::time::Instant::now();
+        let t = web_time::Instant::now();
         let prims: Vec<Prim> = scene.parts.iter().filter_map(|p| p.light).collect();
         let t_prims = t.elapsed();
         let plane = v.as_ref().and_then(|v| terrain_plane(v, origin));
         let t_terrain = t.elapsed() - t_prims;
-        let t = std::time::Instant::now();
+        let t = web_time::Instant::now();
         let mut o = Occupancy::new(origin);
         for p in &prims {
             o.add_prim(p);
@@ -1026,7 +1026,7 @@ mod tests {
             so.planes[k].copy_from_slice(&socc[k * n..(k + 1) * n]);
         }
         for (name, occ) in [("studio occupancy", &so), ("rustudio occupancy", &o)] {
-            let t = std::time::Instant::now();
+            let t = web_time::Instant::now();
             let mut g = skylight(occ);
             let el = t.elapsed();
             let mut hist = [0usize; 5];

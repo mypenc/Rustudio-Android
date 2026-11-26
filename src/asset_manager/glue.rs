@@ -4,7 +4,8 @@
 
 use std::path::PathBuf;
 use std::sync::atomic::Ordering;
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use crate::app::Editor;
 use crate::file_dialog::Purpose;

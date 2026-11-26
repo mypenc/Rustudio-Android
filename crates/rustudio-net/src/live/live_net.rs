@@ -12,7 +12,8 @@ use std::sync::{
     atomic::{AtomicBool, AtomicU64, Ordering},
     mpsc, Arc, Mutex,
 };
-use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+use std::time::Duration;
+use web_time::{Instant, SystemTime, UNIX_EPOCH};
 
 
 fn templates() -> (ProtocolSyncTemplate, TicketTemplate) {
@@ -872,7 +873,7 @@ fn save_unknown_frame(schema: &[u8], frame: &[u8], kinds: &str) -> Option<std::p
             }
         }
     }
-    let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_millis()).unwrap_or(0);
+    let stamp = web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).map(|d| d.as_millis()).unwrap_or(0);
     let path = dir.join(format!("{stamp}-item-{kinds}.stream"));
     let mut options = std::fs::OpenOptions::new();
     options.write(true).create(true).truncate(true);

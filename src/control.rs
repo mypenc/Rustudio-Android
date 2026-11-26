@@ -25,7 +25,8 @@ use std::io::{BufRead, BufReader, Write};
 use std::os::unix::net::UnixListener;
 use std::path::PathBuf;
 use std::sync::mpsc::{channel, Receiver, Sender};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 /// Frames drawn after a camera move before a shot counts as settled.
 const SETTLE_FRAMES: u64 = 1;
@@ -262,7 +263,7 @@ impl crate::app::Editor {
                             Err(e) => format!("error {e}"),
                         };
                         if std::env::var_os("RUSTUDIO_CONTROL_DEBUG").is_some() {
-                            let epoch = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default();
+                            let epoch = web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).unwrap_or_default();
                             eprintln!("[control] shot saved {:.0} ms after it was read, reply sent at {:.3}", t_read.elapsed().as_secs_f64() * 1000.0, epoch.as_secs_f64());
                         }
                         let _ = s.reply.send(reply);

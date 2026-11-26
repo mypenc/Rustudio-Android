@@ -9,7 +9,7 @@ mod env_probe_gpu;
 pub mod vf;
 
 use std::collections::{HashMap, HashSet};
-use std::time::Instant;
+use web_time::Instant;
 
 use bytemuck::{Pod, Zeroable};
 use egui_wgpu::wgpu;

@@ -110,7 +110,7 @@
 use std::ffi::{c_char, c_int, c_void, CStr, CString};
 use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
-use std::time::Instant;
+use web_time::Instant;
 
 use ash::vk;
 
@@ -995,7 +995,7 @@ fn try_activate() -> Result<Status, Status> {
     }
     // From here on a crash would be the Mesa driver's: the marker stays
     // until the editor has drawn its first frames (mark_healthy).
-    let _ = std::fs::write(markers.join("pending"), format!("{:?}", std::time::SystemTime::now()));
+    let _ = std::fs::write(markers.join("pending"), format!("{:?}", web_time::SystemTime::now()));
 
     // Turnip's switches, read when the driver initialises: the start-time
     // TU_DEBUG (libadrenotools' constructor sets one of its own at the

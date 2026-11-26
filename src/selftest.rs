@@ -54,7 +54,7 @@ pub struct SelfTest {
     out: PathBuf,
     /// Seconds each step took (shown with the results), and the clock.
     step_secs: Vec<f32>,
-    clock: Option<(std::time::Instant, f32)>,
+    clock: Option<(web_time::Instant, f32)>,
     frame: u64,
     queue: Vec<Event>,
     modifiers: Modifiers,
@@ -282,7 +282,7 @@ impl SelfTest {
             std::fs::write(&self.out, format!("{{\"test\":\"duplicate_during_drag\",\"passed\":true,\"cases\":{cases}}}")).unwrap();
             return true;
         }
-        let (t0, last) = *self.clock.get_or_insert((std::time::Instant::now(), 0.0));
+        let (t0, last) = *self.clock.get_or_insert((web_time::Instant::now(), 0.0));
         let now = t0.elapsed().as_secs_f32();
         while self.step_secs.len() < self.steps.len() {
             self.step_secs.push(now - last);
@@ -2262,7 +2262,7 @@ struct R6Test {
     ok: bool,
     assets_dir: Option<PathBuf>,
     /// When a step began waiting on background work (downloads).
-    t0: Option<std::time::Instant>,
+    t0: Option<web_time::Instant>,
 }
 
 /// The GUI test's LocalScript: hooks the buttons and the text box.

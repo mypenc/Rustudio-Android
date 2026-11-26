@@ -12,9 +12,9 @@ pub struct Target {
     pub size: [u32; 2],
     pub id: egui::TextureId,
     /// When it was last drawn.
-    pub at: std::time::Instant,
+    pub at: web_time::Instant,
     /// When it was last shown (targets unused for a while are freed).
-    pub used: std::time::Instant,
+    pub used: web_time::Instant,
     /// Needs drawing again: something it shows changed (the document's
     /// journal, read in `Gui::sync_roots`), or a mesh / texture it wanted
     /// was still loading. A static frame is drawn once, not 15 times a
@@ -170,8 +170,8 @@ struct V { @builtin(position) p: vec4f, @location(0) uv: vec2f, @location(1) c: 
         Target {
             size,
             id,
-            at: std::time::Instant::now(),
-            used: std::time::Instant::now(),
+            at: web_time::Instant::now(),
+            used: web_time::Instant::now(),
             dirty: true,
             cam: None,
             parts: Default::default(),
@@ -278,7 +278,7 @@ struct V { @builtin(position) p: vec4f, @location(0) uv: vec2f, @location(1) c: 
             }
         }
         rs.queue.submit([encoder.finish()]);
-        target.at = std::time::Instant::now();
+        target.at = web_time::Instant::now();
     }
 }
 

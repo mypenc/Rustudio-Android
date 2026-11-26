@@ -4,7 +4,8 @@
 
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use egui::text::{LayoutJob, TextFormat};
 use egui::{Color32, FontId, RichText, Stroke};

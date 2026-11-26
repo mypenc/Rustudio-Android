@@ -20,7 +20,7 @@
 #![allow(unused_imports, unused_variables)]
 
 use std::collections::{HashMap, HashSet};
-use std::time::Instant;
+use web_time::Instant;
 
 use mlua::{Function, Lua, MultiValue, Table, Value};
 use rbx_dom_weak::types::{Ref, Variant};
@@ -2032,7 +2032,7 @@ pub mod perf {
     use std::collections::VecDeque;
     use std::sync::atomic::{AtomicU64, Ordering::Relaxed};
     use std::sync::Mutex;
-    use std::time::Instant;
+    use web_time::Instant;
 
     use rbx_dom_weak::types::Variant;
 

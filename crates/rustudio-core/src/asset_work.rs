@@ -124,7 +124,7 @@ mod tests {
     use super::*;
 
     fn wait<T: Send + 'static>(jobs: &mut Jobs<T>) {
-        let t0 = std::time::Instant::now();
+        let t0 = web_time::Instant::now();
         while !jobs.running.is_empty() && t0.elapsed().as_secs() < 10 {
             jobs.poll();
             std::thread::sleep(std::time::Duration::from_millis(1));

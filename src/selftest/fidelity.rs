@@ -12,7 +12,7 @@
 
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
-use std::time::Instant;
+use web_time::Instant;
 
 use super::{SelfTest, Step};
 use crate::app::Editor;

@@ -15,7 +15,7 @@
 //! (any `set_item` / removal in its layer), its camera, size or lighting.
 //! A static frame is drawn once.
 use std::collections::HashMap;
-use std::time::Instant;
+use web_time::Instant;
 
 use egui_wgpu::wgpu;
 use glam::{Mat4, Vec3};

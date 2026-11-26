@@ -75,7 +75,7 @@ pub struct PluginManager {
     pub publishing: bool,
     /// Signed in (as of the last tick).
     pub signed_in: bool,
-    last_user_check: Option<std::time::Instant>,
+    last_user_check: Option<web_time::Instant>,
     pub lines: Vec<Line>,
     pub ui: super::ui::ManageUi,
 }
@@ -214,7 +214,7 @@ impl PluginManager {
         // The account: check who is signed in about once a second.
         let check = self.last_user_check.is_none_or(|t| t.elapsed().as_millis() > 1000);
         if check {
-            self.last_user_check = Some(std::time::Instant::now());
+            self.last_user_check = Some(web_time::Instant::now());
             // Account workers can be using the session during a network request.
             // Keep the last sign-in state until the next tick if the lock is busy.
             let who = match client.as_ref() {

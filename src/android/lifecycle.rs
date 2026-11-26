@@ -24,7 +24,8 @@
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 /// The editor's egui context, for the hook's close request.
 static CTX: Mutex<Option<egui::Context>> = Mutex::new(None);

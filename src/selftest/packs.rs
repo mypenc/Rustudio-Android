@@ -113,7 +113,7 @@ impl SelfTest {
             .iter()
             .any(|e| matches!(rustudio_render::matpack::maps(e), rustudio_render::matpack::Lookup::Pending));
         let waited = f.saturating_sub(self.r6.started);
-        let t0 = *self.r6.t0.get_or_insert_with(std::time::Instant::now);
+        let t0 = *self.r6.t0.get_or_insert_with(web_time::Instant::now);
         if (pending && t0.elapsed().as_secs() < 240) || waited < 40 {
             return false;
         }

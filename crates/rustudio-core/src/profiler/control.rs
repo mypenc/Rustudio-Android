@@ -374,7 +374,7 @@ pub fn last_spike() -> Option<(u64, f64)> {
 /// Called by `frame(FrameKind::Render)`: moves every lane's records into the
 /// capture, trims the ring, and runs the spike / capture-N bookkeeping.
 pub(crate) fn gather(now: u64) {
-    let t0 = std::time::Instant::now();
+    let t0 = web_time::Instant::now();
     let lanes: Vec<Arc<record::ThreadBuf>> = record::threads().lock().unwrap_or_else(|e| e.into_inner()).clone();
     let mut s = lock();
     let s = &mut *s;

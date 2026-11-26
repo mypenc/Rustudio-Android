@@ -364,7 +364,7 @@ fn v3(v: &Value) -> Option<Vec3> {
 fn rand01() -> f32 {
     use std::cell::Cell;
     thread_local! {
-        static SEED: Cell<u64> = Cell::new(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_nanos() as u64).unwrap_or(1) | 1);
+        static SEED: Cell<u64> = Cell::new(web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).map(|d| d.as_nanos() as u64).unwrap_or(1) | 1);
     }
     SEED.with(|s| {
         let mut x = s.get();

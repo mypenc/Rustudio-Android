@@ -11,7 +11,7 @@
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
-use std::time::Instant;
+use web_time::Instant;
 
 use rbx_dom_weak::types::{Ref, Variant};
 

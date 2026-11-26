@@ -88,7 +88,7 @@ impl SelfTest {
                 ed.game.account.check_now();
                 self.r6 = super::R6Test {
                     started: f,
-                    t0: Some(std::time::Instant::now()),
+                    t0: Some(web_time::Instant::now()),
                     ..Default::default()
                 };
                 self.r4.phase = 85;
@@ -103,7 +103,7 @@ impl SelfTest {
                 self.r6 = super::R6Test {
                     started: f,
                     mark: ed.game.log.len(),
-                    t0: Some(std::time::Instant::now()),
+                    t0: Some(web_time::Instant::now()),
                     ..Default::default()
                 };
                 ed.start_play(rustudio_engine::runtime::RunMode::Play);
@@ -158,7 +158,7 @@ impl SelfTest {
                 self.r6 = super::R6Test {
                     started: f,
                     mark: ed.game.log.len(),
-                    t0: Some(std::time::Instant::now()),
+                    t0: Some(web_time::Instant::now()),
                     ..Default::default()
                 };
                 ed.start_play(rustudio_engine::runtime::RunMode::Play);

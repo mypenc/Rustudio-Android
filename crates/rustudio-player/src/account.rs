@@ -217,7 +217,7 @@ impl Account {
     /// otherwise the session's identity is enough and the avatar reaches the
     /// running Play when it arrives (Editor::play_tick).
     pub fn settle_for_play(&mut self, max: std::time::Duration, avatar: bool) -> Vec<(Level, String)> {
-        let t0 = std::time::Instant::now();
+        let t0 = web_time::Instant::now();
         let mut logs = Vec::new();
         loop {
             logs.extend(self.poll());

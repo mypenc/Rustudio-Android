@@ -3,7 +3,7 @@
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
-use std::time::Instant;
+use web_time::Instant;
 
 use egui::{Key, KeyboardShortcut, Modifiers, RichText};
 use egui_dock::{DockArea, DockState, TabViewer};

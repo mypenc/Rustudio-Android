@@ -6,7 +6,8 @@
 use std::io::{Read, Write};
 use std::net::TcpListener;
 use std::sync::mpsc::{self, Receiver};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use rbx_dom_weak::{InstanceBuilder, WeakDom};
 

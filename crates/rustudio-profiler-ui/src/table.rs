@@ -4,7 +4,7 @@
 
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
-use std::time::Instant;
+use web_time::Instant;
 
 use egui::{Align, Align2, Layout, Pos2, Rect, Sense, Ui, Vec2};
 use rustudio_core::profiler::analysis::{self, CallTree, HotEntry, Stats};

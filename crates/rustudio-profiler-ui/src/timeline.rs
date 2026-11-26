@@ -3,7 +3,7 @@
 //! Shift+wheel scrolls the lanes, drag pans, click pins a scope to the
 //! sidebar, double-click zooms to it. The search box dims what doesn't match.
 
-use std::time::Instant;
+use web_time::Instant;
 
 use egui::{Align2, Color32, CornerRadius, Pos2, Rect, Sense, Stroke, StrokeKind, Ui, Vec2};
 use rustudio_core::profiler::{analysis, Capture, Cat, SpanRec, Track};

@@ -453,7 +453,7 @@ pub struct LiveQueue {
     /// Instances in the whole queue, and sent so far.
     pub total: usize,
     pub sent: usize,
-    pub last: Option<std::time::Instant>,
+    pub last: Option<web_time::Instant>,
 }
 
 impl LiveQueue {
@@ -555,7 +555,7 @@ impl LiveQueue {
         if !sets.is_empty() {
             doc.set_props("File Sync", sets, None);
         }
-        self.last = Some(std::time::Instant::now());
+        self.last = Some(web_time::Instant::now());
         out
     }
 }

@@ -423,7 +423,7 @@ impl SelfTest {
             build(ed, scene);
             self.r6 = R6Test {
                 started: f,
-                t0: Some(std::time::Instant::now()),
+                t0: Some(web_time::Instant::now()),
                 ..Default::default()
             };
             self.r4.phase += 1;

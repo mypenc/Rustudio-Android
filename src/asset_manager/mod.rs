@@ -19,7 +19,8 @@ use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::sync::{Arc, Condvar, Mutex};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 /// The longest the In-Experience list lags edits (`scan_document`).
 const EXPERIENCE_RESCAN: Duration = Duration::from_secs(1);

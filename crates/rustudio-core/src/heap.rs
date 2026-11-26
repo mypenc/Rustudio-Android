@@ -41,7 +41,7 @@ pub fn trim() {
 /// a second after a burst of loading ends.
 pub fn settle(busy: bool) {
     use std::sync::Mutex;
-    use std::time::Instant;
+    use web_time::Instant;
     static STATE: Mutex<(bool, Option<Instant>)> = Mutex::new((false, None));
     let mut s = STATE.lock().unwrap_or_else(|e| e.into_inner());
     if busy {

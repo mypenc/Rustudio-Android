@@ -28,7 +28,7 @@ use std::collections::{HashMap, VecDeque};
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::sync::{Arc, Condvar, Mutex};
-use std::time::Instant;
+use web_time::Instant;
 
 use serde::{Deserialize, Serialize};
 

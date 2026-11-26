@@ -491,7 +491,7 @@ print('preload-timed-out')
         rt.enter(World::new(d, RunMode::Run));
         rt.bind_globals().unwrap();
         rt.run_script(script);
-        let t0 = std::time::Instant::now();
+        let t0 = web_time::Instant::now();
         let seen = |rt: &Runtime, what: &str| {
             crate::runtime::world(&rt.lua).map(|w| w.output.iter().any(|(_, s)| s.contains(what))).unwrap_or(false)
         };
@@ -654,9 +654,9 @@ __ac_test_done()
             }).unwrap())
             .unwrap();
         rt.run_script(script);
-        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
+        let deadline = web_time::Instant::now() + std::time::Duration::from_secs(30);
         let mut frames = 0;
-        while (frames < 120 || !done.load(std::sync::atomic::Ordering::SeqCst)) && std::time::Instant::now() < deadline {
+        while (frames < 120 || !done.load(std::sync::atomic::Ordering::SeqCst)) && web_time::Instant::now() < deadline {
             rt.step(1.0 / 60.0);
             frames += 1;
             if frames >= 120 {

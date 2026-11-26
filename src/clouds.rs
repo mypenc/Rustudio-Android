@@ -33,7 +33,7 @@ use crate::doc::Document;
 use glam::Vec3;
 use rbx_dom_weak::types::Variant;
 use std::sync::atomic::{AtomicU32, Ordering};
-use std::time::Instant;
+use web_time::Instant;
 use egui_wgpu::wgpu;
 
 /// What the place asks for: the active Clouds (the first under Terrain).

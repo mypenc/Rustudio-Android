@@ -6,7 +6,7 @@
 use std::cell::Cell;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::{Arc, Mutex, OnceLock, RwLock};
-use std::time::Instant;
+use web_time::Instant;
 
 use super::capture::Unit;
 use super::{Cat, FrameKind};
@@ -48,8 +48,8 @@ pub(crate) fn epoch_unix_ms() -> f64 {
     static AT: OnceLock<f64> = OnceLock::new();
     *AT.get_or_init(|| {
         let since = epoch().elapsed();
-        let now = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
+        let now = web_time::SystemTime::now()
+            .duration_since(web_time::UNIX_EPOCH)
             .unwrap_or_default();
         (now.saturating_sub(since)).as_secs_f64() * 1000.0
     })

@@ -3,7 +3,8 @@
 //! batches, time since the last data) so a slow join is visibly alive and a
 //! stuck one is visibly stuck.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use egui::{Color32, RichText};
 use rustudio_net::live::JoinStage;

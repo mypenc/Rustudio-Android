@@ -43,7 +43,7 @@ pub mod ui;
 
 use std::collections::{HashSet, VecDeque};
 use std::path::{Path, PathBuf};
-use std::time::Instant;
+use web_time::Instant;
 
 use rbx_dom_weak::types::{Ref, Variant};
 use rustudio_core::doc::{self, Mark, Marks};

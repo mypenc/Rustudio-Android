@@ -90,7 +90,7 @@ pub struct StartPage {
     opened_custom: Option<(String, String, Result<Vec<u8>, String>)>,
     /// A template just opened: its preview is taken from the 3D view once
     /// the place has loaded (key, document, when it opened).
-    tpl_capture: Option<(String, u64, std::time::Instant)>,
+    tpl_capture: Option<(String, u64, web_time::Instant)>,
     /// A preview being saved off the UI thread: (key, the picture or why not).
     tpl_preview_rx: Option<Receiver<(String, Result<Option<PathBuf>, String>)>>,
     /// Hidden templates, the person's own and the order (templates.json).
@@ -480,7 +480,7 @@ impl Editor {
         match r.and_then(|b| rustudio_core::doc::Document::from_place_bytes(&b, name.clone())) {
             Ok(doc) => {
                 self.set_document(doc);
-                self.start.tpl_capture = Some((key, self.game.doc.id, std::time::Instant::now()));
+                self.start.tpl_capture = Some((key, self.game.doc.id, web_time::Instant::now()));
                 self.info(format!("New place from your {name} template"));
             }
             Err(e) => self.start.tpl_note = Some((format!("Couldn't open {name}: {e}"), true)),
@@ -1602,8 +1602,8 @@ fn creator(e: &Experience) -> String {
 }
 
 fn unix_now() -> u64 {
-    std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
+    web_time::SystemTime::now()
+        .duration_since(web_time::UNIX_EPOCH)
         .map(|d| d.as_secs())
         .unwrap_or(0)
 }

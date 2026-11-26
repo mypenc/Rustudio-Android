@@ -141,7 +141,7 @@ impl Gui {
     /// Once a frame, before walking: the frame time and the scripts'
     /// Emit / Clear calls.
     pub(super) fn fx_frame(&mut self, doc: &Document) {
-        let now = std::time::Instant::now();
+        let now = web_time::Instant::now();
         let dt = self
             .p2d_clock
             .map(|t| now.duration_since(t).as_secs_f32().min(0.1))

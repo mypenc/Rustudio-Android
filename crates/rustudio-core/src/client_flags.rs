@@ -26,7 +26,8 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
-use std::time::{Duration, SystemTime};
+use std::time::Duration;
+use web_time::SystemTime;
 
 pub const URL: &str = "https://clientsettingscdn.roblox.com/v2/settings/application/PCDesktopClient";
 /// How old the kept copy may get before Play fetches it again (Roblox's

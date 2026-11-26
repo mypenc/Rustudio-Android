@@ -7,7 +7,7 @@
 //! Meshes, textures and materials load through the normal asset pipeline.
 
 use std::collections::HashMap;
-use std::time::Instant;
+use web_time::Instant;
 
 use glam::{Mat3, Vec3};
 use rbx_dom_weak::types::Ref;

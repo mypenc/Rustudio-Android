@@ -116,7 +116,7 @@ pub struct CharBuilder {
     pub tab: Tab,
     pub query: String,
     searched: String,
-    search_due: Option<std::time::Instant>,
+    search_due: Option<web_time::Instant>,
     results: Option<Vec<Person>>,
     outfits: Option<Vec<Outfit>>,
     friends: Option<Vec<Person>>,
@@ -417,7 +417,7 @@ impl Editor {
             Some(("search", q)) => {
                 self.chars.open = true;
                 self.chars.query = q.to_string();
-                self.chars.search_due = Some(std::time::Instant::now());
+                self.chars.search_due = Some(web_time::Instant::now());
                 return;
             }
             Some(("starter", rest)) => {
@@ -742,7 +742,7 @@ impl Editor {
         }
         // Search after a short pause in typing.
         if let Some(due) = self.chars.search_due {
-            if std::time::Instant::now() >= due {
+            if web_time::Instant::now() >= due {
                 self.chars.search_due = None;
                 let q = self.chars.query.trim().to_string();
                 self.chars.searched = q.clone();
@@ -843,7 +843,7 @@ impl Editor {
                     .desired_width(r.width() - 60.0);
                 let resp = ui.put(Rect::from_min_max(egui::pos2(r.min.x + 28.0, r.min.y + 4.0), egui::pos2(r.max.x - 28.0, r.max.y - 4.0)), edit);
                 if resp.changed() {
-                    cb.search_due = Some(std::time::Instant::now() + std::time::Duration::from_millis(450));
+                    cb.search_due = Some(web_time::Instant::now() + std::time::Duration::from_millis(450));
                 }
                 if !cb.query.is_empty() {
                     let x = Rect::from_center_size(egui::pos2(r.max.x - 14.0, r.center().y), Vec2::splat(18.0));

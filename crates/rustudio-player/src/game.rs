@@ -71,7 +71,7 @@ pub struct Game {
     pub render_state: Option<egui_wgpu::RenderState>,
     pub renderer: Option<Renderer>,
     pub(crate) automatic_quality: rustudio_render::quality::Automatic,
-    pub(crate) quality_frame_at: Option<(std::time::Instant, bool)>,
+    pub(crate) quality_frame_at: Option<(web_time::Instant, bool)>,
     pub(crate) quality_cpu_ms: f32,
     /// The document's Highlights, kept from its change journal (viewport.rs).
     pub highlight_index: Option<rustudio_core::doc::ClassIndex>,
@@ -152,7 +152,7 @@ impl Game {
             // The driver's pipeline cache from the last run, before the
             // first pipelines are made (pipeline_cache.rs).
             rustudio_render::pipeline_cache::init(&rs.device, &rs.adapter.get_info(), rustudio_core::assets::cache_dir());
-            let t0 = std::time::Instant::now();
+            let t0 = web_time::Instant::now();
             let r = Renderer::with_caps(&rs.device, &rs.queue, &caps);
             // (a phone shows black until the first frame: logcat
             // `RustStdoutStderr` tells how long the renderer took of it)
@@ -247,8 +247,8 @@ impl Game {
 
 fn timestamp() -> String {
     // Studio's Output timestamp: HH:MM:SS.mmm in local time.
-    let ms = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
+    let ms = web_time::SystemTime::now()
+        .duration_since(web_time::UNIX_EPOCH)
         .map(|d| d.as_millis() as u64)
         .unwrap_or(0);
     let secs = (ms / 1000) as i64;

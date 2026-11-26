@@ -207,7 +207,7 @@ pub fn new_token() -> String {
         use sha2::Digest;
         let seed = format!(
             "{:?}{}{:p}",
-            std::time::SystemTime::now(),
+            web_time::SystemTime::now(),
             std::process::id(),
             &bytes as *const _
         );

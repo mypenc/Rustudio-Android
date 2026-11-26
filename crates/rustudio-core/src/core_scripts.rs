@@ -38,7 +38,7 @@
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, Weak};
-use std::time::SystemTime;
+use web_time::SystemTime;
 
 use rbx_dom_weak::types::{Ref, Variant};
 use rbx_dom_weak::{InstanceBuilder, WeakDom};
@@ -686,11 +686,11 @@ mod tests {
     #[test]
     fn cached_install_reuses_decoded_patch() {
         let Some(path) = patch_path() else { return };
-        let t0 = std::time::Instant::now();
+        let t0 = web_time::Instant::now();
         let mut d1 = Document::empty();
         let (i1, hit1) = install_cached(&mut d1, &path).unwrap();
         let cold_ms = t0.elapsed().as_millis();
-        let t1 = std::time::Instant::now();
+        let t1 = web_time::Instant::now();
         let mut d2 = Document::empty();
         let (i2, hit2) = install_cached(&mut d2, &path).unwrap();
         let warm_ms = t1.elapsed().as_millis();

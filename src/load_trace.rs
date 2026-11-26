@@ -6,7 +6,7 @@
 //! sections, and the asset queues each time they change.
 
 use std::sync::OnceLock;
-use std::time::{SystemTime, UNIX_EPOCH};
+use web_time::{SystemTime, UNIX_EPOCH};
 
 pub fn on() -> bool {
     static ON: OnceLock<bool> = OnceLock::new();

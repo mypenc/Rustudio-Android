@@ -49,7 +49,7 @@ const ADD_BG: Color32 = Color32::from_rgb(30, 50, 38);
 const DEL_BG: Color32 = Color32::from_rgb(58, 32, 34);
 const LIVE: Color32 = Color32::from_rgb(196, 140, 30);
 
-fn ago(t: std::time::Instant) -> String {
+fn ago(t: web_time::Instant) -> String {
     let s = t.elapsed().as_secs();
     match s {
         0..=4 => "just now".into(),

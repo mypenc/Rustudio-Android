@@ -2293,7 +2293,7 @@ impl Editor {
         // (Mouse.Hit / Target, UserInputService:GetMouseLocation()).
         let touch_taps: Vec<(f32, f32)> = match self.play.as_mut() {
             Some(s) if !s.game.touches.is_empty() || s.game.gestures.count() > 0 => {
-                let now = std::time::Instant::now();
+                let now = web_time::Instant::now();
                 let mut taps = Vec::new();
                 let touches = std::mem::take(&mut s.game.touches);
                 for t in &touches {

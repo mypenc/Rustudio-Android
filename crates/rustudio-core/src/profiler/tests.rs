@@ -16,7 +16,7 @@ fn serial() -> std::sync::MutexGuard<'static, ()> {
 }
 
 fn spin(us: u64) {
-    let t = std::time::Instant::now();
+    let t = web_time::Instant::now();
     while t.elapsed().as_micros() < us as u128 {
         std::hint::spin_loop();
     }
@@ -300,7 +300,7 @@ fn overhead() {
     let _g = serial();
     const N: u64 = 2_000_000;
     let run = |label: &str| {
-        let t = std::time::Instant::now();
+        let t = web_time::Instant::now();
         for i in 0..N {
             let _s = scope("bench_scope", Cat::Other);
             std::hint::black_box(i);
@@ -313,7 +313,7 @@ fn overhead() {
         ns
     };
     let base = {
-        let t = std::time::Instant::now();
+        let t = web_time::Instant::now();
         for i in 0..N {
             std::hint::black_box(i);
         }
@@ -322,7 +322,7 @@ fn overhead() {
     println!("empty loop: {base:.1} ns");
     run("profiler off");
     let bench_off = {
-        let t = std::time::Instant::now();
+        let t = web_time::Instant::now();
         for i in 0..N {
             let _s = crate::bench::scope("bench_scope");
             std::hint::black_box(i);
@@ -401,27 +401,27 @@ fn per_frame_stats_gpu_passes_and_categories() {
 #[ignore]
 fn analysis_speed() {
     let Some(path) = std::env::var_os("RUSTUDIO_PROFILE_FILE") else { return };
-    let t = std::time::Instant::now();
+    let t = web_time::Instant::now();
     let cap = export::open(std::path::Path::new(&path)).unwrap();
     println!("open: {:?} ({} spans)", t.elapsed(), cap.span_count());
     let (t0, t1) = cap.time_range().unwrap();
-    let t = std::time::Instant::now();
+    let t = web_time::Instant::now();
     let tree = call_tree(&cap, t0, t1, |_| true);
     println!("call tree, whole capture: {:?} ({} nodes)", t.elapsed(), tree.nodes.len());
-    let t = std::time::Instant::now();
+    let t = web_time::Instant::now();
     let hot = hot_list(&cap, t0, t1, |_| true);
     println!("hot list, whole capture: {:?} ({} rows)", t.elapsed(), hot.len());
     let f = cap.render_frames()[cap.render_frames().len() / 2];
-    let t = std::time::Instant::now();
+    let t = web_time::Instant::now();
     let _ = call_tree(&cap, f.start, f.end, |_| true);
     println!("call tree, one frame: {:?}", t.elapsed());
     let main = main_track(&cap).unwrap();
-    let t = std::time::Instant::now();
+    let t = web_time::Instant::now();
     for f in cap.render_frames() {
         std::hint::black_box(category_breakdown(main, f.start, f.end));
     }
     println!("category breakdown, every frame ({}): {:?}", cap.render_frames().len(), t.elapsed());
-    let t = std::time::Instant::now();
+    let t = web_time::Instant::now();
     let _ = gpu_passes(&cap, t0, t1);
     println!("gpu passes: {:?}", t.elapsed());
 }

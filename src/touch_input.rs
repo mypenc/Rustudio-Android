@@ -47,7 +47,8 @@
 //! the rest is [`Touch::filter`].
 
 use std::collections::{BTreeSet, VecDeque};
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use crate::mech;
 use egui::{Event, Key, Modifiers, MouseWheelUnit, PointerButton, Pos2, Rect, TouchId, TouchPhase, Vec2};

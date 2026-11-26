@@ -605,7 +605,7 @@ pub fn decode_async(bytes: std::sync::Arc<Vec<u8>>, done: std::sync::mpsc::Sende
                 let Some((bytes, done, id)) = job else { return };
                 // (at most 15 s: images nothing asks for again, their parts
                 // gone, must not stop the loading for good)
-                let t0 = std::time::Instant::now();
+                let t0 = web_time::Instant::now();
                 while WAITING_BYTES.load(std::sync::atomic::Ordering::Relaxed) > WAITING_LIMIT && t0.elapsed().as_secs() < 15 {
                     std::thread::sleep(std::time::Duration::from_millis(4));
                 }

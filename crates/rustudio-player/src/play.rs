@@ -4937,7 +4937,7 @@ fn load_core_scripts(cdoc: &mut Document) -> Result<(rustudio_core::core_scripts
     let path = rustudio_core::core_scripts::patch_path().ok_or_else(|| {
         format!("CoreScripts: no {} in the Studio install", rustudio_core::core_scripts::PATCH)
     })?;
-    let t0 = std::time::Instant::now();
+    let t0 = web_time::Instant::now();
     let (installed, cached) =
         rustudio_core::core_scripts::install_cached(cdoc, &path).map_err(|e| format!("CoreScripts: {e}"))?;
     let note = format!(

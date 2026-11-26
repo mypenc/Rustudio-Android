@@ -13,7 +13,8 @@
 //!
 //! An idle editor logs nothing: no input, no frames.
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 const PERIOD: Duration = Duration::from_secs(5);
 

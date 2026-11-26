@@ -48,7 +48,8 @@
 //! layer is 12 MB with its mips, three arrays of them per material.
 
 use std::collections::VecDeque;
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use egui_wgpu::wgpu;
 use serde::{Deserialize, Serialize};

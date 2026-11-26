@@ -78,7 +78,7 @@ pub(crate) fn show(w: &mut ProfilerWindow, ui: &mut Ui, cap: &Capture, live: boo
             let mut durs: Vec<u64> = frames.iter().map(|f| f.dur()).collect();
             durs.sort_unstable();
             let v = analysis::quantile_sorted(&durs, 0.99) as f64 / 1e6;
-            w.tl.strip_p99 = Some((std::time::Instant::now(), n, v));
+            w.tl.strip_p99 = Some((web_time::Instant::now(), n, v));
             v
         }
     };

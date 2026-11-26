@@ -3,7 +3,7 @@
 //! do (`live_draft_toolbar`). A child of cloud_ui so it reads the private
 //! `LiveView` without widening it; it changes nothing on its own.
 
-use std::time::Instant;
+use web_time::Instant;
 
 use rbx_types::Ref;
 use serde_json::{json, Value as J};

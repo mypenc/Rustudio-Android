@@ -417,7 +417,7 @@ impl Document {
             label,
             changes,
             merge_key: None,
-            at: std::time::Instant::now(),
+            at: web_time::Instant::now(),
             sel_before,
             sel_after: Vec::new(),
             display,
@@ -474,8 +474,8 @@ impl Document {
         }
         // "recording_" + a decimal u64, as Studio's (random-looking).
         self.history.seq = self.history.seq.wrapping_add(1);
-        let t = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
+        let t = web_time::SystemTime::now()
+            .duration_since(web_time::UNIX_EPOCH)
             .map(|d| d.as_nanos() as u64)
             .unwrap_or(0);
         let mut x = t ^ (self.id << 32) ^ self.history.seq.wrapping_mul(0x9E37_79B9_7F4A_7C15);

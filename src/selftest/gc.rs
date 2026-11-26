@@ -73,7 +73,7 @@ print("GCTEST back=" .. tostring(workspace:FindFirstChild("KeptOut") ~= nil))
 
 #[derive(Default)]
 pub(super) struct GcTest {
-    t0: Option<std::time::Instant>,
+    t0: Option<web_time::Instant>,
     mark: usize,
     /// DataModel instances, Lua slots and Lua KB at the baseline line.
     base: Option<(usize, usize, f64)>,
@@ -108,7 +108,7 @@ impl SelfTest {
             );
             ed.set_document(doc);
             self.gc = GcTest {
-                t0: Some(std::time::Instant::now()),
+                t0: Some(web_time::Instant::now()),
                 mark: ed.game.log.len(),
                 ..Default::default()
             };

@@ -163,7 +163,7 @@ struct LiveSave {
     revision: u64,
     vt: VersionType,
     from_dialog: bool,
-    sent: Option<std::time::Instant>,
+    sent: Option<web_time::Instant>,
 }
 
 struct LiveView {
@@ -187,8 +187,8 @@ struct LiveView {
     script_service: Option<u64>,
     script_configuration_sent: bool,
     next_script_request: i64,
-    script_commits: HashMap<i64,(u64,std::time::Instant,String)>,
-    last_presence: std::time::Instant,
+    script_commits: HashMap<i64,(u64,web_time::Instant,String)>,
+    last_presence: web_time::Instant,
     last_camera: Option<[f32; 5]>,
     /// What each referent sent this session is (by path), for reports.
     labels: HashMap<u64,String>,
@@ -197,14 +197,14 @@ struct LiveView {
     deleted: HashMap<u64,String>,
     /// Document edits queued, newest last: (when, what), for the report a
     /// disconnect gives of edits the server may not have applied.
-    sent: std::collections::VecDeque<(std::time::Instant,String)>,
+    sent: std::collections::VecDeque<(web_time::Instant,String)>,
     /// Edits that were not sent at all this session.
     unsynced: Vec<String>,
     collaborators: HashSet<rbx_types::Ref>,
     players: HashMap<u64,u64>,
     selections: HashMap<u64,Vec<u64>>,
     last_selection: Option<Vec<rbx_types::Ref>>,
-    last_activity: std::time::Instant,
+    last_activity: web_time::Instant,
     last_active: Option<bool>,
     /// The place's saved terrain voxels (SmoothGrid), fetched when the join
     /// brought a Terrain without any (`saved_terrain`).
@@ -872,7 +872,7 @@ impl Editor {
                     session, model: rustudio_net::model::LiveModel::new(),
                     origin: self.cloud.live_origin.take(), place, universe, document_id: None, requested_document_id: self.game.doc.id,
                     owner_user: None, own_player: None, publish_service: None, save_pending: None, sync_failed: false, backlogged: false, drafts: crate::live_drafts::DraftStore::for_place(place), script_service: None, script_configuration_sent: false, next_script_request: 1, script_commits: HashMap::new(),
-                    last_presence: std::time::Instant::now(), last_camera: None, labels: HashMap::new(), deleted: HashMap::new(), sent: Default::default(), unsynced: Vec::new(), collaborators: HashSet::new(), players: HashMap::new(), selections: HashMap::new(), last_selection: None, last_activity: std::time::Instant::now(), last_active: None, saved_terrain: None, terrain_lods: HashMap::new(),
+                    last_presence: web_time::Instant::now(), last_camera: None, labels: HashMap::new(), deleted: HashMap::new(), sent: Default::default(), unsynced: Vec::new(), collaborators: HashSet::new(), players: HashMap::new(), selections: HashMap::new(), last_selection: None, last_activity: web_time::Instant::now(), last_active: None, saved_terrain: None, terrain_lods: HashMap::new(),
                 });
                 self.info(format!("Joining live Team Create place {place}…"));
             }
@@ -958,7 +958,7 @@ impl Editor {
                     let base=live.drafts.source(id).ok_or("The server source is unavailable")?;
                     let args=rustudio_net::scripts::replace(request,&guid,base,&text);
                     live.session.send_event(service,"LiveScriptingService".into(),"SendAtomicOperation".into(),args).map_err(|e|e.to_string())?;
-                    live.script_commits.insert(request,(id,std::time::Instant::now(),text));
+                    live.script_commits.insert(request,(id,web_time::Instant::now(),text));
                     Ok(true)
                 } else {
                     live.session.send_property(id,inst.class.to_string(),"Source".into(),rustudio_net::replicator::PropValue::String(text)).map_err(|e|e.to_string())?;
@@ -1023,7 +1023,7 @@ impl Editor {
                 }
             };
             match result {
-                Ok(()) => live.sent.push_back((std::time::Instant::now(), label)),
+                Ok(()) => live.sent.push_back((web_time::Instant::now(), label)),
                 Err(error) => {
                     live.sync_failed = true;
                     self.warn(format!("Team Create: {label} was not sent: {error}"));
@@ -1112,7 +1112,7 @@ impl Editor {
                     use rustudio_net::replicator::PropValue as P;
                     let options=P::Dictionary(vec![("publish".into(),P::Bool(save.vt==VersionType::Published)),("upload_to_edge".into(),P::Bool(false))]);
                     match live.session.send_event(service,"TeamCreatePublishService".into(),"TeamCreatePlaceUploadRequest".into(),vec![options]) {
-                        Ok(()) => save.sent=Some(std::time::Instant::now()),
+                        Ok(()) => save.sent=Some(web_time::Instant::now()),
                         Err(error) => self.fail_live_save(&mut live, error.to_string()),
                     }
                 } else {
@@ -1197,7 +1197,7 @@ impl Editor {
             }
         }
         // Limit UI work per frame while retaining the stream's batch ordering.
-        let started = std::time::Instant::now();
+        let started = web_time::Instant::now();
         let budget = std::time::Duration::from_millis(if live.backlogged { 60 } else { 12 });
         live.backlogged = true;
         while started.elapsed() < budget {
@@ -1497,7 +1497,7 @@ impl Editor {
             self.game.doc.marks_for(rustudio_core::doc::Reader::TeamCreate); // Do not echo server changes.
             if !was_dirty { self.game.doc.mark_saved_at(self.game.doc.revision); }
         }
-        if ctx.input(|i| !i.raw.events.is_empty()) {live.last_activity=std::time::Instant::now();}
+        if ctx.input(|i| !i.raw.events.is_empty()) {live.last_activity=web_time::Instant::now();}
         if live.document_id.is_some() && live.last_presence.elapsed() >= std::time::Duration::from_millis(200) {
             let camera = [self.game.cam.pos.x, self.game.cam.pos.y, self.game.cam.pos.z, self.game.cam.yaw, self.game.cam.pitch];
             if live.last_camera != Some(camera) {
@@ -1516,7 +1516,7 @@ impl Editor {
                 let active=live.last_activity.elapsed()<std::time::Duration::from_secs(300);
                 if live.last_active!=Some(active) && live.session.send_property(player,"Player".into(),"CloudEditPlayerActive".into(),rustudio_net::replicator::PropValue::Bool(active)).is_ok() {live.last_active=Some(active);}
             }
-            live.last_presence = std::time::Instant::now();
+            live.last_presence = web_time::Instant::now();
         }
         if live.document_id.is_some() {
             self.collect_live_collaborators(&live);

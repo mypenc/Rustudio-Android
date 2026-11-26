@@ -450,7 +450,7 @@ fn write_pending_panic_report(body: &str) -> Option<PathBuf> {
     let mut f = std::fs::File::create(&pending).ok()?;
     f.write_all(body.as_bytes()).ok()?;
     let _ = f.sync_all();
-    let pub_name = format!("rustudio-crash-{}.txt", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0));
+    let pub_name = format!("rustudio-crash-{}.txt", web_time::SystemTime::now().duration_since(web_time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0));
     auto_export_public_crash(&pub_name, body);
     if let Ok(mut l) = LAST_REPORT.lock() {
         *l = Some(pending.clone());

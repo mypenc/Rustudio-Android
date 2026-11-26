@@ -51,7 +51,7 @@ pub struct ProjectState {
     events: Option<mpsc::Receiver<notify::Result<notify::Event>>>,
     /// Changes seen on disk, applied once quiet for the debounce.
     pending: HashSet<PathBuf>,
-    pending_since: Option<std::time::Instant>,
+    pending_since: Option<web_time::Instant>,
     /// A non-synced instance changed since load / save (Ctrl+S writes the place).
     pub place_dirty: bool,
     /// Files changed during Play: applied when Play stops.
@@ -366,7 +366,7 @@ impl ProjectState {
                         continue;
                     }
                     self.pending.insert(p);
-                    self.pending_since = Some(std::time::Instant::now());
+                    self.pending_since = Some(web_time::Instant::now());
                 }
             }
         }

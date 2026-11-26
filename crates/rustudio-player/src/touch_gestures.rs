@@ -15,7 +15,8 @@
 //! the GUI (`TouchOut::sunk`).
 
 use std::collections::VecDeque;
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use web_time::Instant;
 
 use rustudio_engine::gui::{TouchOut, TouchState};
 use rustudio_core::mech;

@@ -1044,7 +1044,7 @@ pub struct Physics {
     /// Off-centre unions' shape offsets (mesh_bvh::union_offset), kept for
     /// teleports.
     union_offsets: HashMap<rp::ColliderHandle, rp::Pose>,
-    mesh_checked: Option<std::time::Instant>,
+    mesh_checked: Option<web_time::Instant>,
     controller: KinematicCharacterController,
     /// The Humanoid's body box mover (no steps, no snapping: the floor
     /// rays and the hip spring do that, as in Studio).
@@ -1808,7 +1808,7 @@ impl Physics {
                 .mesh_checked
                 .is_none_or(|t| t.elapsed().as_secs_f32() > 0.25)
         {
-            self.mesh_checked = Some(std::time::Instant::now());
+            self.mesh_checked = Some(web_time::Instant::now());
             let done: Vec<Ref> = self
                 .mesh_pending
                 .iter()
@@ -5140,7 +5140,7 @@ mod tests {
         }
         let mut doc = Document::new_place();
         set_smooth_grid(&mut doc, rbx_dom_weak::types::BinaryString::from(b));
-        let t = std::time::Instant::now();
+        let t = web_time::Instant::now();
         let p = Physics::new(&mut doc);
         println!(
             "{} terrain triangles in {} colliders: {:?}",

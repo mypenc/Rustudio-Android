@@ -17,7 +17,7 @@ pollster = "0.4"
 # Desktop only: rfd 0.15 has no Android backend (its FileDialog traits
 # aren't implemented there). On Android the window exports into the app's
 # data folder instead (dialogs.rs).
-[target.'cfg(not(target_os = "android"))'.dependencies]
+[target.'cfg(not(any(target_os = "android", target_arch = "wasm32")))'.dependencies]
 rfd = "0.15"
 
 [dev-dependencies]

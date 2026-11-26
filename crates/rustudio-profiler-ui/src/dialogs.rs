@@ -5,9 +5,9 @@
 //! and Open is not offered (the window reads the captures it records).
 
 use std::path::PathBuf;
-#[cfg(not(target_os = "android"))]
+#[cfg(not(any(target_os = "android", target_arch = "wasm32")))]
 use std::sync::mpsc::{channel, Receiver, TryRecvError};
-#[cfg(target_os = "android")]
+#[cfg(any(target_os = "android", target_arch = "wasm32"))]
 use std::sync::mpsc::{Receiver, TryRecvError};
 
 pub enum Done {
@@ -15,7 +15,7 @@ pub enum Done {
     Save { path: PathBuf, selection: bool },
 }
 
-#[cfg_attr(target_os = "android", allow(dead_code))]
+#[cfg_attr(any(target_os = "android", target_arch = "wasm32"), allow(dead_code))]
 enum Want {
     Open,
     Save { selection: bool },
@@ -27,7 +27,7 @@ pub struct Dialogs {
 }
 
 impl Dialogs {
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any(target_os = "android", target_arch = "wasm32")))]
     pub fn open(&mut self) {
         let d = rfd::AsyncFileDialog::new()
             .set_title("Open a profiler capture")
@@ -38,12 +38,12 @@ impl Dialogs {
 
     /// Android: no file dialog (the app's own picker is the studio's,
     /// src/android/storage.rs, which this crate doesn't see).
-    #[cfg(target_os = "android")]
+    #[cfg(any(target_os = "android", target_arch = "wasm32"))]
     pub fn open(&mut self) {
         log::warn!("profiler: Open needs a file dialog; push a capture with adb and open it from the command line instead");
     }
 
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any(target_os = "android", target_arch = "wasm32")))]
     pub fn save(&mut self, chrome: bool, selection: bool) {
         let (name, filter, ext) = export_name(chrome);
         let d = rfd::AsyncFileDialog::new().set_title("Export the capture").set_file_name(name).add_filter(filter, &[ext]);
@@ -52,7 +52,7 @@ impl Dialogs {
 
     /// Android: straight into `<data>/profiles/<name>` (the external files
     /// folder: `adb pull`, or a PC over USB), as if the dialog had answered.
-    #[cfg(target_os = "android")]
+    #[cfg(any(target_os = "android", target_arch = "wasm32"))]
     pub fn save(&mut self, chrome: bool, selection: bool) {
         if self.pending.is_some() {
             return;
@@ -70,7 +70,7 @@ impl Dialogs {
         self.pending = Some((Want::Save { selection }, rx));
     }
 
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any(target_os = "android", target_arch = "wasm32")))]
     fn start(&mut self, want: Want, fut: std::pin::Pin<Box<dyn std::future::Future<Output = Option<rfd::FileHandle>> + Send>>) {
         if self.pending.is_some() {
             return;

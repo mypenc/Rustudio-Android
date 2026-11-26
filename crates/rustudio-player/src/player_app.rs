@@ -217,6 +217,7 @@ impl eframe::App for PlayerApp {
     }
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 pub fn run() -> eframe::Result<()> {
     let argv: Vec<String> = std::env::args().collect();
     let mut open: Option<PathBuf> = None;
@@ -506,6 +507,13 @@ pub fn run() -> eframe::Result<()> {
         std::process::exit(code);
     }
     result
+}
+
+/// The browser build runs the player inside the editor page; there is no
+/// standalone player window.
+#[cfg(target_arch = "wasm32")]
+pub fn run() -> eframe::Result<()> {
+    Ok(())
 }
 
 fn window_arg(argv: &[String]) -> Option<(u32, u32)> {

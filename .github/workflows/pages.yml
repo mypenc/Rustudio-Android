@@ -38,10 +38,10 @@ jobs:
           CC_wasm32_unknown_unknown: /opt/wasi-sdk/bin/clang
           CXX_wasm32_unknown_unknown: /opt/wasi-sdk/bin/clang++
           AR_wasm32_unknown_unknown: /opt/wasi-sdk/bin/llvm-ar
-          CFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot
-          CXXFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot
+          CFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot -mllvm -wasm-enable-sjlj -mexception-handling
+          CXXFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot -mllvm -wasm-enable-sjlj -mexception-handling
           CXXSTDLIB_wasm32_unknown_unknown: c++
-          RUSTFLAGS: --cfg getrandom_backend="wasm_js" -L native=/opt/wasi-sdk/share/wasi-sysroot/lib/wasm32-wasip1 -C link-arg=-lc++abi -C link-arg=-lc
+          RUSTFLAGS: --cfg getrandom_backend="wasm_js" -L native=/opt/wasi-sdk/share/wasi-sysroot/lib/wasm32-wasip1 -C link-arg=-lc++abi -C link-arg=-lc -C link-arg=-lsetjmp -C link-arg=-lwasi-emulated-process-clocks
         run: |
           mkdir -p pages-log
           cargo build --release --target wasm32-unknown-unknown --bin rustudio > pages-log/full.log 2>&1
@@ -62,10 +62,10 @@ jobs:
           CC_wasm32_unknown_unknown: /opt/wasi-sdk/bin/clang
           CXX_wasm32_unknown_unknown: /opt/wasi-sdk/bin/clang++
           AR_wasm32_unknown_unknown: /opt/wasi-sdk/bin/llvm-ar
-          CFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot
-          CXXFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot
+          CFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot -mllvm -wasm-enable-sjlj -mexception-handling
+          CXXFLAGS_wasm32_unknown_unknown: --target=wasm32-wasip1 --sysroot=/opt/wasi-sdk/share/wasi-sysroot -mllvm -wasm-enable-sjlj -mexception-handling
           CXXSTDLIB_wasm32_unknown_unknown: c++
-          RUSTFLAGS: --cfg getrandom_backend="wasm_js" -L native=/opt/wasi-sdk/share/wasi-sysroot/lib/wasm32-wasip1 -C link-arg=-lc++abi -C link-arg=-lc
+          RUSTFLAGS: --cfg getrandom_backend="wasm_js" -L native=/opt/wasi-sdk/share/wasi-sysroot/lib/wasm32-wasip1 -C link-arg=-lc++abi -C link-arg=-lc -C link-arg=-lsetjmp -C link-arg=-lwasi-emulated-process-clocks
         run: trunk build --release --public-url /Rustudio-Android/ --dist dist
       - name: Publish to gh-pages
         uses: peaceiris/actions-gh-pages@v4

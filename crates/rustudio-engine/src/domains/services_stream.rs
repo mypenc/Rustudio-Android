@@ -231,7 +231,7 @@ pub fn start(req: Request, repaint: Option<egui::Context>) -> u64 {
     let cancel = Arc::new(Cancel::default());
     table().lock().unwrap().insert(id, Entry { events: VecDeque::new(), repaint, tx, cancel: cancel.clone(), done: false, closing: false });
     workers().lock().unwrap().insert(id, req.url.clone());
-    let spawned = std::thread::Builder::new().name("rustudio-webstream".into()).spawn(move || {
+    let spawned = rt_thread::Builder::new().name("rustudio-webstream".into()).spawn(move || {
         let _guard = WorkerGuard(id);
         match req.kind {
             Kind::WebSocket => ws_run(id, req, rx, &cancel),
@@ -718,7 +718,7 @@ mod tests {
             if until(&all) {
                 break;
             }
-            std::thread::sleep(Duration::from_millis(10));
+            rt_thread::sleep(Duration::from_millis(10));
         }
         all
     }
@@ -729,7 +729,7 @@ mod tests {
         let port = listener.local_addr().unwrap().port();
         let (send_message, ready) = mpsc::channel();
         let (finish, done) = mpsc::channel();
-        let server = std::thread::spawn(move || {
+        let server = rt_thread::spawn(move || {
             let (socket, _) = listener.accept().unwrap();
             let mut ws = tungstenite::accept(socket).unwrap();
             ready.recv_timeout(Duration::from_secs(5)).unwrap();
@@ -765,7 +765,7 @@ mod tests {
     fn websocket_echo_close_and_refused() {
         let l = TcpListener::bind("127.0.0.1:0").unwrap();
         let port = l.local_addr().unwrap().port();
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             let (s, _) = l.accept().unwrap();
             let mut ws = tungstenite::accept(s).unwrap();
             ws.send(tungstenite::Message::binary(vec![0u8, 1, 255])).unwrap();
@@ -801,7 +801,7 @@ mod tests {
     fn raw_stream_chunks_then_closed() {
         let l = TcpListener::bind("127.0.0.1:0").unwrap();
         let port = l.local_addr().unwrap().port();
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             let (mut s, _) = l.accept().unwrap();
             let mut b = [0u8; 2048];
             let _ = s.read(&mut b);
@@ -809,7 +809,7 @@ mod tests {
             for part in ["abc", "def"] {
                 write!(s, "{:x}\r\n{part}\r\n", part.len()).unwrap();
                 s.flush().unwrap();
-                std::thread::sleep(Duration::from_millis(100));
+                rt_thread::sleep(Duration::from_millis(100));
             }
             s.write_all(b"0\r\n\r\n").unwrap();
         });
@@ -830,7 +830,7 @@ mod tests {
             if f() {
                 return true;
             }
-            std::thread::sleep(Duration::from_millis(10));
+            rt_thread::sleep(Duration::from_millis(10));
         }
         f()
     }
@@ -850,7 +850,7 @@ mod tests {
         let port = l.local_addr().unwrap().port();
         let (tx, rx) = mpsc::channel();
         let (atx, arx) = mpsc::channel();
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             let (mut s, _) = l.accept().unwrap();
             let _ = atx.send(());
             let _ = s.set_read_timeout(Some(Duration::from_secs(60)));
@@ -901,7 +901,7 @@ mod tests {
             let id = start(req(kind, url.clone()));
             let ev = wait(id, |e| e.iter().any(|e| matches!(e, Event::Message(_))));
             assert!(matches!(&ev[0], Event::Opened(200, _)), "{kind:?} {ev:?}");
-            std::thread::sleep(Duration::from_millis(200));
+            rt_thread::sleep(Duration::from_millis(200));
             assert_eq!(workers_for(&url), 1, "{kind:?}: the worker sits in its read");
             let t = Instant::now();
             close(id, kind);
@@ -944,7 +944,7 @@ mod tests {
                 // Connected, now inside the handshake / waiting for the
                 // response (a cancel before the TCP connect means none is made).
                 accepted.recv_timeout(Duration::from_secs(5)).expect("never connected");
-                std::thread::sleep(Duration::from_millis(200));
+                rt_thread::sleep(Duration::from_millis(200));
                 assert!(poll(id).is_empty(), "{kind:?} {answer}: still connecting");
                 assert_eq!(workers_for(&url), 1);
                 if use_forget {
@@ -955,7 +955,7 @@ mod tests {
                 }
                 assert!(ended.recv_timeout(Duration::from_secs(2)).is_ok(), "{kind:?} {answer} forget={use_forget}: server never saw it go");
                 assert!(within(2.0, || workers_for(&url) == 0), "{kind:?} {answer} forget={use_forget}: worker still running");
-                std::thread::sleep(Duration::from_millis(50));
+                rt_thread::sleep(Duration::from_millis(50));
                 assert!(poll(id).is_empty(), "nothing after Closed");
                 forget(id);
             }
@@ -968,7 +968,7 @@ mod tests {
         let l = TcpListener::bind("127.0.0.1:0").unwrap();
         let port = l.local_addr().unwrap().port();
         let (tx, rx) = mpsc::channel();
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             let (s, _) = l.accept().unwrap();
             let _ = s.set_read_timeout(Some(Duration::from_secs(60)));
             let mut ws = tungstenite::accept(s).unwrap();
@@ -988,7 +988,7 @@ mod tests {
                 }
             }
             // Keep the socket (no EOF for the client) for the test's length.
-            std::thread::sleep(Duration::from_secs(20));
+            rt_thread::sleep(Duration::from_secs(20));
             drop(ws);
         });
         (port, rx)
@@ -1014,7 +1014,7 @@ mod tests {
         assert_eq!(ev, vec![Event::Error(0, "HttpError: ConnectionClosed".into())]);
         assert!(within(2.0, || workers_for(&url) == 0), "worker still running");
         assert!(!send(id, b"three".to_vec()), "Send after the failure is refused");
-        std::thread::sleep(Duration::from_millis(100));
+        rt_thread::sleep(Duration::from_millis(100));
         assert!(poll(id).is_empty(), "no Closed after Error");
         // The server never got "two" (or anything after it).
         let rest: Vec<String> = got.try_iter().collect();
@@ -1030,7 +1030,7 @@ mod tests {
         let url = format!("ws://127.0.0.1:{port}/forget");
         let id = start(req(Kind::WebSocket, url.clone()));
         wait(id, |e| !e.is_empty());
-        std::thread::sleep(Duration::from_millis(200));
+        rt_thread::sleep(Duration::from_millis(200));
         assert_eq!(workers_for(&url), 1);
         forget(id);
         assert_eq!(got.recv_timeout(Duration::from_secs(2)).unwrap(), "close frame");

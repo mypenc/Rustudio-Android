@@ -1,0 +1,9 @@
+[package]
+name = "rt-thread"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "std::thread on native targets; on wasm32 (no threads) spawned closures run inline"
+
+[dependencies]
+web-time = "1"

@@ -270,7 +270,7 @@ impl QuickLogin {
                 Err(e) if failures + 1 < PATIENCE => {
                     failures += 1;
                     eprintln!("[Info] Roblox: browser sign-in: check {failures} of {PATIENCE} failed ({e}); trying again");
-                    std::thread::sleep(Duration::from_secs(3));
+                    rt_thread::sleep(Duration::from_secs(3));
                     continue;
                 }
                 Err(e) => return Err(e),
@@ -291,7 +291,7 @@ impl QuickLogin {
                             Err(e) if tries < 2 && !e.0.starts_with("Roblox") => {
                                 tries += 1;
                                 eprintln!("[Info] Roblox: browser sign-in: the token exchange failed ({e}); trying again");
-                                std::thread::sleep(Duration::from_secs(3));
+                                rt_thread::sleep(Duration::from_secs(3));
                             }
                             Err(e) => return Err(e),
                         }
@@ -305,7 +305,7 @@ impl QuickLogin {
                 if stop() {
                     return Ok(None);
                 }
-                std::thread::sleep(Duration::from_millis(250));
+                rt_thread::sleep(Duration::from_millis(250));
             }
         }
     }

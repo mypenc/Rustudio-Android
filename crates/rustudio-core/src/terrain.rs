@@ -1630,14 +1630,14 @@ pub fn chunk_triangles(v: &Voxels, key: [i32; 3], cube: &dyn Fn(u8) -> bool) -> 
 /// took 8 s on one low-end laptop core). Each chunk's mesh depends only on the
 /// voxels, so the meshes are the same as one at a time.
 pub fn chunk_triangles_many(v: &Voxels, keys: &[[i32; 3]], cube: &(dyn Fn(u8) -> bool + Sync)) -> Vec<Vec<TerrainVertex>> {
-    let threads = std::thread::available_parallelism().map_or(1, |n| n.get()).clamp(1, 8).min(keys.len());
+    let threads = rt_thread::available_parallelism().map_or(1, |n| n.get()).clamp(1, 8).min(keys.len());
     if threads <= 1 {
         return keys.iter().map(|k| chunk_triangles(v, *k, cube)).collect();
     }
     let next = std::sync::atomic::AtomicUsize::new(0);
     let mut out: Vec<Vec<TerrainVertex>> = Vec::new();
     out.resize_with(keys.len(), Vec::new);
-    std::thread::scope(|scope| {
+    rt_thread::scope(|scope| {
         let handles: Vec<_> = (0..threads)
             .map(|_| {
                 let next = &next;

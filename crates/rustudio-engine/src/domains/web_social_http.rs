@@ -240,7 +240,7 @@ pub(super) fn background(
     let mut jobs=lua.app_data_mut::<Jobs>().ok_or_else(||rt_err("Web requests unavailable"))?;
     jobs.next+=1;let id=jobs.next;jobs.pending.insert(id,rx);
     let scope=jobs.scope.clone();drop(jobs);
-    std::thread::spawn(move || {
+    rt_thread::spawn(move || {
         let result=login_session().and_then(|session|work(session,scope)).map(|value|value.to_string());
         let _=tx.send(result);
     });

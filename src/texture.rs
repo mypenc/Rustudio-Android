@@ -597,17 +597,17 @@ pub fn decode_async(bytes: std::sync::Arc<Vec<u8>>, done: std::sync::mpsc::Sende
     let pool = POOL.get_or_init(|| {
         let (tx, rx) = mpsc::channel::<Job>();
         let rx = std::sync::Arc::new(Mutex::new(rx));
-        let n = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(4).clamp(1, 8) / 2;
+        let n = rt_thread::available_parallelism().map(|n| n.get()).unwrap_or(4).clamp(1, 8) / 2;
         for i in 0..n.max(1) {
             let rx = rx.clone();
-            let _ = std::thread::Builder::new().name(format!("tex-decode-{i}")).spawn(move || loop {
+            let _ = rt_thread::Builder::new().name(format!("tex-decode-{i}")).spawn(move || loop {
                 let job = rx.lock().ok().and_then(|r| r.recv().ok());
                 let Some((bytes, done, id)) = job else { return };
                 // (at most 15 s: images nothing asks for again, their parts
                 // gone, must not stop the loading for good)
                 let t0 = web_time::Instant::now();
                 while WAITING_BYTES.load(std::sync::atomic::Ordering::Relaxed) > WAITING_LIMIT && t0.elapsed().as_secs() < 15 {
-                    std::thread::sleep(std::time::Duration::from_millis(4));
+                    rt_thread::sleep(std::time::Duration::from_millis(4));
                 }
                 let r = decode(&bytes).map(|img| {
                     let mips = crate::render::mip_chain_for(&img);

@@ -795,7 +795,7 @@ impl Editor {
             .collect();
         let filename = format!("{safe_name}.rbxm");
 
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             let api = rustudio_account::cloud::CloudApi::new(
                 session,
                 rustudio_account::cloud::Endpoints::default(),

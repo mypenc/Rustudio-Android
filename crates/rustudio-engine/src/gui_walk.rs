@@ -197,7 +197,7 @@ impl TextFitCache {
                 let (options, definitions) = ctx.fonts(|f| (f.options().clone(), f.definitions().clone()));
                 let (tx, rx) = std::sync::mpsc::channel();
                 let repaint = ctx.clone();
-                let spawned = std::thread::Builder::new().name("gui-probe-fonts".into()).spawn(move || {
+                let spawned = rt_thread::Builder::new().name("gui-probe-fonts".into()).spawn(move || {
                     let _ = tx.send(make(options, definitions));
                     repaint.request_repaint();
                 });

@@ -1408,7 +1408,7 @@ pub fn account_identity(uid: i64, max: std::time::Duration) -> Option<Identity> 
                 })
             }
             web::Poll::Failed(_) => return None,
-            web::Poll::Pending if t0.elapsed() < max => std::thread::sleep(std::time::Duration::from_millis(20)),
+            web::Poll::Pending if t0.elapsed() < max => rt_thread::sleep(std::time::Duration::from_millis(20)),
             web::Poll::Pending => return None,
         }
     }

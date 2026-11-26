@@ -31,7 +31,7 @@ fn run_until(h: &mut PluginHost, doc: &mut Document, out: &mut Vec<String>, unti
         if until(out) {
             return;
         }
-        std::thread::sleep(Duration::from_millis(10));
+        rt_thread::sleep(Duration::from_millis(10));
     }
 }
 
@@ -41,7 +41,7 @@ fn within(secs: f32, f: impl Fn() -> bool) -> bool {
         if f() {
             return true;
         }
-        std::thread::sleep(Duration::from_millis(10));
+        rt_thread::sleep(Duration::from_millis(10));
     }
     f()
 }
@@ -53,7 +53,7 @@ fn idle_http(first: &'static [u8]) -> (u16, Receiver<Instant>) {
     let l = TcpListener::bind("127.0.0.1:0").unwrap();
     let port = l.local_addr().unwrap().port();
     let (tx, rx) = mpsc::channel();
-    std::thread::spawn(move || {
+    rt_thread::spawn(move || {
         let (mut s, _) = l.accept().unwrap();
         let _ = s.set_read_timeout(Some(Duration::from_secs(60)));
         let mut b = [0u8; 4096];
@@ -76,7 +76,7 @@ fn idle_ws() -> (u16, Receiver<String>) {
     let l = TcpListener::bind("127.0.0.1:0").unwrap();
     let port = l.local_addr().unwrap().port();
     let (tx, rx) = mpsc::channel();
-    std::thread::spawn(move || {
+    rt_thread::spawn(move || {
         let (s, _) = l.accept().unwrap();
         let _ = s.set_read_timeout(Some(Duration::from_secs(60)));
         let mut ws = tungstenite::accept(s).unwrap();
@@ -96,7 +96,7 @@ fn idle_ws() -> (u16, Receiver<String>) {
             }
         }
         // Keep the socket (no EOF for the client) for the test's length.
-        std::thread::sleep(Duration::from_secs(20));
+        rt_thread::sleep(Duration::from_secs(20));
         drop(ws);
     });
     (port, rx)
@@ -173,7 +173,7 @@ fn unload_ends_idle_live_connections() {
     let mut out = Vec::new();
     run_until(&mut h, &mut doc, &mut out, opened_all);
     assert!(opened_all(&out), "{out:#?}");
-    std::thread::sleep(Duration::from_millis(200));
+    rt_thread::sleep(Duration::from_millis(200));
     assert_eq!(three.workers(), 3, "three idle workers blocked on their sockets");
     h.unload(id);
     for _ in 0..3 {
@@ -194,7 +194,7 @@ fn vm_drop_ends_idle_live_connections() {
     let mut out = Vec::new();
     run_until(&mut h, &mut doc, &mut out, opened_all);
     assert!(opened_all(&out), "{out:#?}");
-    std::thread::sleep(Duration::from_millis(200));
+    rt_thread::sleep(Duration::from_millis(200));
     assert_eq!(three.workers(), 3);
     drop(h);
     three.assert_all_ended("VM dropped");

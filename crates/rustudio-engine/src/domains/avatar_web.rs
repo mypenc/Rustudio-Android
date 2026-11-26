@@ -58,7 +58,7 @@ pub fn start(method: &str, url: String, body: Option<String>) -> u64 {
         id
     };
     let post = method.eq_ignore_ascii_case("POST");
-    std::thread::spawn(move || {
+    rt_thread::spawn(move || {
         let r: Reply = match session() {
             None => Err(http_error(401)),
             Some(s) => {
@@ -106,7 +106,7 @@ pub fn start_asset(id: u64, format: Option<String>) -> u64 {
         g.1.insert(j, None);
         j
     };
-    std::thread::spawn(move || {
+    rt_thread::spawn(move || {
         let cache = rustudio_core::assets::cache_dir().join(format!(
             "assets/{id}_{}.bin",
             format.as_deref().unwrap_or("vlatest")

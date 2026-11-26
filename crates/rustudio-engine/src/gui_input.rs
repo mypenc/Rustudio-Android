@@ -3337,7 +3337,7 @@ impl SurfaceView {
         });
         let verts: Vec<usize> = jobs.iter().map(|j| j.items.iter().map(|(_, m)| m.vertices.len()).sum()).collect();
         let total: usize = verts.iter().sum();
-        let threads = std::thread::available_parallelism().map_or(1, |n| n.get()).saturating_sub(1).clamp(1, 4);
+        let threads = rt_thread::available_parallelism().map_or(1, |n| n.get()).saturating_sub(1).clamp(1, 4);
         let parts = (total / per_thread).clamp(1, threads);
         if parts == 1 || std::env::var_os("RUSTUDIO_GUI_ONE_THREAD").is_some() {
             return jobs.iter().map(|j| self.project(j)).collect();
@@ -3354,7 +3354,7 @@ impl SurfaceView {
         }
         cuts.push(jobs.len());
         let runs: Vec<&[SurfaceJob]> = cuts.windows(2).map(|w| &jobs[w[0]..w[1]]).collect();
-        std::thread::scope(|scope| {
+        rt_thread::scope(|scope| {
             let handles: Vec<_> = runs[1..]
                 .iter()
                 .map(|run| scope.spawn(move || run.iter().map(|j| self.project(j)).collect::<Vec<_>>()))

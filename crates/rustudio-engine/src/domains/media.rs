@@ -434,7 +434,7 @@ fn decode_jobs() -> &'static std::sync::mpsc::Sender<DecodeJob> {
         // concurrency so a burst cannot spawn a worker per Sound.
         for _ in 0..2 {
             let rx = rx.clone();
-            std::thread::spawn(move || loop {
+            rt_thread::spawn(move || loop {
                 let job = { rx.lock().unwrap().recv() };
                 let Ok(job) = job else { break };
                 let decoded = match pcm_cached(&job.id) {

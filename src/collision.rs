@@ -56,13 +56,13 @@ const CACHE_VERSION: &str = "hacd-c0.01-v1";
 fn store() -> &'static Store {
     static S: OnceLock<Store> = OnceLock::new();
     S.get_or_init(|| {
-        let workers = std::thread::available_parallelism()
+        let workers = rt_thread::available_parallelism()
             .map(|n| n.get())
             .unwrap_or(4)
             .saturating_sub(2)
             .clamp(1, 8);
         for _ in 0..workers {
-            std::thread::Builder::new()
+            rt_thread::Builder::new()
                 .name("collision".into())
                 .spawn(|| loop {
                     let job = {
@@ -332,7 +332,7 @@ pub fn wait_ready(id: &str, fidelity: u32, timeout: std::time::Duration) -> Look
     loop {
         match hulls(id, fidelity) {
             Lookup::Pending if start.elapsed() < timeout => {
-                std::thread::sleep(std::time::Duration::from_millis(20))
+                rt_thread::sleep(std::time::Duration::from_millis(20))
             }
             // The mesh's bytes are not here yet (still downloading): fetch them now rather
             // than taking the box and asking again 500 ms of wall clock later — that made a

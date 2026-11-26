@@ -178,7 +178,7 @@ impl Pool {
                 let tx = self.tx.clone();
                 let http = self.http.clone();
                 let busy = self.busy.clone();
-                let _ = std::thread::Builder::new().name(format!("toolbox-{i}")).spawn(move || loop {
+                let _ = rt_thread::Builder::new().name(format!("toolbox-{i}")).spawn(move || loop {
                     let task = {
                         let (lock, cv) = &*q;
                         let Ok(mut g) = lock.lock() else { return };
@@ -1022,7 +1022,7 @@ mod tests {
             if !tb.lists[r].loading {
                 return;
             }
-            std::thread::sleep(std::time::Duration::from_millis(5));
+            rt_thread::sleep(std::time::Duration::from_millis(5));
         }
         panic!("no reply");
     }
@@ -1153,7 +1153,7 @@ mod tests {
                 if tb.suggestions_for("tre").len() >= n {
                     return;
                 }
-                std::thread::sleep(std::time::Duration::from_millis(5));
+                rt_thread::sleep(std::time::Duration::from_millis(5));
             }
         };
         poll_until(&mut tb, 1);

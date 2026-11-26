@@ -57,7 +57,7 @@ pub fn run(
         }
         let deadline = start + Duration::from_secs_f64(frames as f64 / 48000.);
         if let Some(wait) = deadline.checked_duration_since(Instant::now()) {
-            std::thread::sleep(wait);
+            rt_thread::sleep(wait);
         }
     }
     header(&mut f, frames)

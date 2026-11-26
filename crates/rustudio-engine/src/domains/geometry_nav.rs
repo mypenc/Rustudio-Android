@@ -1464,7 +1464,7 @@ fn path_pool(task: PathTask) {
         let mut started = 0;
         for i in 0..PATH_WORKERS {
             let rx = rx.clone();
-            let ok = std::thread::Builder::new()
+            let ok = rt_thread::Builder::new()
                 .name(format!("rustudio-path-{i}"))
                 .spawn(move || loop {
                     let next = rx.lock().ok().and_then(|r| r.recv().ok());

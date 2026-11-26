@@ -193,7 +193,7 @@ impl LiveSession {
             return Err(NetError::Other("Team Create needs sockets, which the browser build does not have".into()));
         }
         #[cfg(not(target_arch = "wasm32"))]
-        std::thread::Builder::new()
+        rt_thread::Builder::new()
             .name("rustudio-team-create".into())
             .spawn(move || {
                 log::info!("Team Create join started (place={place}, universe={universe})");

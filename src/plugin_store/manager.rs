@@ -241,7 +241,7 @@ impl PluginManager {
 
     fn spawn(&self, f: impl FnOnce(Sender<Msg>) + Send + 'static) {
         let tx = self.tx.clone();
-        std::thread::Builder::new().name("plugins".into()).spawn(move || f(tx)).ok();
+        rt_thread::Builder::new().name("plugins".into()).spawn(move || f(tx)).ok();
     }
 
     /// Reads the account's plugins from Roblox (background).
@@ -610,7 +610,7 @@ mod tests {
         let held = client.clone();
         let (ready, locked) = channel();
         let (done, release) = channel();
-        let worker = std::thread::spawn(move || {
+        let worker = rt_thread::spawn(move || {
             let _guard = held.lock().unwrap();
             ready.send(()).unwrap();
             let _ = release.recv_timeout(std::time::Duration::from_secs(3));

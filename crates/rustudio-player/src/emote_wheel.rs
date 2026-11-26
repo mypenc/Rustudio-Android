@@ -81,7 +81,7 @@ impl Game {
         if !want.is_empty() {
             w.asked.extend(want.iter().copied());
             let tx = w.tx.clone();
-            std::thread::spawn(move || {
+            rt_thread::spawn(move || {
                 let got = rustudio_account::characters::thumbnails(rustudio_account::characters::Thumb::Asset, &want)
                     .unwrap_or_default();
                 for (id, bytes) in got {

@@ -274,7 +274,7 @@ impl CrashDialogState {
             let (tx, rx) = mpsc::channel();
             let repaint_ctx = ctx.clone();
 
-            let spawned = std::thread::Builder::new()
+            let spawned = rt_thread::Builder::new()
                 .name("crash-report-export".into())
                 .spawn(move || {
                     let result = match pollster::block_on(dialog.save_file()) {

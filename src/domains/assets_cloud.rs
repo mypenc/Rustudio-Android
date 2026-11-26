@@ -296,7 +296,7 @@ pub fn install(lua: &Lua) -> mlua::Result<()> {
                     LEnumItem::from_name("AssetFetchStatus", "Loading").unwrap(),
                 )?);
                 world(lua)?.fire(r, &format!("AssetFetchStatus:{id}"), vec![v]);
-                std::thread::spawn(move || {
+                rt_thread::spawn(move || {
                     let ok = crate::assets::script_content_blocking(&id).is_ok();
                     *result.lock().unwrap() = Some(ok);
                 });
@@ -564,9 +564,9 @@ __ac_test_done()
             rt.step(1.0 / 60.0);
             frames += 1;
             if frames >= 120 {
-                std::thread::sleep(std::time::Duration::from_millis(2));
+                rt_thread::sleep(std::time::Duration::from_millis(2));
             } else {
-                std::thread::yield_now();
+                rt_thread::yield_now();
             }
         }
         let output = rt.leave().output;

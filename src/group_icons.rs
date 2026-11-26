@@ -47,7 +47,7 @@ pub fn request(ctx: &egui::Context, thumbnails: &str, ids: impl IntoIterator<Ite
     }
     let ctx = ctx.clone();
     let host = thumbnails.trim_end_matches('/').to_string();
-    std::thread::spawn(move || load(&ctx, &host, &dir(), &ids));
+    rt_thread::spawn(move || load(&ctx, &host, &dir(), &ids));
 }
 
 fn load(ctx: &egui::Context, host: &str, dir: &Path, ids: &[u64]) {
@@ -81,7 +81,7 @@ fn load(ctx: &egui::Context, host: &str, dir: &Path, ids: &[u64]) {
     }
     // The PNGs from the CDN, a few at a time.
     let todo = Mutex::new(todo.into_iter());
-    std::thread::scope(|sc| {
+    rt_thread::scope(|sc| {
         for _ in 0..DOWNLOADS {
             sc.spawn(|| loop {
                 let Some((id, url)) = todo.lock().unwrap().next() else { break };

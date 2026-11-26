@@ -802,7 +802,7 @@ impl Game {
 mod tests {
     use super::*;
     use rbx_dom_weak::{ustr, InstanceBuilder};
-    use std::thread::sleep;
+    use rt_thread::sleep;
     use std::time::Duration;
 
     fn wav_bytes(secs: f64, rate: u32) -> Vec<u8> {

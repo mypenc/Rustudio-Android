@@ -1272,7 +1272,7 @@ fn block_on<F: std::future::Future>(fut: F) -> F::Output {
     loop {
         match fut.as_mut().poll(&mut cx) {
             std::task::Poll::Ready(v) => return v,
-            std::task::Poll::Pending => std::thread::yield_now(),
+            std::task::Poll::Pending => rt_thread::yield_now(),
         }
     }
 }

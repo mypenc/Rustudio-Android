@@ -184,7 +184,7 @@ fn add_total(kind: &str, name: &str, ms: f64) {
             t.0 = Some(Instant::now());
             let mut v: Vec<_> = t.1.iter().map(|(k, (ms, n))| (k.clone(), *ms, *n)).collect();
             v.sort_by(|a, b| b.1.total_cmp(&a.1));
-            let th = std::thread::current().name().unwrap_or("?").to_string();
+            let th = rt_thread::current().name().unwrap_or("?").to_string();
             for (k, ms, n) in v.into_iter().take(15) {
                 eprintln!("APITOTAL [{th}] {ms:10.1} ms {n:9}x {k}");
             }

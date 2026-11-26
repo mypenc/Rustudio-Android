@@ -133,7 +133,7 @@ pub fn set_enabled(accelerometer: bool, gyroscope: bool) {
     }
     if (accelerometer || gyroscope) && THREAD.get().is_none() {
         THREAD.get_or_init(|| {
-            if let Err(e) = std::thread::Builder::new().name("sensors".into()).spawn(run) {
+            if let Err(e) = rt_thread::Builder::new().name("sensors".into()).spawn(run) {
                 log::error!("sensors thread: {e}");
             }
         });
@@ -211,7 +211,7 @@ fn run() {
             log::info!("sensors: accelerometer {on_accel}, gyroscope {on_gyro}");
         }
         if !on_accel && !on_gyro {
-            std::thread::sleep(Duration::from_millis(250));
+            rt_thread::sleep(Duration::from_millis(250));
             continue;
         }
         // SAFETY: a poll on this thread's looper; the out-pointers may be

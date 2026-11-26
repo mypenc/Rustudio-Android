@@ -111,7 +111,7 @@ impl Thumbs {
             let tx = self.tx.clone();
             let http = self.http.clone();
             let dir = self.dir.clone();
-            let _ = std::thread::Builder::new().name(format!("toolbox-thumbs-{i}")).spawn(move || worker(q, tx, http, dir));
+            let _ = rt_thread::Builder::new().name(format!("toolbox-thumbs-{i}")).spawn(move || worker(q, tx, http, dir));
         }
     }
 

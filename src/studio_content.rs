@@ -85,7 +85,7 @@ pub fn spawn_background_install_if_missing() {
     {
         return;
     }
-    let _ = std::thread::Builder::new().name("studio-content".into()).spawn(|| {
+    let _ = rt_thread::Builder::new().name("studio-content".into()).spawn(|| {
         post(false, "No Roblox Studio install found: downloading Studio's built-in content (default character, player scripts, fonts, textures, sounds; about 60 MB) from Roblox's CDN…".into());
         // The packages as they come, so a slow connection is seen to get
         // somewhere (the retired textures are a hundred small fetches: one
@@ -109,7 +109,7 @@ pub fn spawn_background_install_if_missing() {
                 }
                 Err(e) if attempt < TRIES => {
                     post(false, format!("Studio content: {e}; trying again in 20 s"));
-                    std::thread::sleep(std::time::Duration::from_secs(20));
+                    rt_thread::sleep(std::time::Duration::from_secs(20));
                 }
                 Err(e) => post(true, format!(
                     "Couldn't download Studio's built-in content: {e}. It continues where it stopped at the next start; `rustudio --install-studio-content` retries now, or point RUSTUDIO_STUDIO_DIR at a Studio install."
@@ -175,7 +175,7 @@ pub fn fetch_classic_oof_once() {
     {
         return;
     }
-    let _ = std::thread::Builder::new().name("classic-oof".into()).spawn(|| {
+    let _ = rt_thread::Builder::new().name("classic-oof".into()).spawn(|| {
         let dest = classic_oof();
         let got = fetch_one(&agent(), &format!("{CDN}/{CLASSIC_OOF_PKG}"), "uuhhh.mp3").and_then(|data| {
             let dir = dest.parent().ok_or("bad data dir")?;

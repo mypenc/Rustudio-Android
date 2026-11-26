@@ -72,10 +72,10 @@ impl Control {
         let _ = std::fs::remove_file(path);
         let listener = UnixListener::bind(path)?;
         let (tx, rx) = channel::<(String, Sender<String>)>();
-        std::thread::Builder::new().name("control".into()).spawn(move || {
+        rt_thread::Builder::new().name("control".into()).spawn(move || {
             for stream in listener.incoming().flatten() {
                 let tx = tx.clone();
-                std::thread::spawn(move || {
+                rt_thread::spawn(move || {
                     let Ok(mut out) = stream.try_clone() else { return };
                     for line in BufReader::new(stream).lines().map_while(Result::ok) {
                         let (reply_tx, reply_rx) = channel();

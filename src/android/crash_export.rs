@@ -347,7 +347,7 @@ fn export_desktop(file_name: String, content: String) -> ExportStatus {
         .set_file_name(&file_name)
         .add_filter("Text files", &["txt"]);
 
-    let spawned = std::thread::Builder::new()
+    let spawned = rt_thread::Builder::new()
         .name("crash-export".into())
         .spawn(move || {
             let handle = pollster::block_on(dialog.save_file());

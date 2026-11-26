@@ -73,7 +73,7 @@ pub(crate) fn wait_for_operation<E>(
             }
             poll_url = Some(format!("{operations_url}/{id}"));
         }
-        std::thread::sleep(Duration::from_secs(1));
+        rt_thread::sleep(Duration::from_secs(1));
         operation = parse(&fetch(poll_url.as_deref().unwrap())?)?;
     }
     Err(error(
@@ -186,7 +186,7 @@ pub(crate) fn multipart_upload<E>(
                         break;
                     }
                 }
-                _ => std::thread::sleep(Duration::from_secs(1)),
+                _ => rt_thread::sleep(Duration::from_secs(1)),
             }
         }
         let etag = sent.ok_or_else(|| error(format!("Uploading chunk {chunk} to storage failed")))?;

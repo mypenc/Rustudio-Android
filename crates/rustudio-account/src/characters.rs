@@ -186,7 +186,7 @@ pub fn thumbnails(kind: Thumb, ids: &[u64]) -> Result<Vec<(u64, Vec<u8>)>> {
             .collect();
         // The images in parallel (8 at a time).
         let got = std::sync::Mutex::new(Vec::new());
-        std::thread::scope(|sc| {
+        rt_thread::scope(|sc| {
             for part in urls.chunks(urls.len().div_ceil(8).max(1)) {
                 let (agent, got) = (&agent, &got);
                 sc.spawn(move || {

@@ -2814,7 +2814,7 @@ impl ViewportPipelines {
             None => {
                 map.insert(mask, None);
                 let (device, src, cache) = (device.clone(), self.plain_src.clone(), self.plain_spec.clone());
-                std::thread::Builder::new()
+                rt_thread::Builder::new()
                     .name("rustudio-pipeline".into())
                     .spawn(move || {
                         let src = (std::sync::Arc::new(spec_source(&src.0, false, false, Some(mask))), src.1, src.2);
@@ -3864,7 +3864,7 @@ impl Renderer {
             let (device, queue) = (device.clone(), queue.clone());
             let (g, t, gl, tr, reduced) = (r.globals_layout.clone(), r.tex_layout.clone(), r.glass_layout.clone(), r.terrain_layout.clone(), r.reduced);
             let (tx, rx) = std::sync::mpsc::channel();
-            let spawned = std::thread::Builder::new().name("rustudio-pipelines".into()).spawn(move || {
+            let spawned = rt_thread::Builder::new().name("rustudio-pipelines".into()).spawn(move || {
                 let _ = tx.send(ViewportPipelines::new(&device, &queue, &g, &t, &gl, &tr, 1, reduced));
             });
             if spawned.is_ok() {
@@ -8383,7 +8383,7 @@ fn prefilter_env_mips(base_raw: &[u8], base_size: u32, atmos: Option<&Globals>) 
         out[0].1[i * 4..i * 4 + 4].copy_from_slice(&encode_px(*lin));
     }
     // Mips 1..levels: GGX-prefiltered in parallel across the 6 faces.
-    let face_mips: Vec<Vec<Vec<u8>>> = std::thread::scope(|scope| {
+    let face_mips: Vec<Vec<Vec<u8>>> = rt_thread::scope(|scope| {
         let handles: Vec<_> = (0..6)
             .map(|f| {
                 let fetch = &fetch;
@@ -8520,7 +8520,7 @@ fn ggx_prefilter_cube(size: u32, data: &mut [u8]) {
     let base_w = src[0].0 as f32;
     let texel_sa = 4.0 * std::f32::consts::PI / (6.0 * base_w * base_w);
     // One thread per face: each writes only its own face's levels.
-    std::thread::scope(|scope| {
+    rt_thread::scope(|scope| {
         for (f, face) in data.chunks_mut(face_len).enumerate() {
             let fetch = &fetch;
             let to_srgb = &to_srgb;

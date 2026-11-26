@@ -111,7 +111,7 @@ pub fn install_backend(lua:&Lua,local:bool)->mlua::Result<()> {
             let id=|n|match d.prop(root,n){Some(Variant::Int64(v))=>v.max(0)as u64,Some(Variant::Int32(v))=>v.max(0)as u64,_=>0};
             let context=rustudio_account::data::Context{place:id("PlaceId"),universe:id("GameId"),players:0};drop(w);
             let(tx,commands)=mpsc::channel::<(u64,String,serde_json::Value)>();let(events,rx)=mpsc::channel();
-            std::thread::spawn(move||{
+            rt_thread::spawn(move||{
                 let run=||->Result<(),String>{
                     let session=super::store::session()?;
                     let mut socket=rustudio_account::data::messaging::Connection::connect(&session,context).map_err(|e|e.to_string())?;

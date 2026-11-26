@@ -1852,7 +1852,7 @@ impl WorldGuiPass {
                             let (device, queue) = (device.clone(), rs.queue.clone());
                             let (pipeline, bgl, sampler) = (this.mip_pipeline.clone(), this.mip_bgl.clone(), this.mip_sampler.clone());
                             let source = tex.clone();
-                            let made = std::thread::Builder::new().name("gui-mips".into()).spawn(move || {
+                            let made = rt_thread::Builder::new().name("gui-mips".into()).spawn(move || {
                                 let size = source.size();
                                 let key = mip_copy_key(size.width, size.height);
                                 let Some(copy) = try_create_texture(

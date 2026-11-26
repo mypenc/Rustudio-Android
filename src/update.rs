@@ -93,7 +93,7 @@ impl Updater {
             *stage.lock().unwrap() = Stage::Current;
         } else {
             let s = stage.clone();
-            std::thread::Builder::new()
+            rt_thread::Builder::new()
                 .name("update check".into())
                 .spawn(move || {
                     remove_leftovers();
@@ -258,7 +258,7 @@ impl Updater {
         *self.stage.lock().unwrap() = Stage::Downloading(r.clone());
         let s = self.stage.clone();
         let progress = self.progress.clone();
-        std::thread::Builder::new()
+        rt_thread::Builder::new()
             .name("update install".into())
             .spawn(move || {
                 let next = match install(&r, &progress) {

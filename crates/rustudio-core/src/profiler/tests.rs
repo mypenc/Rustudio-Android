@@ -60,7 +60,7 @@ fn nested_scopes_frames_counters_and_tree() {
         frame(FrameKind::Render);
     }
     // another thread with its own name
-    std::thread::spawn(|| {
+    rt_thread::spawn(|| {
         thread_name("worker lane");
         let _s = scope("bg_job", Cat::Assets);
         spin(200);
@@ -259,7 +259,7 @@ fn short_lived_threads_share_a_lane() {
     enable();
     frame(FrameKind::Render);
     for _ in 0..3 {
-        std::thread::Builder::new()
+        rt_thread::Builder::new()
             .name("oneshot".into())
             .spawn(|| {
                 let _s = scope("job", Cat::Network);

@@ -1917,7 +1917,7 @@ fn outline_thread_count(triangles: usize) -> usize {
     if triangles < OUTLINE_PARALLEL_TRIANGLES {
         1
     } else {
-        std::thread::available_parallelism().map_or(1, |n| n.get()).clamp(1, outline_threads())
+        rt_thread::available_parallelism().map_or(1, |n| n.get()).clamp(1, outline_threads())
     }
 }
 
@@ -2023,7 +2023,7 @@ fn union_edges(rect: Rect, vp: Mat4, jobs: &[impl std::borrow::Borrow<OutlineJob
         if extra.len() < others {
             extra.resize_with(others, Default::default);
         }
-        let (mut mask, boxes) = std::thread::scope(|sc| {
+        let (mut mask, boxes) = rt_thread::scope(|sc| {
             let handles: Vec<_> = extra[..others]
                 .iter_mut()
                 .map(|scratch| {

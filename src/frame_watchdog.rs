@@ -31,10 +31,10 @@ impl Watchdog {
         }));
         let stop = Arc::new(AtomicBool::new(false));
         let (s, done) = (state.clone(), stop.clone());
-        std::thread::Builder::new().name("frame watchdog".into()).spawn(move || {
+        rt_thread::Builder::new().name("frame watchdog".into()).spawn(move || {
             let mut reported = false;
             while !done.load(Ordering::Relaxed) {
-                std::thread::sleep(Duration::from_secs(1));
+                rt_thread::sleep(Duration::from_secs(1));
                 let p = s.lock().unwrap();
                 let stalled = p.stalled(Instant::now());
                 if stalled && !reported {

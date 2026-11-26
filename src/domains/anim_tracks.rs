@@ -203,7 +203,7 @@ fn load(lua: &Lua, id: &str) -> mlua::Result<(Option<Rc<Seq>>, bool)> {
     if rbx_dom_weak::deterministic() {
         let t0 = web_time::Instant::now();
         while still && matches!(seq, Value::Nil) && t0.elapsed() < std::time::Duration::from_secs(20) {
-            std::thread::sleep(std::time::Duration::from_millis(10));
+            rt_thread::sleep(std::time::Duration::from_millis(10));
             (seq, still) = f.call(id)?;
         }
     }

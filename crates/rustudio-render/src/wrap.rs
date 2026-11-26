@@ -363,7 +363,7 @@ pub fn fitted(doc: &Document, model: Ref) -> Lookup {
     s.insert(key.clone(), State::Pending);
     drop(s);
     let job = Job { targets, layers };
-    std::thread::Builder::new()
+    rt_thread::Builder::new()
         .name("layered clothing".into())
         .spawn(move || {
             let st = match fit(&job) {

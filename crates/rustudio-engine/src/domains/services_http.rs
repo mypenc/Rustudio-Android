@@ -93,7 +93,7 @@ pub fn studio_headers(mut h: Vec<(String, String)>, place_id: i64) -> Vec<(Strin
 
 pub fn start(req: Request) -> u64 {
     let id = NEXT.fetch_add(1, Ordering::Relaxed);
-    std::thread::Builder::new()
+    rt_thread::Builder::new()
         .name("rustudio-http".into())
         .spawn(move || {
             let r = {
@@ -111,7 +111,7 @@ pub fn start(req: Request) -> u64 {
 /// `*.roblox.com` URLs when signed in, falling back to unauthenticated HTTP.
 pub fn start_internal(req: Request) -> u64 {
     let id = NEXT.fetch_add(1, Ordering::Relaxed);
-    std::thread::Builder::new()
+    rt_thread::Builder::new()
         .name("rustudio-http-internal".into())
         .spawn(move || {
             let r = {

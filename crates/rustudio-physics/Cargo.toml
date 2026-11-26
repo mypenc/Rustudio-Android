@@ -9,6 +9,7 @@ license.workspace = true
 test-support = []
 
 [dependencies]
+rt-thread = { path = "../../shims/thread" }
 web-time = "1"
 rustudio-core = { path = "../rustudio-core" }
 glam = { version = "0.30", features = ["bytemuck"] }

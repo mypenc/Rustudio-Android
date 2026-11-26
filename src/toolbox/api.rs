@@ -67,7 +67,7 @@ pub trait Http: Send + Sync {
     fn signed_in(&self) -> bool;
     /// Waits between retries (tests make it instant).
     fn sleep(&self, secs: f32) {
-        std::thread::sleep(std::time::Duration::from_secs_f32(secs));
+        rt_thread::sleep(std::time::Duration::from_secs_f32(secs));
     }
 }
 

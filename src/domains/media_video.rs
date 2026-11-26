@@ -542,7 +542,7 @@ impl Stream {
         let mut dec = Decoder::new(track)?;
         let key = Ref::new();
         let (tx, rx): (Sender<f64>, Receiver<f64>) = channel();
-        std::thread::Builder::new()
+        rt_thread::Builder::new()
             .name("rustudio-video".into())
             .spawn(move || {
                 let mut shown = f64::NAN;

@@ -359,7 +359,7 @@ pub fn block_on<F: std::future::Future>(f: F) -> F::Output {
         if let std::task::Poll::Ready(v) = f.as_mut().poll(&mut cx) {
             return v;
         }
-        std::thread::yield_now();
+        rt_thread::yield_now();
     }
 }
 

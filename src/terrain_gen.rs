@@ -643,10 +643,10 @@ pub fn generate_with_progress(v: &mut Voxels, lo: [i32; 3], size: [i32; 3], o: &
     }
     let ctx = Ctx::new(lo, size, o);
     let jobs = (size[0] + SLAB_COLUMNS - 1) / SLAB_COLUMNS;
-    let threads = std::thread::available_parallelism().map_or(4, |n| n.get()).clamp(1, 32).min(jobs as usize);
+    let threads = rt_thread::available_parallelism().map_or(4, |n| n.get()).clamp(1, 32).min(jobs as usize);
     let next = AtomicI32::new(0);
     let (tx, rx) = std::sync::mpsc::sync_channel::<Slab>(threads * 2);
-    std::thread::scope(|s| {
+    rt_thread::scope(|s| {
         for _ in 0..threads {
             let (tx, ctx, next) = (tx.clone(), &ctx, &next);
             s.spawn(move || loop {

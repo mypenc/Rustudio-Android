@@ -491,7 +491,7 @@ fn store() -> &'static Store {
     static S: OnceLock<Store> = OnceLock::new();
     S.get_or_init(|| {
         for _ in 0..2 {
-            std::thread::Builder::new()
+            rt_thread::Builder::new()
                 .name("material packs".into())
                 .spawn(|| loop {
                     let (pack, color, keep) = {
@@ -508,7 +508,7 @@ fn store() -> &'static Store {
                     // their parts gone, must not hold up the rest)
                     let t0 = web_time::Instant::now();
                     while !cfg!(test) && HELD.load(Ordering::Relaxed) >= HELD_LIMIT && t0.elapsed().as_secs() < 3 {
-                        std::thread::sleep(std::time::Duration::from_millis(5));
+                        rt_thread::sleep(std::time::Duration::from_millis(5));
                     }
                     let built = build(pack, color);
                     let s = store();
@@ -639,7 +639,7 @@ pub fn wait(e: &Entry, timeout: std::time::Duration) -> Lookup {
     loop {
         match maps(e) {
             Lookup::Pending if t0.elapsed() < timeout => {
-                std::thread::sleep(std::time::Duration::from_millis(50))
+                rt_thread::sleep(std::time::Duration::from_millis(50))
             }
             other => return other,
         }

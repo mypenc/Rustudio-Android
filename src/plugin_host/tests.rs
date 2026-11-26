@@ -1220,7 +1220,7 @@ fn edit_sound_preview_syncs_dom_properties_and_edit_vm() {
     game.doc
         .set_props("Set Playing", vec![(s, ustr("Playing"), Variant::Bool(true))], None);
     tick(&mut game, &mut host);
-    std::thread::sleep(Duration::from_millis(60));
+    rt_thread::sleep(Duration::from_millis(60));
     tick(&mut game, &mut host);
     assert_eq!(game.edit_audio.playing_count(), 0);
 
@@ -1240,7 +1240,7 @@ fn edit_sound_preview_syncs_dom_properties_and_edit_vm() {
         .set_props("Clear Playing", vec![(s, ustr("Playing"), Variant::Bool(false))], None);
     game.doc.selection = vec![s];
     game.edit_audio_preview_toggle(s);
-    std::thread::sleep(Duration::from_millis(80));
+    rt_thread::sleep(Duration::from_millis(80));
     tick(&mut game, &mut host);
     let (pv_playing, pv_pos, pv_len) = game.edit_audio.preview_state(s);
     assert!(pv_playing && pv_pos > 0.02 && (pv_len - 0.30).abs() < 0.02);

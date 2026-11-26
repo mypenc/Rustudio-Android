@@ -399,7 +399,7 @@ impl CloudUi {
     ) {
         self.jobs += 1;
         let tx = self.tx.clone();
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             f(api(), &tx);
             let _ = tx.send(Msg::Done);
         });
@@ -2739,7 +2739,7 @@ impl SavedPlaceTerrain {
 fn saved_terrain(client: rustudio_core::assets::SharedClient, place: u64) -> Option<std::sync::mpsc::Receiver<SavedPlaceTerrain>> {
     let session = client.lock().ok()?.as_ref()?.session.downloader();
     let (tx, rx) = std::sync::mpsc::channel();
-    std::thread::Builder::new()
+    rt_thread::Builder::new()
         .name("tc-saved-terrain".into())
         .spawn(move || {
             let Ok(bytes) = session.download_asset(place, None) else { return };

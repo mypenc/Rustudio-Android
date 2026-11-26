@@ -428,7 +428,7 @@ fn decode_off_thread(job: Box<dyn FnOnce() + Send>) {
         let rx = Arc::new(Mutex::new(rx));
         for i in 0..2 {
             let rx = rx.clone();
-            let _ = std::thread::Builder::new().name(format!("gui-decode-{i}")).spawn(move || loop {
+            let _ = rt_thread::Builder::new().name(format!("gui-decode-{i}")).spawn(move || loop {
                 let job = rx.lock().ok().and_then(|r| r.recv().ok());
                 let Some(job) = job else { return };
                 let _p = rustudio_core::profiler::scope("gui_image_decode", rustudio_core::profiler::Cat::Assets);

@@ -1929,7 +1929,7 @@ pub fn prop_get(lua: &Lua, r: Ref, class: &str, key: &str) -> mlua::Result<Optio
         }
         "SchedulerDutyCycle" | "SchedulerRate" if class == "TaskScheduler" => Value::Number(0.0),
         "ThreadPoolSize" if class == "TaskScheduler" => Value::Integer(
-            std::thread::available_parallelism().map(|n| n.get() as i64).unwrap_or(1),
+            rt_thread::available_parallelism().map(|n| n.get() as i64).unwrap_or(1),
         ),
         _ if class == "Stats" => match stats_prop(lua, key)? {
             Some(v) => v,

@@ -1088,7 +1088,7 @@ mod tests {
         let mut t = Touch::default();
         t.zones = Zones { viewport: Rect::from_min_max(Pos2::ZERO, Pos2::new(500.0, 500.0)), frame: 1, ..Default::default() };
         run(&mut t, &ctx, vec![touch(1, TouchPhase::Start, Pos2::new(10.0, 10.0))]);
-        std::thread::sleep(HOLD + Duration::from_millis(20));
+        rt_thread::sleep(HOLD + Duration::from_millis(20));
         let out = run(&mut t, &ctx, vec![]);
         assert!(out.iter().any(|e| matches!(e, Event::PointerButton { pressed: true, .. })), "{out:?}");
         let mut raw = egui::RawInput { events: vec![touch(1, TouchPhase::Move, Pos2::new(20.0, 10.0))], ..Default::default() };
@@ -1151,13 +1151,13 @@ mod tests {
         let mut t = Touch::default();
         let at = Pos2::new(10.0, 10.0);
         run(&mut t, &ctx, vec![touch(1, TouchPhase::Start, at)]);
-        std::thread::sleep(HOLD + Duration::from_millis(20));
+        rt_thread::sleep(HOLD + Duration::from_millis(20));
         // Held past the hold: still no press (a selection under the finger
         // stays for the menu).
         let out = run(&mut t, &ctx, vec![]);
         assert!(buttons(&out).is_empty(), "{out:?}");
         assert_eq!(t.mode(), Some(Mode::Pending));
-        std::thread::sleep(LONG_PRESS.saturating_sub(HOLD));
+        rt_thread::sleep(LONG_PRESS.saturating_sub(HOLD));
         let out = run(&mut t, &ctx, vec![]);
         assert_eq!(buttons(&out), vec![(PointerButton::Secondary, true), (PointerButton::Secondary, false)], "{out:?}");
         assert!(out.iter().any(|e| matches!(e, Event::PointerMoved(p) if *p == at)), "{out:?}");
@@ -1178,7 +1178,7 @@ mod tests {
         let mut t = Touch::default();
         let at = Pos2::new(10.0, 10.0);
         run(&mut t, &ctx, vec![touch(1, TouchPhase::Start, at)]);
-        std::thread::sleep(LONG_PRESS + Duration::from_millis(20));
+        rt_thread::sleep(LONG_PRESS + Duration::from_millis(20));
         let out = run(&mut t, &ctx, vec![]);
         assert_eq!(buttons(&out), vec![(PointerButton::Secondary, true), (PointerButton::Secondary, false)], "{out:?}");
         assert_eq!(t.mode(), Some(Mode::Done));
@@ -1194,7 +1194,7 @@ mod tests {
         let mut t = Touch::default();
         let at = Pos2::new(10.0, 10.0);
         run(&mut t, &ctx, vec![touch(1, TouchPhase::Start, at)]);
-        std::thread::sleep(HOLD + Duration::from_millis(20));
+        rt_thread::sleep(HOLD + Duration::from_millis(20));
         run(&mut t, &ctx, vec![]);
         let out = run(&mut t, &ctx, vec![touch(1, TouchPhase::Move, Pos2::new(40.0, 10.0))]);
         assert_eq!(buttons(&out), vec![(PointerButton::Primary, true)], "{out:?}");
@@ -1396,11 +1396,11 @@ mod tests {
         run(&mut t, &ctx, vec![touch(1, TouchPhase::Start, ribbon_start)]);
         assert_eq!(t.owner(TouchId(1)), Some(TouchOwner::Ui));
         // Swipe far left and drift down into the 3D viewport (y = 220 > 100).
-        std::thread::sleep(Duration::from_millis(10));
+        rt_thread::sleep(Duration::from_millis(10));
         let out_move = run(&mut t, &ctx, vec![touch(1, TouchPhase::Move, Pos2::new(120.0, 220.0))]);
         assert!(t.is_scroll_from_ui());
         assert!(!out_move.iter().any(|e| matches!(e, Event::PointerMoved(p) if *p != ribbon_start)), "{out_move:?}");
-        std::thread::sleep(Duration::from_millis(10));
+        rt_thread::sleep(Duration::from_millis(10));
         let _ = run(&mut t, &ctx, vec![touch(1, TouchPhase::End, Pos2::new(40.0, 240.0))]);
         // Fling must also be pinned to ribbon_start, never to the viewport lift position.
         assert!(t.is_scroll_from_ui());

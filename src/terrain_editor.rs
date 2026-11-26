@@ -552,7 +552,7 @@ impl Editor {
         let done = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
         let (tx, rx) = std::sync::mpsc::channel();
         let worker_done = done.clone();
-        let spawned = std::thread::Builder::new().name("terrain-generate".into()).spawn(move || {
+        let spawned = rt_thread::Builder::new().name("terrain-generate".into()).spawn(move || {
             let mut v = Voxels::decode(&bytes).unwrap_or_else(|_| Voxels::empty());
             gen::generate_with_progress(&mut v, b.lo, b.size, &opts, Some(&worker_done));
             let _ = tx.send(v.encode());

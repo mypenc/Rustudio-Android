@@ -313,7 +313,7 @@ fn rerun_headless() -> Option<i32> {
             for (i, p) in fifos.iter().enumerate() {
                 let p = p.clone();
                 let (tx, rx) = std::sync::mpsc::channel::<()>();
-                std::thread::spawn(move || {
+                rt_thread::spawn(move || {
                     // (Line by line, leaving out the notes gamescope's Vulkan
                     // WSI layer prints from inside rustudio's process.)
                     if let Ok(r) = std::fs::File::open(&p) {
@@ -671,7 +671,7 @@ pub fn run() -> eframe::Result<()> {
     match std::env::var("RUSTUDIO_CRASH_TEST").as_deref() {
         Ok("panic") => panic!("RUSTUDIO_CRASH_TEST panic"),
         Ok("thread") => {
-            let _ = std::thread::Builder::new()
+            let _ = rt_thread::Builder::new()
                 .name("crash-test".into())
                 .spawn(|| panic!("RUSTUDIO_CRASH_TEST thread panic"))
                 .map(|h| h.join());

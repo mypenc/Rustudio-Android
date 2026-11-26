@@ -374,7 +374,7 @@ impl CharBuilder {
         }
         for (kind, ids) in by {
             let tx = self.tx.clone();
-            std::thread::spawn(move || {
+            rt_thread::spawn(move || {
                 let got = characters::thumbnails(kind, &ids).unwrap_or_default();
                 let mut done = HashSet::new();
                 for (id, bytes) in got {
@@ -466,7 +466,7 @@ impl Editor {
         let me = self.game.account.user_id().unwrap_or(0);
         self.chars.status = Some((true, format!("Downloading {}…", pick.label())));
         let tx = self.chars.tx.clone();
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             let txl = tx.clone();
             let mut log = |s: String| {
                 let _ = txl.send(Msg::Log(s));
@@ -711,7 +711,7 @@ impl Editor {
                 self.chars.outfits = Some(Vec::new());
                 if let (Some(client), Some(uid)) = (self.game.account.shared_client(), me) {
                     let tx = self.chars.tx.clone();
-                    std::thread::spawn(move || {
+                    rt_thread::spawn(move || {
                         let r = client
                             .lock()
                             .map_err(|_| "account busy".to_string())
@@ -727,7 +727,7 @@ impl Editor {
                 self.chars.friends = Some(Vec::new());
                 if let (Some(client), Some(uid)) = (self.game.account.shared_client(), me) {
                     let tx = self.chars.tx.clone();
-                    std::thread::spawn(move || {
+                    rt_thread::spawn(move || {
                         let r = client
                             .lock()
                             .map_err(|_| "account busy".to_string())
@@ -751,7 +751,7 @@ impl Editor {
                 } else if let Some(client) = self.game.account.shared_client() {
                     self.chars.results = None;
                     let tx = self.chars.tx.clone();
-                    std::thread::spawn(move || {
+                    rt_thread::spawn(move || {
                         let r = client
                             .lock()
                             .map_err(|_| "account busy".to_string())

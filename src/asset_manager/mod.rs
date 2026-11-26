@@ -553,7 +553,7 @@ impl Pool {
                 let http = self.http.clone();
                 let tx = self.tx.clone();
                 let busy = self.busy.clone();
-                let _ = std::thread::Builder::new()
+                let _ = rt_thread::Builder::new()
                     .name(format!("asset-mgr-{n}"))
                     .spawn(move || loop {
                         let job = {

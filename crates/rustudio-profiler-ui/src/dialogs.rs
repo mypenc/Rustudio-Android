@@ -76,7 +76,7 @@ impl Dialogs {
             return;
         }
         let (tx, rx) = channel();
-        let ok = std::thread::Builder::new()
+        let ok = rt_thread::Builder::new()
             .name("profiler-dialog".into())
             .spawn(move || {
                 let _ = tx.send(pollster::block_on(fut).map(|h| h.path().to_path_buf()));

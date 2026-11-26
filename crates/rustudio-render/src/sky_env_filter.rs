@@ -14,7 +14,7 @@ struct CubeLevel {
 
 impl CubeLevel {
     fn render(width: usize, sample: impl Fn(usize, f32, f32) -> Vec3 + Sync) -> Self {
-        let pixels = std::thread::scope(|scope| {
+        let pixels = rt_thread::scope(|scope| {
             let faces: Vec<_> = (0..6)
                 .map(|face| {
                     let sample = &sample;

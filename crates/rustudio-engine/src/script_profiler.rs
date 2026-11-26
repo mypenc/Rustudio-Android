@@ -803,12 +803,12 @@ mod sampler {
         if RUNNING.swap(true, Relaxed) {
             return;
         }
-        let ok = std::thread::Builder::new()
+        let ok = rt_thread::Builder::new()
             .name("script-sampler".into())
             .spawn(|| {
                 while recording() {
                     let hz = SAMPLE_HZ.load(Relaxed).max(1);
-                    std::thread::sleep(Duration::from_nanos(1_000_000_000 / hz as u64));
+                    rt_thread::sleep(Duration::from_nanos(1_000_000_000 / hz as u64));
                     let now = epoch().elapsed().as_nanos() as u64;
                     for slot in slots().iter() {
                         if slot.executing.load(Relaxed) == 0 || slot.mlua_proc == 0 {

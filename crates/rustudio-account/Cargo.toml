@@ -6,6 +6,7 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
+rt-thread = { path = "../../shims/thread" }
 web-time = "1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

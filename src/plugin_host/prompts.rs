@@ -53,7 +53,7 @@ struct Open {
     /// so two editors in one process (tests run in parallel) never see or
     /// answer each other's dialogs. Answers by id (a native dialog's
     /// worker thread) are not restricted.
-    owner: std::thread::ThreadId,
+    owner: rt_thread::ThreadId,
 }
 
 #[derive(Default)]
@@ -63,11 +63,11 @@ struct State {
     open: Vec<Open>,
     answers: HashMap<u64, Answer>,
     /// `queue:` answers given while no prompt was open, oldest first.
-    queued: Vec<(std::thread::ThreadId, String)>,
+    queued: Vec<(rt_thread::ThreadId, String)>,
 }
 
-fn me() -> std::thread::ThreadId {
-    std::thread::current().id()
+fn me() -> rt_thread::ThreadId {
+    rt_thread::current().id()
 }
 
 static STATE: Mutex<Option<State>> = Mutex::new(None);
@@ -298,7 +298,7 @@ fn asset_config_ui(ctx: &egui::Context, doc: &rustudio_core::doc::Document) {
                             let (title, desc) = (cfg.title.clone(), cfg.description.clone());
                             let (tx, rx) = std::sync::mpsc::channel();
                             let ctx2 = ctx.clone();
-                            let _ = std::thread::Builder::new().name("save-to-roblox".into()).spawn(move || {
+                            let _ = rt_thread::Builder::new().name("save-to-roblox".into()).spawn(move || {
                                 let r = upload_model(&title, &desc, &bytes);
                                 let _ = tx.send(r);
                                 ctx2.request_repaint();
@@ -476,7 +476,7 @@ fn spawn(ctx: &egui::Context, id: u64, d: crate::file_dialog::Request, pick: Pic
         Pick::Save => Box::pin(async move { d.save_file().await.map(|h| vec![h.path().to_path_buf()]).unwrap_or_default() }),
     };
     let ctx = ctx.clone();
-    let _ = std::thread::Builder::new().name("plugin-dialog".into()).spawn(move || {
+    let _ = rt_thread::Builder::new().name("plugin-dialog".into()).spawn(move || {
         let paths = pollster::block_on(fut);
         if let (Some(ObjJob(text)), Some(p)) = (&job, paths.first()) {
             let _ = std::fs::write(p, text);

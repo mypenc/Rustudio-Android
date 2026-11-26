@@ -431,7 +431,7 @@ fn decode(id: &str, bytes: Arc<Vec<u8>>) -> Got {
     }
     let (tx, rx) = std::sync::mpsc::channel();
     let key = id.to_string();
-    std::thread::spawn(move || {
+    rt_thread::spawn(move || {
         let r = crate::audio::decode_pcm(&bytes).map(Arc::new);
         if let Ok(p) = &r {
             pcm_store(&key, p.clone());

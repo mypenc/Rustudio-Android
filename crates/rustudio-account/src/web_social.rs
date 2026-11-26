@@ -378,7 +378,7 @@ pub fn subscription_prompt_products(session: &Session, scope: &CacheScope) -> Re
     subscription_prompt_at(session,scope,|host|format!("https://{host}.roblox.com"))
 }
 fn subscription_prompt_at(session: &Session, scope: &CacheScope, origin: impl Fn(&str)->String + Sync) -> Result<Value> {
-    std::thread::scope(|threads| {
+    rt_thread::scope(|threads| {
         let products=threads.spawn(|| Read::RobloxSubscriptionPromptProducts.fetch_at_scoped(session,scope.0.0,&origin));
         let url=format!("{}/payments-gateway/v1/payment-sessions",origin("apis"));
         // Network.createPaymentSession catches every failure and resolves "".
@@ -1135,7 +1135,7 @@ mod tests {
         let seen=count.clone();
         let server=MockServer::start(Arc::new(move |_| {
             seen.fetch_add(1,Ordering::SeqCst);
-            std::thread::sleep(Duration::from_millis(100));
+            rt_thread::sleep(Duration::from_millis(100));
             MockReply::json(200,r#"{"developerProducts":[{"ProductId":7,"Name":"Shared product","Creator":{"Id":1}}]}"#)
         })).unwrap();
         let scope=CacheScope::default();
@@ -1144,7 +1144,7 @@ mod tests {
         let mut threads=Vec::new();
         for _ in 0..8 {
             let session=session.clone();let start=start.clone();let origin=server.base.clone();let scope=scope.clone();
-            threads.push(std::thread::spawn(move || {
+            threads.push(rt_thread::spawn(move || {
                 start.wait();
                 Read::Product { id:7,kind:"Product".into() }.fetch_at_scoped(&session,scope.0.0,|_|origin.clone()).unwrap()
             }));
@@ -1184,7 +1184,7 @@ mod tests {
         let start=Arc::new(Barrier::new(7));let mut threads=Vec::new();
         for read in [Read::Product{id:7,kind:"Product".into()},Read::Product{id:8,kind:"Product".into()},Read::Product{id:7,kind:"GamePass".into()},Read::Product{id:8,kind:"GamePass".into()},Read::PassOwnership{user:7,pass:1},Read::PassOwnership{user:8,pass:1}] {
             let (scope,start,session,origin)=(scope.clone(),start.clone(),session.clone(),server.base.clone());
-            threads.push(std::thread::spawn(move || {
+            threads.push(rt_thread::spawn(move || {
                 start.wait();let value=read.fetch_at_scoped(&session,scope.0.0,|_|origin.clone()).unwrap();(read,value)
             }));
         }
@@ -1204,7 +1204,7 @@ mod tests {
         let start=Arc::new(Barrier::new(52));let mut threads=Vec::new();
         for id in 100..151 {
             let (scope,start,session,origin)=(scope.clone(),start.clone(),session.clone(),server.base.clone());
-            threads.push(std::thread::spawn(move || {
+            threads.push(rt_thread::spawn(move || {
                 start.wait();let value=Read::Product{id,kind:"GamePass".into()}.fetch_at_scoped(&session,scope.0.0,|_|origin.clone()).unwrap();assert_eq!(value["gamePasses"][0]["id"],id);
             }));
         }
@@ -1574,7 +1574,7 @@ mod tests {
         let ids:Vec<_>=products["developerProducts"].as_array().unwrap().iter().filter_map(|row|row["ProductId"].as_u64()).take(2).collect();
         assert_eq!(ids.len(),2);
         let scope=CacheScope::default();let start=std::sync::Barrier::new(3);
-        std::thread::scope(|threads| {
+        rt_thread::scope(|threads| {
             let handles:Vec<_>=ids.iter().map(|id|{
                 let scope=scope.clone();let start=&start;let session=&client.session;
                 threads.spawn(move || {

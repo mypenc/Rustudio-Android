@@ -787,7 +787,7 @@ pub fn preload_content(id: &str, done: Arc<Mutex<Option<bool>>>) {
 pub fn wait_for_session(max: std::time::Duration) -> bool {
     let t0 = web_time::Instant::now();
     while CHECKING.load(std::sync::atomic::Ordering::SeqCst) && t0.elapsed() < max {
-        std::thread::sleep(std::time::Duration::from_millis(20));
+        rt_thread::sleep(std::time::Duration::from_millis(20));
     }
     signed_in()
 }
@@ -893,7 +893,7 @@ type DownloadJob = Box<dyn FnOnce() + Send>;
 // permits directly, including when waiting out a shared pause.
 static ASSET_WORKERS: LazyLock<()> = LazyLock::new(|| {
     for i in 0..MAX_ASSET_DOWNLOADS {
-        let _ = std::thread::Builder::new().name(format!("asset-download-{i}")).spawn(move || loop {
+        let _ = rt_thread::Builder::new().name(format!("asset-download-{i}")).spawn(move || loop {
             let (job, priority) = SCHEDULER.next();
             {
                 let _p = crate::profiler::scope("asset_download", crate::profiler::Cat::Assets);
@@ -1354,7 +1354,7 @@ fn fetch_rbxthumb(uri: &str) -> Fetch {
         _ => return Fetch::Unavailable(format!("unsupported rbxthumb type '{kind}'")),
     };
     map.insert(key.clone(), None);
-    std::thread::spawn(move || {
+    rt_thread::spawn(move || {
         let r = (|| -> Result<Arc<Vec<u8>>, String> {
             let agent = rustudio_account::api::agent();
             let mut resp = agent.get(&api_url).call().map_err(|e| e.to_string())?;
@@ -1420,7 +1420,7 @@ pub fn product_info(id: u64, kind: &str) -> Fetch {
         _ => return Fetch::Ready(Arc::new(b"{}".to_vec())),
     };
     map.insert(key.clone(), None);
-    std::thread::spawn(move || {
+    rt_thread::spawn(move || {
         let r = (|| {
             let mut r = rustudio_account::api::agent()
                 .get(&url)
@@ -3012,7 +3012,7 @@ mod tests {
     #[test]
     fn download_retry_after_pauses_the_whole_queue() {
         let downloads = AssetDownloads::new([Duration::ZERO; ASSET_BACKOFF.len()]);
-        std::thread::scope(|scope| {
+        rt_thread::scope(|scope| {
             let (send, receive) = channel();
             let downloads = &downloads;
             let retry = scope.spawn(move || {
@@ -3135,7 +3135,7 @@ mod tests {
             assert_eq!(priority, Priority::Preload);
             job();
         }
-        std::thread::scope(|scope| {
+        rt_thread::scope(|scope| {
             let (send, receive) = channel();
             let scheduler = &scheduler;
             scope.spawn(move || {
@@ -3167,7 +3167,7 @@ mod tests {
             if waiting || t0.elapsed() > Duration::from_secs(5) {
                 break;
             }
-            std::thread::sleep(Duration::from_millis(2));
+            rt_thread::sleep(Duration::from_millis(2));
         }
     }
 
@@ -3176,7 +3176,7 @@ mod tests {
         let a = AssetRef { id: 7_000_000_001, version: Some(1) };
         let downloads = std::sync::atomic::AtomicUsize::new(0);
         let gate = (Mutex::new(false), Condvar::new());
-        std::thread::scope(|scope| {
+        rt_thread::scope(|scope| {
             let first = scope.spawn(|| {
                 download_shared(a, || {
                     downloads.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
@@ -3186,7 +3186,7 @@ mod tests {
             });
             // The second asker arrives while the first downloads.
             while !INFLIGHT.lock().unwrap().contains_key(&a) {
-                std::thread::sleep(Duration::from_millis(5));
+                rt_thread::sleep(Duration::from_millis(5));
             }
             let second = scope.spawn(|| download_shared(a, || panic!("downloaded twice")));
             wait_for_waiter(a);
@@ -3200,7 +3200,7 @@ mod tests {
         // A download that panics still answers its waiters.
         let b = AssetRef { id: 7_000_000_002, version: Some(1) };
         let gate = (Mutex::new(false), Condvar::new());
-        std::thread::scope(|scope| {
+        rt_thread::scope(|scope| {
             let first = scope.spawn(|| {
                 std::panic::catch_unwind(|| {
                     download_shared(b, || {
@@ -3211,7 +3211,7 @@ mod tests {
                 .unwrap_err()
             });
             while !INFLIGHT.lock().unwrap().contains_key(&b) {
-                std::thread::sleep(Duration::from_millis(5));
+                rt_thread::sleep(Duration::from_millis(5));
             }
             let second = scope.spawn(|| download_shared(b, || Ok(vec![])));
             wait_for_waiter(b);
@@ -3256,13 +3256,13 @@ mod tests {
         register_generated(id, vec![1]);
         let done = Arc::new(Mutex::new(None));
         preload_content(id, done.clone());
-        std::thread::sleep(Duration::from_millis(300));
+        rt_thread::sleep(Duration::from_millis(300));
         assert_eq!(*done.lock().unwrap(), None, "a preload ran on a busy slot: {:?}", SCHEDULER.queued());
         *gate.0.lock().unwrap() = true;
         gate.1.notify_all();
         let t0 = Instant::now();
         while done.lock().unwrap().is_none() && t0.elapsed() < Duration::from_secs(10) {
-            std::thread::sleep(Duration::from_millis(5));
+            rt_thread::sleep(Duration::from_millis(5));
         }
         assert_eq!(*done.lock().unwrap(), Some(true));
         unregister_generated(id);
@@ -3280,7 +3280,7 @@ mod tests {
         while (first.lock().unwrap().is_none() || second.lock().unwrap().is_none())
             && t0.elapsed() < Duration::from_secs(10)
         {
-            std::thread::sleep(Duration::from_millis(5));
+            rt_thread::sleep(Duration::from_millis(5));
         }
         assert_eq!(*first.lock().unwrap(), Some(true));
         assert_eq!(*second.lock().unwrap(), Some(true));
@@ -3290,7 +3290,7 @@ mod tests {
         preload_content("rbxtemp://rustudio/preload-content-missing", missing.clone());
         let t0 = Instant::now();
         while missing.lock().unwrap().is_none() && t0.elapsed() < Duration::from_secs(10) {
-            std::thread::sleep(Duration::from_millis(5));
+            rt_thread::sleep(Duration::from_millis(5));
         }
         assert_eq!(*missing.lock().unwrap(), Some(false));
     }
@@ -3304,7 +3304,7 @@ mod tests {
         let peak = std::sync::atomic::AtomicUsize::new(0);
         use std::sync::atomic::Ordering::Relaxed;
 
-        std::thread::scope(|scope| {
+        rt_thread::scope(|scope| {
             for index in 0..2 * MAX_ASSET_DOWNLOADS {
                 let download = || {
                     let count = active.fetch_add(1, Relaxed) + 1;

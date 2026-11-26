@@ -249,7 +249,7 @@ fn rig_for(id: u64) -> Option<Arc<Facs>> {
         None => {}
     }
     g.insert(id, None);
-    std::thread::spawn(move || {
+    rt_thread::spawn(move || {
         let r = crate::assets::public_cached(id)
             .ok()
             .and_then(|b| parse_mesh_facs(&b))

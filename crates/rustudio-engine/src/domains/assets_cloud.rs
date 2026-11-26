@@ -497,14 +497,14 @@ print('preload-timed-out')
         };
         while !seen(&rt, "preload-timed-out") && !seen(&rt, "Script:") && t0.elapsed() < std::time::Duration::from_secs(10) {
             rt.step(1. / 60.);
-            std::thread::sleep(std::time::Duration::from_millis(5));
+            rt_thread::sleep(std::time::Duration::from_millis(5));
         }
         std::env::remove_var("RUSTUDIO_PRELOAD_DEADLINE");
         // The link delivers: the status moves on.
         hold.release(Ok(vec![0; 16]));
         while !seen(&rt, "preload-arrived-later") && t0.elapsed() < std::time::Duration::from_secs(20) {
             rt.step(1. / 60.);
-            std::thread::sleep(std::time::Duration::from_millis(5));
+            rt_thread::sleep(std::time::Duration::from_millis(5));
         }
         let output = rt.leave().output;
         assert!(output.iter().any(|(_, s)| s.contains("preload-timed-out")), "{output:?}");
@@ -660,9 +660,9 @@ __ac_test_done()
             rt.step(1.0 / 60.0);
             frames += 1;
             if frames >= 120 {
-                std::thread::sleep(std::time::Duration::from_millis(2));
+                rt_thread::sleep(std::time::Duration::from_millis(2));
             } else {
-                std::thread::yield_now();
+                rt_thread::yield_now();
             }
         }
         let output = rt.leave().output;

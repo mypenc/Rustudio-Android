@@ -450,7 +450,7 @@ pub struct Audio {
     hold: Option<Sender<()>>,
     /// Length cache keyed by the byte buffer's address (validated through the `Weak`).
     lengths: HashMap<usize, (Weak<Vec<u8>>, Arc<LenCell>)>,
-    capture_thread: Option<std::thread::JoinHandle<()>>,
+    capture_thread: Option<rt_thread::JoinHandle<()>>,
     routes: HashMap<u64, (u64, Control)>,
     buses: HashMap<u64, (Mixer, Control)>,
 }
@@ -483,7 +483,7 @@ impl Audio {
             let (tx, rx) = mpsc::channel();
             a.hold = Some(tx);
             a.out = Output::Ready(m);
-            a.capture_thread = Some(std::thread::spawn(move || {
+            a.capture_thread = Some(rt_thread::spawn(move || {
                 if let Err(e) = crate::audio_capture::run(path.into(), source, rx) {
                     eprintln!("audio capture: {e}");
                 }
@@ -531,7 +531,7 @@ impl Audio {
     fn spawn_open(&mut self) -> Output {
         let (tx, rx) = mpsc::channel();
         let (hold_tx, hold_rx) = mpsc::channel::<()>();
-        let spawned = std::thread::Builder::new()
+        let spawned = rt_thread::Builder::new()
             .name("rustudio-audio".into())
             .spawn(move || {
                 match rodio::DeviceSinkBuilder::open_default_sink() {
@@ -700,7 +700,7 @@ impl Audio {
             Some(mixer) => {
                 if len.secs.get().is_none() && !len.scanning.swap(true, Ordering::AcqRel) {
                     let (cell, data) = (len.clone(), bytes.clone());
-                    let _ = std::thread::Builder::new()
+                    let _ = rt_thread::Builder::new()
                         .name("rustudio-audio-len".into())
                         .spawn(move || {
                             if let Some(l) = decoder(&data).ok().and_then(length_of) {
@@ -968,7 +968,7 @@ impl Audio {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::thread::sleep;
+    use rt_thread::sleep;
 
     /// 16-bit mono PCM WAV of `secs` seconds (a quiet square wave).
     fn wav(secs: f64, rate: u32) -> Arc<Vec<u8>> {
@@ -1509,7 +1509,7 @@ fn graph_device() -> Option<&'static Arc<GraphDevice>> {
                 // The sender lives as long as the process: the capture runs until exit
                 // and the WAV header is rewritten every second.
                 std::mem::forget(tx);
-                std::thread::Builder::new()
+                rt_thread::Builder::new()
                     .name("rustudio-graph-capture".into())
                     .spawn(move || {
                         if let Err(e) = crate::audio_capture::run(path.into(), src, rx) {
@@ -1518,7 +1518,7 @@ fn graph_device() -> Option<&'static Arc<GraphDevice>> {
                     })
                     .is_ok()
             }
-            None => std::thread::Builder::new()
+            None => rt_thread::Builder::new()
                 .name("rustudio-graph-audio".into())
                 .spawn(move || {
                     if let Ok(mut sink) = rodio::DeviceSinkBuilder::open_default_sink() {
@@ -1526,7 +1526,7 @@ fn graph_device() -> Option<&'static Arc<GraphDevice>> {
                         sink.mixer().add(src);
                         // The sink lives as long as the process.
                         loop {
-                            std::thread::park();
+                            rt_thread::park();
                         }
                     }
                 })

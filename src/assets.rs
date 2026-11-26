@@ -442,7 +442,7 @@ pub fn session_ready(client: Option<SharedClient>) {
 pub fn wait_for_session(max: std::time::Duration) -> bool {
     let t0 = web_time::Instant::now();
     while CHECKING.load(std::sync::atomic::Ordering::SeqCst) && t0.elapsed() < max {
-        std::thread::sleep(std::time::Duration::from_millis(20));
+        rt_thread::sleep(std::time::Duration::from_millis(20));
     }
     signed_in()
 }
@@ -537,7 +537,7 @@ static ASSET_WORKERS: LazyLock<Sender<DownloadJob>> = LazyLock::new(|| {
     let receive = Arc::new(Mutex::new(receive));
     for _ in 0..MAX_ASSET_DOWNLOADS {
         let receive = receive.clone();
-        std::thread::spawn(move || loop {
+        rt_thread::spawn(move || loop {
             let job = receive.lock().unwrap().recv();
             match job {
                 Ok(job) => job(),
@@ -896,7 +896,7 @@ fn public_prefetch_inner(id: u64) -> Fetch {
         };
     }
     map.insert(id, None);
-    std::thread::spawn(move || {
+    rt_thread::spawn(move || {
         let r = public_cached(id).map(|_| ());
         content_track(&format!("rbxassetid://{id}"),if r.is_ok(){2}else{3});
         if let Ok(mut g) = STATES.lock() {
@@ -932,7 +932,7 @@ pub fn product_info(id: u64, kind: &str) -> Fetch {
         _ => return Fetch::Ready(Arc::new(b"{}".to_vec())),
     };
     map.insert(key.clone(), None);
-    std::thread::spawn(move || {
+    rt_thread::spawn(move || {
         let r = (|| {
             let mut r = rustudio_account::api::agent()
                 .get(&url)
@@ -2331,7 +2331,7 @@ mod tests {
     #[test]
     fn download_retry_after_pauses_the_whole_queue() {
         let downloads = AssetDownloads::new([Duration::ZERO; ASSET_BACKOFF.len()]);
-        std::thread::scope(|scope| {
+        rt_thread::scope(|scope| {
             let (send, receive) = channel();
             let downloads = &downloads;
             let retry = scope.spawn(move || {
@@ -2436,7 +2436,7 @@ mod tests {
         let peak = std::sync::atomic::AtomicUsize::new(0);
         use std::sync::atomic::Ordering::Relaxed;
 
-        std::thread::scope(|scope| {
+        rt_thread::scope(|scope| {
             for index in 0..2 * MAX_ASSET_DOWNLOADS {
                 let download = || {
                     let count = active.fetch_add(1, Relaxed) + 1;

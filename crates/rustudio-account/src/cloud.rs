@@ -392,7 +392,7 @@ pub const GROUP_FANOUT: usize = 8;
 pub fn fan_out<T: Sync, R: Send>(items: &[T], f: impl Fn(&T) -> R + Sync) -> Vec<R> {
     let next = std::sync::atomic::AtomicUsize::new(0);
     let out: Vec<std::sync::Mutex<Option<R>>> = items.iter().map(|_| std::sync::Mutex::new(None)).collect();
-    std::thread::scope(|s| {
+    rt_thread::scope(|s| {
         for _ in 0..GROUP_FANOUT.min(items.len()) {
             s.spawn(|| loop {
                 let i = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
@@ -422,7 +422,7 @@ impl CloudApi {
             if status != 429 || wait > 4 {
                 break (status, text);
             }
-            std::thread::sleep(Duration::from_secs(wait));
+            rt_thread::sleep(Duration::from_secs(wait));
             wait *= 2;
         };
         if status != 200 {

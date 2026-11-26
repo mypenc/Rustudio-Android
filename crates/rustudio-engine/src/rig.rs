@@ -1445,7 +1445,7 @@ pub fn character_pool(rigs: usize) -> Option<&'static rapier3d::rayon::ThreadPoo
     }
     static POOL: std::sync::OnceLock<Option<rapier3d::rayon::ThreadPool>> = std::sync::OnceLock::new();
     POOL.get_or_init(|| {
-        let threads = std::thread::available_parallelism().map_or(1, |n| n.get().min(4));
+        let threads = rt_thread::available_parallelism().map_or(1, |n| n.get().min(4));
         if threads == 1 {
             return None;
         }

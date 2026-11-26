@@ -150,7 +150,7 @@ impl Picker {
         let (tx, rx) = mpsc::channel();
         let owner = self.owner;
         let ctx = ctx.clone();
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             let result = client_snapshot(&client).and_then(|mut client| {
                 if Some(client.user_id()) != owner {
                     return Err(Error::new(
@@ -247,7 +247,7 @@ impl Picker {
         let (tx, rx) = mpsc::channel();
         self.thumbnail_worker = Some(rx);
         let ctx = ctx.clone();
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             for batch in ids.chunks(12) {
                 let Ok(images) = thumbnails(Thumb::Asset, batch) else {
                     continue;

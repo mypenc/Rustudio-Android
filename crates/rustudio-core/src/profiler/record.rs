@@ -172,7 +172,7 @@ thread_local! {
     static LOCAL: Local = {
         static NEXT: AtomicU32 = AtomicU32::new(1);
         let id = NEXT.fetch_add(1, Ordering::Relaxed);
-        let name = std::thread::current().name().map(str::to_string).unwrap_or_else(|| format!("thread {id}"));
+        let name = rt_thread::current().name().map(str::to_string).unwrap_or_else(|| format!("thread {id}"));
         let buf = Arc::new(ThreadBuf { id, name: Mutex::new(name), pending: Mutex::new(Pending::default()) });
         threads().lock().unwrap_or_else(|e| e.into_inner()).push(buf.clone());
         Local { buf, depth: Cell::new(0) }

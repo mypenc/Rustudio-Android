@@ -146,7 +146,7 @@ impl IconCache {
         self.map.insert(id.to_string(), Icon::Loading);
         let tx = self.tx.clone();
         let owned = id.to_string();
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             let r = load_icon(&owned);
             let _ = tx.send((owned, r));
         });

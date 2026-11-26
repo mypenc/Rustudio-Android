@@ -2816,7 +2816,7 @@ impl Game {
             return;
         }
         let (tx, rx) = std::sync::mpsc::channel();
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             let _ = tx.send(prepare_sky(&bytes, orient));
         });
         self.lighting.sky_job = Some((key, rx));
@@ -3097,7 +3097,7 @@ impl Game {
             };
             let (tx, rx) = std::sync::mpsc::channel();
             let mut prims = prims;
-            std::thread::spawn(move || {
+            rt_thread::spawn(move || {
                 let t0 = web_time::Instant::now();
                 // The hull boxes the gather didn't know, as it worked them out.
                 let mut pending = false;
@@ -3159,7 +3159,7 @@ impl Game {
                             let lights = st.lightgrid_lights.clone();
                             let mut locals = st.lightgrid_locals.take().expect("locals");
                             let (tx, rx) = std::sync::mpsc::channel();
-                            std::thread::spawn(move || {
+                            rt_thread::spawn(move || {
                                 let t0 = web_time::Instant::now();
                                 let patches = locals.update(&occ, &lights, usize::MAX).unwrap_or_default();
                                 let _ = tx.send((locals, patches, t0.elapsed().as_secs_f64() * 1e3));
@@ -3240,7 +3240,7 @@ impl Game {
             }
             let gathered = rustudio_render::lightocc::Gathered { origin, voxel, solids };
             let (tx, rx) = std::sync::mpsc::channel();
-            std::thread::spawn(move || {
+            rt_thread::spawn(move || {
                 let _ = tx.send(rustudio_render::lightocc::fill(gathered));
             });
             st.lightocc_job = Some(rx);

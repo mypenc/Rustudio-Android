@@ -24,10 +24,10 @@ type Job = Box<dyn FnOnce() + Send>;
 static POOL: LazyLock<Mutex<mpsc::Sender<Job>>> = LazyLock::new(|| {
     let (tx, rx) = mpsc::channel::<Job>();
     let rx = Arc::new(Mutex::new(rx));
-    let n = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(4) / 2;
+    let n = rt_thread::available_parallelism().map(|n| n.get()).unwrap_or(4) / 2;
     for i in 0..n.clamp(1, crate::mech::ASSET_WORK_THREADS) {
         let rx = rx.clone();
-        let _ = std::thread::Builder::new().name(format!("asset-work-{i}")).spawn(move || loop {
+        let _ = rt_thread::Builder::new().name(format!("asset-work-{i}")).spawn(move || loop {
             let job = rx.lock().ok().and_then(|r| r.recv().ok());
             let Some(job) = job else { return };
             let _p = crate::profiler::scope("asset_work", crate::profiler::Cat::Assets);
@@ -127,7 +127,7 @@ mod tests {
         let t0 = web_time::Instant::now();
         while !jobs.running.is_empty() && t0.elapsed().as_secs() < 10 {
             jobs.poll();
-            std::thread::sleep(std::time::Duration::from_millis(1));
+            rt_thread::sleep(std::time::Duration::from_millis(1));
         }
     }
 

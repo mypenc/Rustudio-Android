@@ -232,7 +232,7 @@ pub fn body_mesh(doc: &Document, part: Ref, mesh_id: &str) -> Look {
     s.insert(key.clone(), State::Pending);
     drop(s);
     let mesh_id = mesh_id.to_string();
-    std::thread::Builder::new()
+    rt_thread::Builder::new()
         .name("hsr".into())
         .spawn(move || {
             let out = match hidden_mesh(&mesh_id, body_hsr, &cage, &garments) {

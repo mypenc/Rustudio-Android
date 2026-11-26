@@ -125,7 +125,7 @@ pub fn install(lua: &Lua, local_mode: bool) -> mlua::Result<()> {
             let id = jobs.next;
             jobs.pending.insert(id, rx);
             drop(jobs);
-            std::thread::spawn(move || {
+            rt_thread::spawn(move || {
                 let response = (|| {
                     let s = session()?;
                     let r = request.execute(&s, context).map_err(|e| e.to_string())?;
@@ -589,7 +589,7 @@ shared.dataLiveDone=true;print('SCRATCH ROUNDTRIP PASSED',name)
             {
                 break;
             }
-            std::thread::sleep(std::time::Duration::from_millis(20));
+            rt_thread::sleep(std::time::Duration::from_millis(20));
         }
         panic!(
             "scratch roundtrip failed: {:?}",

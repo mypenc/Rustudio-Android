@@ -74,7 +74,7 @@ pub fn install(lua: &Lua) -> mlua::Result<()> {
         };
         let (tx,rx)=mpsc::channel();
         let mut jobs=lua.app_data_mut::<Jobs>().unwrap();jobs.next+=1;let token=jobs.next;jobs.pending.insert(token,rx);drop(jobs);
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             let response=(|| {
                 if let Some(id)=id {
                     let bytes=if name=="LoadAssetVersion" {

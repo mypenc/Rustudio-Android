@@ -350,7 +350,7 @@ thread_local! {
 
 /// Run `f`, catching a panic in it (the caller falls back). Such a panic is
 /// expected, so it writes no crash report.
-pub fn recoverable<R>(f: impl FnOnce() -> R) -> std::thread::Result<R> {
+pub fn recoverable<R>(f: impl FnOnce() -> R) -> rt_thread::Result<R> {
     RECOVERING.with(|r| r.set(r.get() + 1));
     let out = std::panic::catch_unwind(std::panic::AssertUnwindSafe(f));
     RECOVERING.with(|r| r.set(r.get() - 1));
@@ -494,7 +494,7 @@ pub fn install() {
             return;
         }
         if !WRITTEN.swap(true, Ordering::SeqCst) {
-            let thread = std::thread::current();
+            let thread = rt_thread::current();
             let thread_name = thread.name().unwrap_or("<unnamed>").to_string();
             let msg = info
                 .payload()

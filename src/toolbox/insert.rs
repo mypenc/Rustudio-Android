@@ -151,7 +151,7 @@ pub fn prepare(h: &dyn Http, job: u64, mut asset: Asset, target: Target, cancel:
                     if cancel() {
                         return Err(Failure::Cancelled);
                     }
-                    std::thread::sleep(std::time::Duration::from_millis(10));
+                    rt_thread::sleep(std::time::Duration::from_millis(10));
                 }
             }
             let bytes = download(h, asset.id, cancel)?;

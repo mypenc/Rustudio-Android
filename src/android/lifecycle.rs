@@ -125,7 +125,7 @@ unsafe extern "C" fn on_destroy(activity: *mut ndk_sys::ANativeActivity) {
     }
     let since = Instant::now();
     while !LOOP_DONE.load(Ordering::SeqCst) && since.elapsed() < GRACE {
-        std::thread::sleep(Duration::from_millis(25));
+        rt_thread::sleep(Duration::from_millis(25));
     }
     if LOOP_DONE.load(Ordering::SeqCst) {
         // The loop returned: the glue's onDestroy no longer has to wait.

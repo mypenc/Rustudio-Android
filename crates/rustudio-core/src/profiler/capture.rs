@@ -281,7 +281,7 @@ impl Default for Meta {
             build: super::control::build().to_string(),
             instr_unit: String::new(),
             load_avg: load_avg(),
-            cpus: std::thread::available_parallelism().map_or(0, |n| n.get() as u32),
+            cpus: rt_thread::available_parallelism().map_or(0, |n| n.get() as u32),
             context: String::new(),
             source: None,
         }

@@ -235,7 +235,7 @@ impl<'a> Matchmaker<'a> {
                     .saturating_duration_since(web_time::Instant::now())
                     .min(std::time::Duration::from_millis(100));
                 if !step.is_zero() {
-                    std::thread::sleep(step);
+                    rt_thread::sleep(step);
                 }
             }
             cancel.load(Ordering::Acquire)

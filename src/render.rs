@@ -2931,7 +2931,7 @@ impl Renderer {
         }
         let pipes = std::sync::Arc::clone(&self.pipes);
         let settings = self.settings.clone();
-        let _ = std::thread::Builder::new().name("rustudio-pipelines".into()).spawn(move || {
+        let _ = rt_thread::Builder::new().name("rustudio-pipelines".into()).spawn(move || {
             let t0 = Instant::now();
             pipes.build_all(Some(&settings));
             if crate::perf_log::on() {
@@ -6457,7 +6457,7 @@ fn ggx_prefilter_cube(size: u32, data: &mut [u8]) {
     let base_w = src[0].0 as f32;
     let texel_sa = 4.0 * std::f32::consts::PI / (6.0 * base_w * base_w);
     // One thread per face: each writes only its own face's levels.
-    std::thread::scope(|scope| {
+    rt_thread::scope(|scope| {
         for (f, face) in data.chunks_mut(face_len).enumerate() {
             let fetch = &fetch;
             let to_srgb = &to_srgb;

@@ -51,7 +51,7 @@ static THREAD: LazyLock<Option<Thread>> = LazyLock::new(|| {
     // (the window's painter joins this thread before egui's paint)
     egui_wgpu::prewarm::set_before_paint(wait);
     let (tx, rx) = std::sync::mpsc::channel::<Job>();
-    let spawned = std::thread::Builder::new().name("rustudio-render".into()).spawn(move || {
+    let spawned = rt_thread::Builder::new().name("rustudio-render".into()).spawn(move || {
         // (waits for this initializer to finish)
         let Some(me) = THREAD.as_ref() else { return };
         for job in rx {
@@ -199,7 +199,7 @@ mod tests {
         for i in 0..50 {
             let s = seen.clone();
             super::run(move || {
-                std::thread::sleep(std::time::Duration::from_micros(50));
+                rt_thread::sleep(std::time::Duration::from_micros(50));
                 s.lock().unwrap().push(i);
             });
         }

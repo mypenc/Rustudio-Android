@@ -4,7 +4,7 @@
 
 use std::io;
 use std::sync::mpsc::{self, Receiver, Sender};
-use std::thread::{self, JoinHandle};
+use rt_thread::{self as thread, JoinHandle};
 
 use crate::game::Game;
 

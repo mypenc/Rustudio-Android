@@ -67,14 +67,14 @@ impl MockServer {
         let requests = Arc::new(Mutex::new(Vec::new()));
         let stop = Arc::new(AtomicBool::new(false));
         let (reqs, stop2) = (requests.clone(), stop.clone());
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             for conn in listener.incoming() {
                 if stop2.load(Ordering::SeqCst) {
                     break;
                 }
                 let Ok(conn) = conn else { continue };
                 let (reqs, handler) = (reqs.clone(), handler.clone());
-                std::thread::spawn(move || {
+                rt_thread::spawn(move || {
                     let _ = serve(conn, &reqs, &handler);
                 });
             }

@@ -39,7 +39,7 @@ pub fn poll(key: &str, job: Job) -> Poll {
     }
     map.insert(key.to_string(), None);
     let key = key.to_string();
-    std::thread::spawn(move || {
+    rt_thread::spawn(move || {
         let r = (|| {
             if !rustudio_core::assets::wait_for_session(std::time::Duration::from_secs(20)) {
                 return Err("HTTP 401 (Unauthorized)".to_string());

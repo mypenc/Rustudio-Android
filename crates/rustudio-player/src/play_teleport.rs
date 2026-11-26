@@ -98,7 +98,7 @@ impl Game {
         let client = self.account.shared_client();
         let place = req.place_id;
         let universe = req.universe_id;
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             let result = (|| {
                 let session = {
                     let g = client.as_ref().ok_or("sign in to teleport to other places")?;

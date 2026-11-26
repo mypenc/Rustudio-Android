@@ -232,7 +232,7 @@ pub fn run(
             next += period;
             let now = Instant::now();
             if next > now {
-                std::thread::sleep(next - now);
+                rt_thread::sleep(next - now);
             } else if now - next > period * 4 {
                 // (fell behind: don't run a burst of catch-up frames)
                 next = now;

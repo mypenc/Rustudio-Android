@@ -39,7 +39,7 @@ pub fn install(lua:&Lua)->mlua::Result<()>{
         };
         let token=NEXT.fetch_add(1,Ordering::Relaxed);let(tx,rx)=mpsc::channel();
         lua.app_data_mut::<ContentJobs>().unwrap().pending.insert(token,rx);
-        std::thread::spawn(move||{
+        rt_thread::spawn(move||{
             let result=match source{
                 Source::Mesh(bytes)=>Ok((*bytes).clone()),
                 Source::Image(image)=>(||{

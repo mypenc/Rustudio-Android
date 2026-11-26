@@ -1903,7 +1903,7 @@ impl Editor {
             let dlg = rfd::AsyncFileDialog::new()
                 .set_title("Run Luau Script")
                 .add_filter("Luau Scripts", &["luau", "lua", "txt"]);
-            std::thread::spawn(move || {
+            rt_thread::spawn(move || {
                 let picked = pollster::block_on(dlg.pick_file()).map(|h| crate::file_dialog::handle_path(&h));
                 let _ = tx.send(picked);
                 ctx.request_repaint();

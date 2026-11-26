@@ -208,7 +208,7 @@ fn get_json(s: &Session, url: &str) -> std::result::Result<Value, Failure> {
         if st != 429 || wait > 8 {
             break (st, t);
         }
-        std::thread::sleep(std::time::Duration::from_secs(wait));
+        rt_thread::sleep(std::time::Duration::from_secs(wait));
         wait *= 2;
     };
     if st != 200 {
@@ -355,7 +355,7 @@ pub fn download(s: &Session, asset_id: u64, version_id: Option<u64>) -> std::res
         if st != 429 || wait > 4 {
             break (st, body);
         }
-        std::thread::sleep(std::time::Duration::from_secs(wait));
+        rt_thread::sleep(std::time::Duration::from_secs(wait));
         wait *= 2;
     };
     // A specific older version the v2 route keeps refusing (429): asset

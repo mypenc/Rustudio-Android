@@ -12,7 +12,7 @@ impl Watchdog {
     fn arm(name: &str) -> Watchdog {
         let (tx, rx) = std::sync::mpsc::channel::<()>();
         let name = name.to_string();
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             if let Err(std::sync::mpsc::RecvTimeoutError::Timeout) = rx.recv_timeout(std::time::Duration::from_secs(90)) {
                 eprintln!("script_profiler test run {name:?} hung for 90 s: aborting");
                 std::process::abort();

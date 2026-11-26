@@ -157,7 +157,7 @@ pub fn spawn_background_install_if_missing() {
             if let Some(marker) = std::fs::read_to_string(root.join(MARKER)).ok() {
                 if let Some(version) = marker.split_whitespace().next().and_then(studio_version) {
                     let version = version.to_owned();
-                    let _ = std::thread::Builder::new().name("studio-content-upgrade".into()).spawn(move || {
+                    let _ = rt_thread::Builder::new().name("studio-content-upgrade".into()).spawn(move || {
                         let a = agent();
                         if !packages.is_empty() {
                             let names: Vec<&str> = packages.iter().map(|(p, _)| *p).collect();
@@ -194,7 +194,7 @@ pub fn spawn_background_install_if_missing() {
         }
         return;
     }
-    let _ = std::thread::Builder::new().name("studio-content".into()).spawn(|| {
+    let _ = rt_thread::Builder::new().name("studio-content".into()).spawn(|| {
         post(false, "No Roblox Studio install found: downloading Studio's built-in content (default character, player scripts, fonts, textures, sounds, the CoreScripts' icon font; about 70 MB) from Roblox's CDN…".into());
         // The packages as they come, so a slow connection is seen to get
         // somewhere (the retired textures are a hundred small fetches: one
@@ -220,7 +220,7 @@ pub fn spawn_background_install_if_missing() {
                 }
                 Err(e) if attempt < TRIES => {
                     post(false, format!("Studio content: {e}; trying again in 20 s"));
-                    std::thread::sleep(std::time::Duration::from_secs(20));
+                    rt_thread::sleep(std::time::Duration::from_secs(20));
                 }
                 Err(e) => post(true, format!(
                     "Couldn't download Studio's built-in content: {e}. It continues where it stopped at the next start; `rustudio --install-studio-content` retries now, or point RUSTUDIO_STUDIO_DIR at a Studio install."
@@ -300,7 +300,7 @@ pub fn fetch_classic_oof_once() {
     {
         return;
     }
-    let _ = std::thread::Builder::new().name("classic-oof".into()).spawn(|| {
+    let _ = rt_thread::Builder::new().name("classic-oof".into()).spawn(|| {
         let dest = classic_oof();
         let got = fetch_one(&agent(), &format!("{CDN}/{CLASSIC_OOF_PKG}"), "uuhhh.mp3").and_then(|data| {
             let dir = dest.parent().ok_or("bad data dir")?;
@@ -465,7 +465,7 @@ pub fn install(progress: &(dyn Fn(&str) + Sync)) -> Result<String, String> {
         let total = PACKAGES.len();
         let next = std::sync::atomic::AtomicUsize::new(0);
         let failed: Mutex<Option<String>> = Mutex::new(None);
-        std::thread::scope(|scope| {
+        rt_thread::scope(|scope| {
             for _ in 0..PARALLEL_PACKAGES.min(total) {
                 scope.spawn(|| loop {
                     let n = next.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
@@ -569,7 +569,7 @@ fn install_extras(agent: &ureq::Agent, version: &str, root: &Path, progress: &(d
     if !legacy.is_empty() {
         progress(&format!("fetching {} retired textures", legacy.len()));
         let next = std::sync::atomic::AtomicUsize::new(0);
-        std::thread::scope(|scope| {
+        rt_thread::scope(|scope| {
             for _ in 0..PARALLEL_LEGACY.min(legacy.len()) {
                 scope.spawn(|| loop {
                     let n = next.fetch_add(1, std::sync::atomic::Ordering::SeqCst);

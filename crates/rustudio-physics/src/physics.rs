@@ -1167,7 +1167,7 @@ type PhysicsJobOutput = (Box<Physics>, PhysicsFrame, Vec<(&'static str, f64, u64
 /// One in-flight frame of the server's simulation. The job owns the world
 /// and leaves DOM and Lua access to the caller.
 pub struct PhysicsJob {
-    result: std::sync::mpsc::Receiver<std::thread::Result<PhysicsJobOutput>>,
+    result: std::sync::mpsc::Receiver<rt_thread::Result<PhysicsJobOutput>>,
     hurry: std::sync::Arc<std::sync::atomic::AtomicBool>,
     /// The frame's own ticks done so far, of `planned`.
     progress: std::sync::Arc<std::sync::atomic::AtomicU32>,
@@ -1221,7 +1221,7 @@ impl PhysicsJob {
 
     fn finish_join(
         start: web_time::Instant,
-        result: std::thread::Result<PhysicsJobOutput>,
+        result: rt_thread::Result<PhysicsJobOutput>,
     ) -> (Box<Physics>, PhysicsFrame) {
         rustudio_core::bench::add("physics_join_wall", start.elapsed().as_secs_f64() * 1000.0, 1);
         let (world, frame, sections) = result.unwrap_or_else(|panic| std::panic::resume_unwind(panic));
@@ -6592,7 +6592,7 @@ fn with_inline_pool<R>(f: impl FnOnce(Option<&rapier3d::rayon::ThreadPool>) -> R
 fn par_pool() -> Option<&'static rapier3d::rayon::ThreadPool> {
     static POOL: std::sync::OnceLock<Option<rapier3d::rayon::ThreadPool>> = std::sync::OnceLock::new();
     POOL.get_or_init(|| {
-        let available = std::thread::available_parallelism().map_or(1, |n| n.get());
+        let available = rt_thread::available_parallelism().map_or(1, |n| n.get());
         let threads = std::env::var("RUSTUDIO_PHYSICS_THREADS").ok()
             .and_then(|value| value.parse::<usize>().ok())
             .filter(|&count| count > 0)

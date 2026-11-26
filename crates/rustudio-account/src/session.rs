@@ -1169,13 +1169,13 @@ mod tests {
         use web_time::Instant;
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         let url = format!("http://{}/", listener.local_addr().unwrap());
-        let server = std::thread::spawn(move || {
+        let server = rt_thread::spawn(move || {
             let (mut stream, _) = listener.accept().unwrap();
             stream.set_read_timeout(Some(Duration::from_secs(2))).unwrap();
             let mut bytes = [0; 4096];
             let _ = stream.read(&mut bytes);
             // Keep the connection open without ever replying.
-            std::thread::sleep(Duration::from_secs(1));
+            rt_thread::sleep(Duration::from_secs(1));
         });
         let session = Session::unchecked(Cookie::new("test-cookie").unwrap(),
             Profile { id: 1, name: "test".into(), display_name: "test".into() });

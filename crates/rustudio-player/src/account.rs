@@ -226,7 +226,7 @@ impl Account {
             if !(checking || avatar_pending) || t0.elapsed() >= max {
                 return logs;
             }
-            std::thread::sleep(std::time::Duration::from_millis(20));
+            rt_thread::sleep(std::time::Duration::from_millis(20));
         }
     }
 
@@ -362,7 +362,7 @@ impl Account {
         let client = self.client.clone();
         let label = label.to_string();
         let _ = tx.send(Msg::Log(Level::Info, format!("{label}…")));
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             if let Err(e) = f(&client, &tx) {
                 let _ = tx.send(Msg::Log(Level::Error, format!("{label} failed: {e}")));
             }
@@ -498,7 +498,7 @@ impl Account {
         self.config().accounts.retain(|a| a.id != id);
         let _ = self.config().save();
         self.heads.remove(&id);
-        std::thread::spawn(move || Client::forget_account(id));
+        rt_thread::spawn(move || Client::forget_account(id));
     }
 
     /// Sign in after a sign-out: the import file may be read again.
@@ -647,7 +647,7 @@ impl Account {
         }
         self.heads_asked.extend(ids.iter().copied());
         let tx = self.tx.clone();
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             let Ok(list) = rustudio_account::headshots(&ids) else { return };
             for (id, bytes) in list {
                 let Ok(img) = image::load_from_memory(&bytes) else { continue };

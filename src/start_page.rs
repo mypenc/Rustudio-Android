@@ -207,7 +207,7 @@ impl StartPage {
     ) {
         self.jobs += 1;
         let tx = self.tx.clone();
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             f(Self::api(client, ep), &tx);
             let _ = tx.send(Msg::Done);
         });
@@ -526,7 +526,7 @@ impl Editor {
         let Some(id) = key.strip_prefix("c:").map(str::to_string) else { return };
         let (tx, rx) = channel();
         self.start.tpl_preview_rx = Some(rx);
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             let _ = tx.send((key, template_prefs::save_preview(&id, w, h, rgba)));
         });
     }

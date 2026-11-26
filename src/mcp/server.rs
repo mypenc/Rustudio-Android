@@ -125,14 +125,14 @@ impl Server {
         let stop = Arc::new(AtomicBool::new(false));
         let stop2 = stop.clone();
         let shared2 = shared.clone();
-        let _ = std::thread::Builder::new().name("mcp-listen".into()).spawn(move || {
+        let _ = rt_thread::Builder::new().name("mcp-listen".into()).spawn(move || {
             for stream in listener.incoming() {
                 if stop2.load(Ordering::Acquire) {
                     break;
                 }
                 let Ok(stream) = stream else { continue };
                 let (tx, shared, stop) = (tx.clone(), shared2.clone(), stop2.clone());
-                let _ = std::thread::Builder::new().name("mcp-conn".into()).spawn(move || connection(stream, &tx, &shared, &stop));
+                let _ = rt_thread::Builder::new().name("mcp-conn".into()).spawn(move || connection(stream, &tx, &shared, &stop));
             }
         });
         log::info!("MCP server listening on 127.0.0.1:{port}");
@@ -463,7 +463,7 @@ mod tests {
         let port = server.port;
         // Answer calls from a stand-in UI thread.
         let jobs = std::mem::replace(&mut server.jobs, channel().1);
-        std::thread::spawn(move || {
+        rt_thread::spawn(move || {
             while let Ok(job) = jobs.recv() {
                 let _ = job.reply.send(ToolResult::text(format!("ran {}", job.tool)));
             }

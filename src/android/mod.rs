@@ -203,9 +203,9 @@ pub fn run(app: AndroidApp) {
         rustudio_core::studio_content::spawn_background_install_if_missing();
     } else {
         log::warn!("no network yet: Studio content download waits for one");
-        let _ = std::thread::Builder::new().name("studio-content-wait".into()).spawn(|| {
+        let _ = rt_thread::Builder::new().name("studio-content-wait".into()).spawn(|| {
             for _ in 0..180 {
-                std::thread::sleep(std::time::Duration::from_secs(10));
+                rt_thread::sleep(std::time::Duration::from_secs(10));
                 if jni::network_available().unwrap_or(true) {
                     log::info!("network is up: starting the Studio content download");
                     rustudio_core::studio_content::spawn_background_install_if_missing();
@@ -430,7 +430,7 @@ pub fn gpu_watch(ed: &mut crate::app::Editor) -> bool {
         log::error!("rustudio: relaunch: {e}");
     }
     // (the report and the save are on disk; the relaunch intent is queued)
-    std::thread::sleep(std::time::Duration::from_millis(300));
+    rt_thread::sleep(std::time::Duration::from_millis(300));
     std::process::exit(0);
 }
 
@@ -523,7 +523,7 @@ pub mod touch {
 /// `adb logcat -s rustudio` after a start shows where a slow network's
 /// time goes.
 fn network_check() {
-    let _ = std::thread::Builder::new().name("network-check".into()).spawn(|| {
+    let _ = rt_thread::Builder::new().name("network-check".into()).spawn(|| {
         for url in [
             "https://clientsettingscdn.roblox.com/v2/client-version/WindowsStudio64",
             "https://assetdelivery.roblox.com/v1/asset/?id=1",

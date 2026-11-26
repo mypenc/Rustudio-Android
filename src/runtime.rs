@@ -514,10 +514,10 @@ mod interrupt_watchdog {
         let Some(proc) = proc else { return };
         VMS.lock().unwrap().push((cb as usize, proc as usize));
         STARTED.call_once(|| {
-            std::thread::Builder::new()
+            rt_thread::Builder::new()
                 .name("lua-watchdog".into())
                 .spawn(|| loop {
-                    std::thread::sleep(std::time::Duration::from_millis(WATCHDOG_MS));
+                    rt_thread::sleep(std::time::Duration::from_millis(WATCHDOG_MS));
                     for &(cb, proc) in VMS.lock().unwrap().iter() {
                         let cb = cb as *mut ffi::lua_Callbacks;
                         // SAFETY: registered VMs are alive until unregister,

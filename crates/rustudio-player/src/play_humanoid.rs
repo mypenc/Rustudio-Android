@@ -1454,7 +1454,7 @@ mod script_moves_player_character_tests {
             n += 1;
             tick(&mut game, &ctx, 1);
             if client_since.is_none() {
-                std::thread::sleep(std::time::Duration::from_millis(5));
+                rt_thread::sleep(std::time::Duration::from_millis(5));
             }
             assert_eq!(
                 game.run_luau(Side::Server, r#"

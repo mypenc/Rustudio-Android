@@ -2238,7 +2238,7 @@ impl SelfTest {
                             rustudio_core::mech::SELFTEST_PERF_SECONDS,
                             rustudio_core::mech::PERF_MIN_FPS,
                             rustudio_core::platform::load_average(),
-                            std::thread::available_parallelism().map(|n| n.get()).unwrap_or(1)
+                            rt_thread::available_parallelism().map(|n| n.get()).unwrap_or(1)
                         ),
                     });
                     // Then the Place A playthrough's result (it ran meanwhile).

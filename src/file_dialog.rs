@@ -173,7 +173,7 @@ impl Dialogs {
             Kind::PickFolder => Box::pin(dialog.pick_folder()),
             Kind::SaveFile => Box::pin(dialog.save_file()),
         };
-        let spawned = std::thread::Builder::new().name("file-dialog".into()).spawn(move || {
+        let spawned = rt_thread::Builder::new().name("file-dialog".into()).spawn(move || {
             let path = pollster::block_on(fut).map(|h| h.path().to_path_buf());
             let _ = tx.send(path);
             if let Some(c) = ctx {
@@ -196,7 +196,7 @@ impl Dialogs {
         let dialog = request.into_rfd();
         let (tx, rx) = channel();
         let ctx = self.ctx.clone();
-        let spawned = std::thread::Builder::new().name("file-dialog-multi".into()).spawn(move || {
+        let spawned = rt_thread::Builder::new().name("file-dialog-multi".into()).spawn(move || {
             let paths = pollster::block_on(dialog.pick_files())
                 .map(|hs| hs.into_iter().map(|h| h.path().to_path_buf()).collect())
                 .unwrap_or_default();

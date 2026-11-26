@@ -90,13 +90,13 @@ fn seen_map() -> &'static Mutex<HashMap<String, (String, Placement)>> {
     static SEEN: OnceLock<Mutex<HashMap<String, (String, Placement)>>> = OnceLock::new();
     SEEN.get_or_init(|| {
         if active() {
-            let _ = std::thread::Builder::new().name("hyprland".into()).spawn(|| loop {
+            let _ = rt_thread::Builder::new().name("hyprland".into()).spawn(|| loop {
                 if let Some(map) = poll() {
                     if let Ok(mut s) = seen_map().lock() {
                         *s = map;
                     }
                 }
-                std::thread::sleep(Duration::from_secs(1));
+                rt_thread::sleep(Duration::from_secs(1));
             });
         }
         Mutex::new(HashMap::new())
@@ -150,7 +150,7 @@ pub fn restore(class: &str, p: &Placement) -> bool {
     };
     let lua = dispatches(&addr, p).join(" ; ");
     let legacy = legacy_dispatches(&addr, p).join(" ; ");
-    let _ = std::thread::Builder::new().name("hyprland restore".into()).spawn(move || {
+    let _ = rt_thread::Builder::new().name("hyprland restore".into()).spawn(move || {
         let out = Command::new("hyprctl").args(["--batch", &lua]).output();
         // Before 0.55 dispatch took the old text form.
         if out.map_or(true, |o| String::from_utf8_lossy(&o.stdout).contains("error")) {

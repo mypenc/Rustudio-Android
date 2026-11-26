@@ -133,7 +133,7 @@ shared.memoryLiveDone=true;print('MEMORY SCRATCH ROUNDTRIP PASSED',name)
             rt.step(0.02);
             if rt.lua.globals().get::<Table>("shared").unwrap().get::<bool>("memoryLiveDone").unwrap_or(false){return}
             if rt.world_mut().unwrap().output.iter().any(|(l,_)|matches!(l,rustudio_core::log::Level::Error)){break}
-            std::thread::sleep(std::time::Duration::from_millis(20));
+            rt_thread::sleep(std::time::Duration::from_millis(20));
         }
         panic!("memory scratch roundtrip failed: {:?}",rt.world_mut().unwrap().output);
     }

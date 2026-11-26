@@ -27,7 +27,10 @@ mod wasm {
     }
     impl<T> JoinHandle<T> {
         pub fn join(mut self) -> Result<T> {
-            Ok(self.result.take().expect("joined twice"))
+            match self.result.take() {
+                Some(v) => Ok(v),
+                None => Err(Box::new("worker threads are not run in the browser build") as Box<dyn Any + Send>),
+            }
         }
         pub fn thread(&self) -> &std::thread::Thread {
             &self.thread
@@ -65,6 +68,14 @@ mod wasm {
             F: FnOnce() -> T + Send + 'static,
             T: Send + 'static,
         {
+            if self.name.is_some() {
+                // Named threads are long-lived workers (`loop { rx.recv() }`,
+                // watchdogs): running them inline would never return. Park the
+                // closure forever instead; leaking it keeps its channels open so
+                // senders do not start failing.
+                std::mem::forget(f);
+                return Ok(JoinHandle { result: None, thread: std::thread::current() });
+            }
             Ok(spawn(f))
         }
         pub fn spawn_scoped<'scope, 'env, F, T>(self, scope: &'scope Scope<'scope, 'env>, f: F) -> io::Result<ScopedJoinHandle<'scope, T>>

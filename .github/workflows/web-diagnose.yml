@@ -1,0 +1,45 @@
+name: Web diagnose
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Page to load
+        default: https://mypenc.github.io/Rustudio-Android/
+      secs:
+        description: Seconds to watch
+        default: "150"
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright Chromium
+        run: |
+          cd tools/webdiag
+          npm init -y >/dev/null
+          npm i playwright@1.49.1 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Load the page
+        working-directory: tools/webdiag
+        env:
+          URL: ${{ inputs.url }}
+          SECS: ${{ inputs.secs }}
+        run: node run.js
+      - name: Publish to ci-logs
+        if: always()
+        run: |
+          git clone -q --branch ci-logs --single-branch "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" logs
+          cd logs
+          git config user.name mypenc; git config user.email "338947253+mypenc@users.noreply.github.com"
+          rm -rf diag; mkdir diag; cp ../tools/webdiag/out/* diag/ 2>/dev/null || true
+          echo "run ${{ github.run_id }} url ${{ inputs.url }}" > diag/RUN
+          git add -A; git commit -q -m "diag ${{ github.run_id }}" || true
+          git push -q origin ci-logs

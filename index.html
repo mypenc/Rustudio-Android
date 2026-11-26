@@ -4,6 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RusTudio (web)</title>
+  <!-- The wasm-bindgen glue does `import ... from "wasi_snapshot_preview1"`;
+       a bare specifier needs an import map, and it has to come before the
+       module script trunk injects. The shim below supplies the real functions. -->
+  <script type="importmap">
+  {"imports": {"wasi_snapshot_preview1": "data:text/javascript,const%20w%3D%28%29%3D%3EglobalThis.__wasi%7C%7C%7B%7D%3B%0Aexport%20const%20clock_time_get%3D%28...a%29%3D%3Ew%28%29.clock_time_get%28...a%29%3B%0Aexport%20const%20clock_res_get%3D%28...a%29%3D%3Ew%28%29.clock_res_get%28...a%29%3B%0Aexport%20const%20fd_write%3D%28...a%29%3D%3Ew%28%29.fd_write%28...a%29%3B%0Aexport%20const%20fd_close%3D%28...a%29%3D%3Ew%28%29.fd_close%28...a%29%3B%0Aexport%20const%20fd_seek%3D%28...a%29%3D%3Ew%28%29.fd_seek%28...a%29%3B%0Aexport%20const%20fd_fdstat_get%3D%28...a%29%3D%3Ew%28%29.fd_fdstat_get%28...a%29%3B%0Aexport%20const%20environ_sizes_get%3D%28...a%29%3D%3Ew%28%29.environ_sizes_get%28...a%29%3B%0Aexport%20const%20environ_get%3D%28...a%29%3D%3Ew%28%29.environ_get%28...a%29%3B%0Aexport%20const%20args_sizes_get%3D%28...a%29%3D%3Ew%28%29.args_sizes_get%28...a%29%3B%0Aexport%20const%20args_get%3D%28...a%29%3D%3Ew%28%29.args_get%28...a%29%3B%0Aexport%20const%20random_get%3D%28...a%29%3D%3Ew%28%29.random_get%28...a%29%3B%0Aexport%20const%20sched_yield%3D%28...a%29%3D%3Ew%28%29.sched_yield%28...a%29%3B%0Aexport%20const%20proc_exit%3D%28...a%29%3D%3Ew%28%29.proc_exit%28...a%29%3B%0A"}}
+  </script>
   <link data-trunk rel="rust" data-bin="rustudio" data-wasm-opt="0" />
   <link data-trunk rel="icon" href="assets/icons/rustudio-32.png">
   <script>
@@ -49,6 +55,7 @@
         sched_yield() { return 0; },
         proc_exit(code) { throw new Error("wasi proc_exit(" + code + ")"); },
       };
+      globalThis.__wasi = impl;
       const rawInstantiate = WebAssembly.instantiate.bind(WebAssembly);
       async function withWasi(module, imports) {
         const needed = WebAssembly.Module.imports(module).filter(i => i.module === "wasi_snapshot_preview1");

@@ -253,7 +253,7 @@ mod tests {
     #[test]
     fn commit_acknowledges_only_the_submitted_snapshot() {
         let root =
-            std::env::temp_dir().join(format!("rustudio-draft-inflight-{}", std::process::id()));
+            (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-draft-inflight-{}", std::process::id()));
         let mut d = DraftStore::new(root.clone());
         d.register(1, Some("inflight"), "base".into()).unwrap();
         d.edit(1, "submitted".into()).unwrap();
@@ -269,7 +269,7 @@ mod tests {
     }
     #[test]
     fn drafts_survive_reconnect_and_preserve_peer_conflicts() {
-        let root = std::env::temp_dir().join(format!("rustudio-drafts-{}", std::process::id()));
+        let root = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-drafts-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&root);
         {
             let mut d = DraftStore::new(root.clone());

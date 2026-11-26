@@ -288,7 +288,7 @@ fn rerun_headless() -> Option<i32> {
     // descriptors, so rustudio inside writes to two FIFOs (RUSTUDIO_PARENT_OUT
     // / _ERR, see restore_parent_fds) that this process copies to its own
     // stdout / stderr.
-    let tmp = std::env::temp_dir().join(format!("rustudio-headless-{}", std::process::id()));
+    let tmp = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-headless-{}", std::process::id()));
     let _ = std::fs::create_dir_all(&tmp);
     let gs_log = tmp.join("gamescope.log");
     let gs_out = std::fs::File::create(&gs_log).ok();

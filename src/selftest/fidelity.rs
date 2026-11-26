@@ -137,7 +137,7 @@ impl SelfTest {
             ));
             return;
         }
-        let dir = std::env::temp_dir().join("rustudio-selftest-fidelity");
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join("rustudio-selftest-fidelity");
         let _ = std::fs::create_dir_all(&dir);
         for f in ["output.log", "place-a-server.luau", "place-a-client.luau"] {
             let _ = std::fs::write(dir.join(f), "");

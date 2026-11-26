@@ -446,7 +446,7 @@ mod tests {
 
     #[test]
     fn refuses_escaping_paths() {
-        let d = std::env::temp_dir().join(format!("rs-sc-test-{}", std::process::id()));
+        let d = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rs-sc-test-{}", std::process::id()));
         assert!(write_file(&d, "..\\evil.txt", b"x").is_err());
         assert!(write_file(&d, "a/../../evil.txt", b"x").is_err());
         assert!(write_file(&d, "C:\\evil.txt", b"x").is_err());

@@ -150,11 +150,11 @@ impl SelfTest {
         // content folder is our own generated files; sounds stay silent.
         std::env::set_var(
             "RUSTUDIO_CACHE_DIR",
-            std::env::temp_dir().join("rustudio-selftest-cache"),
+            (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join("rustudio-selftest-cache"),
         );
         std::env::set_var(
             "RUSTUDIO_CONTENT_DIR",
-            std::env::temp_dir().join("rustudio-selftest-content"),
+            (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join("rustudio-selftest-content"),
         );
         std::env::set_var("RUSTUDIO_NO_AUDIO", "1");
         SelfTest {
@@ -474,7 +474,7 @@ impl SelfTest {
                     self.notes.push("Ctrl+Y did not redo the move".into());
                 }
                 // Save and reload through the real file format.
-                let path = std::env::temp_dir().join("rustudio-selftest.rbxl");
+                let path = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join("rustudio-selftest.rbxl");
                 let before = ed.game.doc.count_class("BasePart");
                 let roundtrip = ed.game
                     .doc
@@ -2566,7 +2566,7 @@ impl SelfTest {
             },
             // FBX pack: InsertService:LoadAsset on an FBX in the local asset store.
             20 => {
-                let dir = std::env::temp_dir().join("rustudio-selftest-assets");
+                let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join("rustudio-selftest-assets");
                 let _ = std::fs::create_dir_all(&dir);
                 let _ = std::fs::write(
                     dir.join(format!("{FBX_ASSET_ID}.fbx")),

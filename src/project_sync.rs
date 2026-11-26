@@ -623,7 +623,7 @@ mod tests {
     /// instances each change exactly the right files.
     #[test]
     fn write_back_structure() {
-        let dir = std::env::temp_dir().join(format!("rustudio-test-proj-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-test-proj-{}", std::process::id()));
         let _ = std::fs::create_dir_all(dir.join("src/Server/Sub"));
         std::fs::write(
             dir.join("default.project.json"),
@@ -681,7 +681,7 @@ mod tests {
     /// symlink) is neither read nor writable.
     #[test]
     fn path_outside_project_is_refused() {
-        let base = std::env::temp_dir().join(format!("rustudio-test-escape-{}", std::process::id()));
+        let base = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-test-escape-{}", std::process::id()));
         let dir = base.join("proj");
         let _ = std::fs::create_dir_all(dir.join("src"));
         let secret = base.join("outside.txt");
@@ -741,7 +741,7 @@ mod tests {
     /// path out of the repository is still refused.
     #[test]
     fn path_inside_the_repository_is_allowed() {
-        let base = std::env::temp_dir().join(format!("rustudio-test-repo-{}", std::process::id()));
+        let base = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-test-repo-{}", std::process::id()));
         std::fs::create_dir_all(&base).unwrap();
         // ProjectState stores paths relative to the canonical project file.
         let base = std::fs::canonicalize(base).unwrap();

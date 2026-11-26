@@ -192,7 +192,7 @@ mod tests {
     #[cfg(windows)]
     #[test]
     fn trash_goes_to_recycle_bin() {
-        let dir = std::env::temp_dir().join(format!("rustudio-recycle-test-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-recycle-test-{}", std::process::id()));
         std::fs::create_dir_all(dir.join("folder")).unwrap();
         let f = dir.join("gone.txt");
         std::fs::write(&f, "x").unwrap();
@@ -209,7 +209,7 @@ mod tests {
     #[cfg(target_os = "macos")]
     #[test]
     fn trash_goes_to_finder_trash() {
-        let dir = std::env::temp_dir().join(format!("rustudio-trash-test-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-trash-test-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let f = dir.join("gone.txt");
         std::fs::write(&f, "x").unwrap();

@@ -17,7 +17,7 @@ pub(crate) fn temp_data() {
     rustudio_engine::globals_parity::show_internals(true);
     static ONCE: std::sync::Once = std::sync::Once::new();
     ONCE.call_once(|| {
-        let dir = std::env::temp_dir().join(format!("rustudio-plugin-test-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-plugin-test-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::env::set_var("RUSTUDIO_PLUGIN_DATA", &dir);
     });
@@ -446,7 +446,7 @@ fn play_copies_run_with_play_values() {
 
 #[test]
 fn plugins_folder_order() {
-    let dir = std::env::temp_dir().join(format!("rustudio-plugin-order-{}", std::process::id()));
+    let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-plugin-order-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(dir.join("Sub/Deeper")).unwrap();
     for f in ["Zz.lua", "Aa.lua", "b.LUA", "Ab.rbxmx", "Zy.rbxmx", "M.rbxm", "skip.luau", "x.txt", "Sub/In.lua", "Sub/Deeper/D.lua", "Sub/no.rbxmx"] {
@@ -536,7 +536,7 @@ fn command_identity_gets_plugin_manager_interface() {
 #[test]
 fn builtin_plugin_runs_at_identity_6_with_roblox_script_capabilities() {
     temp_data();
-    let dir = std::env::temp_dir().join(format!("rustudio-builtin-test-{}", std::process::id()));
+    let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-builtin-test-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
     // Write a minimal valid binary .rbxm with a Script whose Source is Luau bytecode or plain string.
@@ -586,7 +586,7 @@ fn builtin_plugin_runs_at_identity_6_with_roblox_script_capabilities() {
 #[test]
 fn builtin_plugin_round2_apis_and_security_gates() {
     temp_data();
-    let dir = std::env::temp_dir().join(format!("rustudio-builtin-r2-{}", std::process::id()));
+    let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-builtin-r2-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
     let mut dom = WeakDom::new(InstanceBuilder::new("DataModel"));
@@ -789,7 +789,7 @@ fn builtin_plugin_round2_apis_and_security_gates() {
 #[test]
 fn deferred_builtin_plugins_load_on_first_use() {
     temp_data();
-    let dir = std::env::temp_dir().join(format!("rustudio-lazy-builtin-{}", std::process::id()));
+    let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-lazy-builtin-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
 
@@ -926,7 +926,7 @@ fn builtin_tool_selector_registers_one_of_each_and_never_materializes_unchosen()
     use rustudio_core::rustudio_settings::{BuiltinTool, BuiltinToolChoices, ToolImpl};
 
     temp_data();
-    let dir = std::env::temp_dir().join(format!("rustudio-tool-selector-{}", std::process::id()));
+    let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-tool-selector-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
 

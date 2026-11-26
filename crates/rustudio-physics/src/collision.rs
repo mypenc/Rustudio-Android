@@ -499,7 +499,7 @@ mod tests {
         rustudio_core::assets::register_generated(id, l_prism_obj().into_bytes());
         std::env::set_var(
             "RUSTUDIO_CACHE_DIR",
-            std::env::temp_dir().join("rustudio-collision-test"),
+            (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join("rustudio-collision-test"),
         );
         let Lookup::Ready(hull) = hulls(id, FIDELITY_HULL) else {
             panic!("hull")
@@ -559,7 +559,7 @@ mod tests {
         rustudio_core::assets::register_generated(id, obj.into_bytes());
         std::env::set_var(
             "RUSTUDIO_CACHE_DIR",
-            std::env::temp_dir().join("rustudio-collision-test"),
+            (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join("rustudio-collision-test"),
         );
         let Lookup::Ready(dec) = wait_ready(id, FIDELITY_DEFAULT, std::time::Duration::from_secs(60)) else {
             panic!("decomposition")

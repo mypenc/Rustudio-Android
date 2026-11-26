@@ -177,7 +177,7 @@ mod tests {
 
     #[test]
     fn the_bridge_lists_tools_without_a_window() {
-        let dir = std::env::temp_dir().join(format!("rustudio-mcp-bridge-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-mcp-bridge-{}", std::process::id()));
         std::env::set_var("RUSTUDIO_MCP_SESSIONS", &dir);
         let mut b = Bridge { pid: None, token: "x".into() };
         let init = b.handle(&json!({ "jsonrpc": "2.0", "id": 1, "method": "initialize", "params": { "protocolVersion": "2025-06-18" } })).unwrap();

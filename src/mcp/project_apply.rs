@@ -267,7 +267,7 @@ mod tests {
     use super::*;
 
     fn project_dir() -> PathBuf {
-        let dir = std::env::temp_dir().join(format!("rustudio-mcp-project-{}-{:?}", std::process::id(), std::thread::current().id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-mcp-project-{}-{:?}", std::process::id(), std::thread::current().id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(dir.join("src/server/Lib")).unwrap();
         std::fs::write(

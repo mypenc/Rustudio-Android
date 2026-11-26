@@ -259,7 +259,7 @@ mod tests {
         assert_eq!(s.initial, Initial::Preview);
         assert!(s.auto_attach && s.hydrate && !s.two_way && !s.keep_unknowns && s.keep_unknowns_live);
         assert_eq!((s.prompts, s.threshold, s.ask_deletes, s.live_batch), (Prompts::Threshold, 5, AskDeletes::Live, 40));
-        let dir = std::env::temp_dir().join(format!("rustudio-filesync-settings-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-filesync-settings-{}", std::process::id()));
         let file = dir.join("file-sync.json");
         let mut s = s;
         s.two_way = true;

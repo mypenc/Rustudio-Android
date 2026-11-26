@@ -1029,7 +1029,7 @@ mod tests {
 
     #[test]
     fn paging_and_cache() {
-        std::env::set_var("RUSTUDIO_TOOLBOX_STATE", std::env::temp_dir().join("rustudio-toolbox-test.json"));
+        std::env::set_var("RUSTUDIO_TOOLBOX_STATE", (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join("rustudio-toolbox-test.json"));
         let mut tb = Toolbox::default();
         let m = Arc::new(Mock::default().route("/inventory/", "v1_inventory_model.json").raw("items/details", 200, "{\"data\":[]}"));
         tb.set_http(m.clone());
@@ -1107,7 +1107,7 @@ mod tests {
 
     #[test]
     fn suggestion_races() {
-        std::env::set_var("RUSTUDIO_TOOLBOX_STATE", std::env::temp_dir().join("rustudio-toolbox-test-suggest.json"));
+        std::env::set_var("RUSTUDIO_TOOLBOX_STATE", (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join("rustudio-toolbox-test-suggest.json"));
         let mut tb = Toolbox::default();
         tb.st = Persist::default();
         tb.set_http(Arc::new(Mock::default()));
@@ -1141,7 +1141,7 @@ mod tests {
     /// signed in, so the rows aren't left at the typed text alone.
     #[test]
     fn suggestions_asked_again_when_signed_in() {
-        std::env::set_var("RUSTUDIO_TOOLBOX_STATE", std::env::temp_dir().join("rustudio-toolbox-test-suggest-session.json"));
+        std::env::set_var("RUSTUDIO_TOOLBOX_STATE", (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join("rustudio-toolbox-test-suggest-session.json"));
         let mut tb = Toolbox::default();
         tb.st = Persist::default();
         tb.set_http(Arc::new(api::AnonHttp));
@@ -1171,7 +1171,7 @@ mod tests {
 
     #[test]
     fn choosing_a_suggestion() {
-        std::env::set_var("RUSTUDIO_TOOLBOX_STATE", std::env::temp_dir().join("rustudio-toolbox-test-choose.json"));
+        std::env::set_var("RUSTUDIO_TOOLBOX_STATE", (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join("rustudio-toolbox-test-choose.json"));
         let mut tb = Toolbox::default();
         tb.st = Persist::default();
         let (model, plugin) = (autocomplete("autocomplete_tre.json"), autocomplete("autocomplete_tre_plugin.json"));

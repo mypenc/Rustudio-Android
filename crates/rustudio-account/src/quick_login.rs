@@ -318,7 +318,7 @@ mod tests {
     /// `RUSTUDIO_ACCOUNT_CONFIG` is process-wide: one test owns it.
     #[test]
     fn pending_code_round_trip() {
-        let dir = std::env::temp_dir().join(format!("rustudio-quick-login-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-quick-login-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::env::set_var("RUSTUDIO_ACCOUNT_CONFIG", dir.join("account.toml"));
         assert!(QuickLogin::pending().is_none());

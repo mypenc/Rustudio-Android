@@ -111,7 +111,7 @@ mod tests {
 
     #[test]
     fn keeps_groups_with_experiences_and_failed_ones_from_before() {
-        let dir = std::env::temp_dir().join(format!("rustudio-group-cache-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-group-cache-{}", std::process::id()));
         let p = dir.join("c.json");
         let groups = [group(1), group(2), group(3)];
         save_to(&p, &groups, &[Ok((vec![exp(10)], false)), Ok((vec![], false)), Ok((vec![exp(30)], true))]);

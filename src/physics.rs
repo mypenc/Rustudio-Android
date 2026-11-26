@@ -4746,7 +4746,7 @@ mod tests {
         crate::assets::register_generated(id, crate::collision::l_prism_obj().into_bytes());
         std::env::set_var(
             "RUSTUDIO_CACHE_DIR",
-            std::env::temp_dir().join("rustudio-physics-mesh-test"),
+            (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join("rustudio-physics-mesh-test"),
         );
         let _ = crate::collision::wait_ready(
             id,

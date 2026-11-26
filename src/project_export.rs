@@ -487,7 +487,7 @@ mod tests {
         let btn = doc.dom.insert(gui, InstanceBuilder::new("TextButton").with_name("Play").with_property("Text", src("Play!")));
         doc.dom.insert(btn, InstanceBuilder::new("LocalScript").with_name("Click").with_property("Source", src("-- click\n")));
 
-        let dir = std::env::temp_dir().join(format!("rustudio-export-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-export-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         let rep = export(&doc, &dir, &ExportOptions { name: "t".into(), ..Default::default() }).unwrap();
         assert_eq!(rep.scripts, 6, "{rep:?}");
@@ -597,7 +597,7 @@ mod real {
     fn export_real_place() {
         let place = std::env::var("RUSTUDIO_EXPORT_PLACE").expect("RUSTUDIO_EXPORT_PLACE");
         let doc = Document::open(Path::new(&place)).unwrap();
-        let dir = std::env::temp_dir().join(format!("rustudio-export-real-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-export-real-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         let rep = export(&doc, &dir, &ExportOptions { name: "g".into(), ..Default::default() }).unwrap();
         let (back, _) = crate::project_sync::open(&rep.project_file).unwrap();

@@ -54,7 +54,7 @@ mod tests {
     #[test]
     fn deterministic_r6_traces() {
         let dir = std::env::var_os("RUSTUDIO_MOVEMENT_TRACE_DIR").map(std::path::PathBuf::from)
-            .unwrap_or_else(|| std::env::temp_dir().join("rustudio-movement-r6"));
+            .unwrap_or_else(|| (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join("rustudio-movement-r6"));
         println!("{}", super::run(&dir).expect("R6 movement traces"));
     }
 }

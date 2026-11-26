@@ -232,7 +232,7 @@ mod tests {
 
     #[test]
     fn settings_round_trip_through_the_file() {
-        let dir = std::env::temp_dir().join(format!("rustudio-mcp-settings-{}", std::process::id()));
+        let dir = (if cfg!(target_arch = "wasm32") { std::path::PathBuf::from("/tmp") } else { std::env::temp_dir() }).join(format!("rustudio-mcp-settings-{}", std::process::id()));
         let file = dir.join("mcp.json");
         let mut s = McpSettings::load(None);
         s.enabled = true;

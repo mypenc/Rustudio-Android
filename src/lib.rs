@@ -21,6 +21,8 @@
 //! kind of system has is behind `#[cfg(target_os = "android")]` /
 //! `#[cfg(not(target_os = "android"))]`.
 
+#[cfg(target_arch = "wasm32")]
+mod wasm_cxx_stubs;
 pub mod asset_manager;
 pub mod plugin_store;
 pub mod toolbox;

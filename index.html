@@ -6,6 +6,76 @@
   <title>RusTudio (web)</title>
   <link data-trunk rel="rust" data-bin="rustudio" data-wasm-opt="0" />
   <link data-trunk rel="icon" href="assets/icons/rustudio-32.png">
+  <script>
+    // wasi shim: the C/C++ deps (Luau, zstd, ...) are built against wasi-sdk's
+    // libc, so the module imports a few wasi_snapshot_preview1 functions that
+    // wasm-bindgen's loader knows nothing about. Wrap instantiate() to supply
+    // them, reading the module's own import list; anything unimplemented
+    // answers ENOSYS (52) and is reported once on the console.
+    (function () {
+      let memory = null;
+      const warned = new Set();
+      const view = () => new DataView(memory.buffer);
+      const text = new TextDecoder();
+      let line = { 1: "", 2: "" };
+      const impl = {
+        clock_time_get(id, _prec, out) {
+          const ns = id === 0 ? Date.now() * 1e6 : performance.now() * 1e6;
+          view().setBigUint64(out, BigInt(Math.round(ns)), true);
+          return 0;
+        },
+        clock_res_get(_id, out) { view().setBigUint64(out, 1000000n, true); return 0; },
+        fd_write(fd, iovs, n, written) {
+          const v = view(); let total = 0, s = "";
+          for (let i = 0; i < n; i++) {
+            const ptr = v.getUint32(iovs + i * 8, true), len = v.getUint32(iovs + i * 8 + 4, true);
+            s += text.decode(new Uint8Array(memory.buffer, ptr, len)); total += len;
+          }
+          if (fd === 1 || fd === 2) {
+            line[fd] += s; const parts = line[fd].split("\n"); line[fd] = parts.pop();
+            for (const l of parts) (fd === 2 ? console.error : console.log)(l);
+          }
+          v.setUint32(written, total, true);
+          return 0;
+        },
+        fd_close() { return 0; },
+        fd_seek() { return 70; },
+        fd_fdstat_get() { return 8; },
+        environ_sizes_get(c, s) { const v = view(); v.setUint32(c, 0, true); v.setUint32(s, 0, true); return 0; },
+        environ_get() { return 0; },
+        args_sizes_get(c, s) { const v = view(); v.setUint32(c, 0, true); v.setUint32(s, 0, true); return 0; },
+        args_get() { return 0; },
+        random_get(ptr, len) { crypto.getRandomValues(new Uint8Array(memory.buffer, ptr, len)); return 0; },
+        sched_yield() { return 0; },
+        proc_exit(code) { throw new Error("wasi proc_exit(" + code + ")"); },
+      };
+      const rawInstantiate = WebAssembly.instantiate.bind(WebAssembly);
+      async function withWasi(module, imports) {
+        const needed = WebAssembly.Module.imports(module).filter(i => i.module === "wasi_snapshot_preview1");
+        if (needed.length) {
+          const ns = {};
+          for (const i of needed) {
+            ns[i.name] = impl[i.name] || (() => {
+              if (!warned.has(i.name)) { warned.add(i.name); console.warn("wasi: " + i.name + " is not implemented (ENOSYS)"); }
+              return 52;
+            });
+          }
+          imports = Object.assign({}, imports, { wasi_snapshot_preview1: ns });
+        }
+        const instance = await rawInstantiate(module, imports);
+        memory = instance.exports.memory || memory;
+        return instance;
+      }
+      WebAssembly.instantiate = async function (src, imports) {
+        if (src instanceof WebAssembly.Module) return withWasi(src, imports);
+        const module = await WebAssembly.compile(src);
+        return { module, instance: await withWasi(module, imports) };
+      };
+      WebAssembly.instantiateStreaming = async function (resp, imports) {
+        return WebAssembly.instantiate(await (await resp).arrayBuffer(), imports);
+      };
+    })();
+  </script>
   <style>
     html, body { margin: 0; height: 100%; background: #1e1e1e; overflow: hidden; }
     canvas { width: 100%; height: 100%; display: block; outline: none; }

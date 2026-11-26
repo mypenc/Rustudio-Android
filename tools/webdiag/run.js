@@ -17,7 +17,7 @@ const race = (p, ms, tag) => Promise.race([p, new Promise(r => setTimeout(() => 
   const b = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--enable-webgl', '--enable-unsafe-webgpu'] });
   const ctx = await b.newContext({ viewport: { width: 1280, height: 800 } });
   const p = await ctx.newPage();
-  p.on('console', m => add(`[${m.type()}] ${m.text().slice(0, 600)}`));
+  p.on('console', m => add(`[${m.type()}] ${m.text().slice(0, 6000)}`));
   p.on('pageerror', e => add(`[pageerror] ${String(e.stack || e).slice(0, 1200)}`));
   p.on('requestfailed', r => add(`[reqfail] ${r.url()} ${r.failure()?.errorText}`));
   p.on('response', r => { if (r.status() >= 400) add(`[http ${r.status()}] ${r.url()}`); });

@@ -2952,6 +2952,9 @@ pub struct Renderer {
     /// alone (bindings 0, 2, 3), so the clouds' 8 textures fit in 16.
     sky_globals: Option<(wgpu::BindGroupLayout, wgpu::BindGroup)>,
     lights_buf: wgpu::Buffer,
+    /// Local lights / shadow-casting lights that fit the light buffers (fewer under WebGL2's uniform arrays).
+    max_lights: usize,
+    max_lshadow: usize,
     /// The depth map the sun's cascades are drawn into, one at a time.
     shadow_view: wgpu::TextureView,
     /// The sun's shadow cascades: the atlas the shaders read (sun_shadow.rs).
@@ -3789,6 +3792,8 @@ impl Renderer {
             sky_globals,
             globals_layout: bgl,
             lights_buf,
+            max_lights: crate::gpu_caps::max_lights(device),
+            max_lshadow: crate::gpu_caps::max_lshadow(device),
             shadow_view,
             sun,
             clouds: [None, None, None],
@@ -5696,7 +5701,7 @@ impl Renderer {
         }
 
         drop(r_scope);
-        let n_lights = frame.lights.len().min(crate::gpu_caps::max_lights(&self.device));
+        let n_lights = frame.lights.len().min(self.max_lights);
         self.gui_n_lights = n_lights as u32;
         if n_lights > 0 {
             queue.write_buffer(
@@ -5976,7 +5981,7 @@ impl Renderer {
                 .iter()
                 .filter(|l| l.extra[3] >= 0.0)
                 .map(|light| (light.extra[3] as usize, light))
-                .filter(|(slot, _)| *slot < crate::gpu_caps::max_lshadow(&self.device))
+                .filter(|(slot, _)| *slot < self.max_lshadow)
                 .collect();
             let key = {
                 use std::hash::{Hash, Hasher};
@@ -5996,7 +6001,7 @@ impl Renderer {
             // (the reduced binding set has no light shadow atlas to read)
             if !self.reduced && !slots.is_empty() && self.lshadow.key != Some(key) {
                 self.lshadow.key = Some(key);
-                let n = crate::gpu_caps::max_lshadow(&self.device);
+                let n = self.max_lshadow;
                 let mut slot_data = vec![0f32; n * 100];
                 let mut face_data = vec![0u8; n * 6 * LSHADOW_FACE_STRIDE as usize];
                 let mut slot_faces = Vec::with_capacity(slots.len());

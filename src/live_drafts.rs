@@ -3,8 +3,9 @@ use serde::{Deserialize, Serialize};
 use std::{
     collections::{HashMap, HashSet},
     path::PathBuf,
-    time::{Duration, Instant},
+    time::Duration,
 };
+use web_time::Instant;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Draft {

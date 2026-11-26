@@ -6,8 +6,9 @@ use std::{
     fs::File,
     io::{BufWriter, Seek, SeekFrom, Write},
     sync::mpsc::Receiver,
-    time::{Duration, Instant},
+    time::Duration,
 };
+use web_time::Instant;
 
 fn header(f: &mut BufWriter<File>, frames: u32) -> std::io::Result<()> {
     let n = frames * 8;

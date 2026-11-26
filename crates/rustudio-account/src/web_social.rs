@@ -8,8 +8,9 @@ use serde_json::{Value, json};
 use std::{
     collections::HashMap,
     sync::{Arc, Condvar, LazyLock, Mutex, atomic::{AtomicU64, Ordering}},
-    time::{Duration, Instant},
+    time::Duration,
 };
+use web_time::Instant;
 type CacheKey = (String, String);
 type Cache = HashMap<CacheKey, (Instant, Duration, Value)>;
 static PRODUCT_CACHE: LazyLock<Mutex<Cache>> = LazyLock::new(|| Mutex::new(HashMap::new()));

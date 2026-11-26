@@ -1165,7 +1165,8 @@ mod tests {
 
     #[test]
     fn csrf_post_deadline_stops_a_stalled_server() {
-        use std::{io::Read, net::TcpListener, time::{Duration, Instant}};
+        use std::{io::Read, net::TcpListener, time::Duration};
+        use web_time::Instant;
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         let url = format!("http://{}/", listener.local_addr().unwrap());
         let server = std::thread::spawn(move || {

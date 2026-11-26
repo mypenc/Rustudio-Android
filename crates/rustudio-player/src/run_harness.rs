@@ -1,6 +1,7 @@
 //! Timing, input and capture shared by Studio and the standalone player.
 
-use std::{path::PathBuf, time::Instant};
+use std::path::PathBuf;
+use web_time::Instant;
 use rustudio_core::{log::Level, mech};
 use rustudio_engine::runtime::STACK_MARK;
 use crate::game::Game;

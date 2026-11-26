@@ -1,6 +1,7 @@
 //! The game window and headless entry point.
 
-use std::{path::PathBuf, time::Instant};
+use std::path::PathBuf;
+use web_time::Instant;
 
 use rustudio_core::{doc::Document, log::LogLine};
 use rustudio_engine::{runtime::RunMode, theme};

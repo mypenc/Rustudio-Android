@@ -13,7 +13,7 @@ const race = (p, ms, tag) => Promise.race([p, new Promise(r => setTimeout(() => 
   const stamp = () => ((Date.now() - t0) / 1000).toFixed(1).padStart(6);
   const flush = () => fs.writeFileSync('out/console.log', log.join('\n'));
   const add = l => { log.push(`${stamp()} ${l}`); flush(); };
-  setTimeout(() => { add('[hard stop]'); process.exit(0); }, (SECS + 60) * 1000);
+  setTimeout(() => { add('[hard stop]'); process.exit(0); }, (SECS + 90) * 1000);
   const b = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--enable-webgl', '--enable-unsafe-webgpu'] });
   const ctx = await b.newContext({ viewport: { width: 1280, height: 800 } });
   const p = await ctx.newPage();
@@ -36,16 +36,17 @@ const race = (p, ms, tag) => Promise.race([p, new Promise(r => setTimeout(() => 
   await p.goto(URL, { waitUntil: 'commit', timeout: 60000 }).catch(e => add('goto: ' + e));
   for (let t = 10; t <= SECS; t += 10) {
     await new Promise(r => setTimeout(r, 10000));
-    if (t === 50 && process.env.PLAY) { await p.mouse.click(106, 38).catch(() => {}); add('[click] Play'); }
-    if (t === 30) { await p.mouse.click(336, 243).catch(() => {}); add('[click] Baseplate'); }
-    if (t >= (process.env.PLAY ? 60 : 40) && t <= 100 && t % 10 === 0) cdp.send('Debugger.pause').catch(() => {});
+    const el = Date.now() - t0;
+    if (!global.playDone && process.env.PLAY && el > 70000) { global.playDone = true; await p.mouse.click(106, 38).catch(() => {}); add('[click] Play'); }
+    if (!global.baseDone && el > 25000) { global.baseDone = true; await p.mouse.click(336, 243).catch(() => {}); add('[click] Baseplate'); }
+    if (el > (process.env.PLAY ? 90000 : 60000) && t % 10 === 0) cdp.send('Debugger.pause').catch(() => {});
     const info = await race(p.evaluate(() => ({
       status: (document.getElementById('status') || {}).textContent || '',
       canvas: (() => { const c = document.querySelector('canvas'); return c ? `${c.width}x${c.height}` : 'none'; })(),
       sab: typeof SharedArrayBuffer, coi: self.crossOriginIsolated, gpu: !!navigator.gpu,
     })), 5000, 'evaluate');
     add(`[probe] ${typeof info === 'string' ? info : JSON.stringify(info).replace(/\\n/g, ' | ').slice(0, 400)}`);
-    if (t % 30 === 0 || t === 40) await race(p.screenshot({ path: `out/shot-${String(t).padStart(3, '0')}.png`, timeout: 8000 }).catch(() => {}), 10000, 'screenshot');
+    if (t % 40 === 0) await race(p.screenshot({ path: `out/shot-${String(t).padStart(3, '0')}.png`, timeout: 8000 }).catch(() => {}), 10000, 'screenshot');
   }
   add('[done]');
   process.exit(0);

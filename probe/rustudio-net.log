@@ -1,0 +1,49 @@
+[1m[92m    Updating[0m crates.io index
+[1m[92m    Checking[0m rt-thread v0.1.0 (/home/runner/work/Rustudio-Android/Rustudio-Android/shims/thread)
+[1m[92m    Checking[0m ureq-wasm v3.0.0 (/home/runner/work/Rustudio-Android/Rustudio-Android/shims/ureq)
+[1m[92m    Checking[0m rbx_dom_weak v4.2.0 (/home/runner/work/Rustudio-Android/Rustudio-Android/vendor/rbx_dom_weak)
+shims/ureq/src/lib.rs:244:5: [1m[33mwarning[0m: field `limit` is never read
+[1m[33mwarning[0m: `ureq-wasm` (lib) generated 1 warning
+[1m[92m    Checking[0m rustudio-account v1.0.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/crates/rustudio-account)
+crates/rustudio-account/src/quick_login.rs:16:17: [1m[33mwarning[0m: unused import: `SystemTime`
+[1m[33mwarning[0m: `rustudio-account` (lib) generated 1 warning (run `cargo fix --lib -p rustudio-account` to apply 1 suggestion)
+[1m[92m    Checking[0m rustudio-net v1.0.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/crates/rustudio-net)
+crates/rustudio-net/src/live.rs:16:25: [1m[33mwarning[0m: unused imports: `Decoder` and `packet_id`
+crates/rustudio-net/src/live.rs:25:16: [1m[33mwarning[0m: unused import: `Mutex`
+crates/rustudio-net/src/live.rs:28:17: [1m[33mwarning[0m: unused imports: `SystemTime` and `UNIX_EPOCH`
+crates/rustudio-net/src/live.rs:29:5: [1m[33mwarning[0m: unused import: `web_time::Instant`
+crates/rustudio-net/src/matchmaker.rs:348:21: [1m[33mwarning[0m: unused import: `SystemTime`
+crates/rustudio-net/src/live.rs:219:9: [1m[33mwarning[0m: unreachable expression: unreachable expression
+crates/rustudio-net/src/live.rs:245:14: [1m[33mwarning[0m: use of deprecated method `std::sync::atomic::Atomic::<u64>::fetch_update`: renamed to `try_update` for consistency
+crates/rustudio-net/src/live.rs:176:50: [1m[33mwarning[0m: unused variable: `account`: help: if this is intentional, prefix it with an underscore: `_account`
+crates/rustudio-net/src/live.rs:182:18: [1m[33mwarning[0m: unused variable: `events`: help: if this is intentional, prefix it with an underscore: `_events`
+crates/rustudio-net/src/live.rs:185:14: [1m[33mwarning[0m: unused variable: `commands`: help: if this is intentional, prefix it with an underscore: `_commands`
+crates/rustudio-net/src/live.rs:31:7: [1m[33mwarning[0m: constant `REP_CONTROL` is never used
+crates/rustudio-net/src/live.rs:34:7: [1m[33mwarning[0m: constant `INITIAL_STREAM_QUOTA` is never used
+crates/rustudio-net/src/live.rs:35:7: [1m[33mwarning[0m: constant `EDITOR_STREAM_REGION_RADIUS` is never used
+crates/rustudio-net/src/live.rs:37:4: [1m[33mwarning[0m: function `stream_credit` is never used
+crates/rustudio-net/src/live.rs:44:4: [1m[33mwarning[0m: function `initial_stream_request` is never used
+crates/rustudio-net/src/live.rs:58:7: [1m[33mwarning[0m: constant `BATCH_SIZE` is never used
+crates/rustudio-net/src/live.rs:59:7: [1m[33mwarning[0m: constant `MAX_FRAME_SIZE` is never used
+crates/rustudio-net/src/live.rs:60:7: [1m[33mwarning[0m: constant `QUIET_PERIOD` is never used
+crates/rustudio-net/src/live.rs:64:7: [1m[33mwarning[0m: constant `EDITS_PER_TICK` is never used
+crates/rustudio-net/src/live.rs:65:7: [1m[33mwarning[0m: constant `BYTES_PER_TICK` is never used
+crates/rustudio-net/src/live.rs:67:7: [1m[33mwarning[0m: constant `RECENT_EDITS` is never used
+crates/rustudio-net/src/live.rs:126:12: [1m[33mwarning[0m: fields `id`, `class`, `name`, and `args` are never read
+crates/rustudio-net/src/live.rs:128:9: [1m[33mwarning[0m: fields `id`, `class`, `name`, and `value` are never read
+crates/rustudio-net/src/live.rs:134:9: [1m[33mwarning[0m: fields `id`, `class`, `parent`, and `props` are never read
+crates/rustudio-net/src/live.rs:139:12: [1m[33mwarning[0m: field `0` is never read
+crates/rustudio-net/src/live.rs:141:9: [1m[33mwarning[0m: fields `id` and `parent` are never read
+crates/rustudio-net/src/live.rs:148:8: [1m[33mwarning[0m: method `describe` is never used
+[1m[33mwarning[0m: `rustudio-net` (lib) generated 27 warnings (run `cargo fix --lib -p rustudio-net` to apply 9 suggestions)
+[1m[33mwarning[0m[1m: unused dependency `tokio`[0m
+  [1m[94m--> [0mcrates/rustudio-net/Cargo.toml:41:1
+   [1m[94m|[0m
+[1m[94m41[0m [1m[94m|[0m tokio = { version = "1", features = ["rt", "time", "macros"] }
+   [1m[94m|[0m [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+   [1m[94m|[0m
+   [1m[94m= [0m[1mnote[0m: `cargo::unused_dependencies` is set to `warn` by default
+[1m[96mhelp[0m: consider removing the dependency on `tokio`
+[1m[33mwarning[0m: `rustudio-net` (manifest) generated 1 warning
+[1m[92m    Finished[0m `dev` profile [optimized + debuginfo] target(s) in 2.50s
+exit=0

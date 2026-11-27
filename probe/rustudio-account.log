@@ -1,0 +1,26 @@
+[1m[92m    Updating[0m crates.io index
+[1m[92m    Checking[0m rt-thread v0.1.0 (/home/runner/work/Rustudio-Android/Rustudio-Android/shims/thread)
+[1m[92m    Checking[0m ureq-wasm v3.0.0 (/home/runner/work/Rustudio-Android/Rustudio-Android/shims/ureq)
+shims/ureq/src/lib.rs:244:5: [1m[33mwarning[0m: field `limit` is never read
+[1m[33mwarning[0m: `ureq-wasm` (lib) generated 1 warning
+[1m[92m    Checking[0m rustudio-account v1.0.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/crates/rustudio-account)
+crates/rustudio-account/src/quick_login.rs:16:17: [1m[33mwarning[0m: unused import: `SystemTime`
+[1m[33mwarning[0m: `rustudio-account` (lib) generated 1 warning (run `cargo fix --lib -p rustudio-account` to apply 1 suggestion)
+[1m[33mwarning[0m[1m: unused dependency `getrandom02`[0m
+  [1m[94m--> [0mcrates/rustudio-account/Cargo.toml:41:1
+   [1m[94m|[0m
+[1m[94m41[0m [1m[94m|[0m getrandom02 = { package = "getrandom", version = "0.2", features = ["js"] }
+   [1m[94m|[0m [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+   [1m[94m|[0m
+   [1m[94m= [0m[1mnote[0m: `cargo::unused_dependencies` is set to `warn` by default
+[1m[96mhelp[0m: consider removing the dependency on `getrandom02`
+[1m[33mwarning[0m[1m: unused dependency `getrandom03`[0m
+  [1m[94m--> [0mcrates/rustudio-account/Cargo.toml:42:1
+   [1m[94m|[0m
+[1m[94m42[0m [1m[94m|[0m getrandom03 = { package = "getrandom", version = "0.3", features = ["wasm_js"] }
+   [1m[94m|[0m [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+   [1m[94m|[0m
+[1m[96mhelp[0m: consider removing the dependency on `getrandom03`
+[1m[33mwarning[0m: `rustudio-account` (manifest) generated 2 warnings
+[1m[92m    Finished[0m `dev` profile [optimized + debuginfo] target(s) in 1.94s
+exit=0

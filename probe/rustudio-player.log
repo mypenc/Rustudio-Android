@@ -1,0 +1,88 @@
+[1m[92m    Updating[0m crates.io index
+[1m[92m    Checking[0m epaint v0.36.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/vendor/epaint)
+[1m[92m    Checking[0m rbx_dom_weak v4.2.0 (/home/runner/work/Rustudio-Android/Rustudio-Android/vendor/rbx_dom_weak)
+[1m[92m    Checking[0m ureq-wasm v3.0.0 (/home/runner/work/Rustudio-Android/Rustudio-Android/shims/ureq)
+[1m[92m    Checking[0m rt-thread v0.1.0 (/home/runner/work/Rustudio-Android/Rustudio-Android/shims/thread)
+[1m[92m   Compiling[0m luau0-src v0.23.0+luau745 (/home/runner/work/Rustudio-Android/Rustudio-Android/vendor/luau0-src)
+shims/ureq/src/lib.rs:244:5: [1m[33mwarning[0m: field `limit` is never read
+[1m[33mwarning[0m: `ureq-wasm` (lib) generated 1 warning
+[1m[92m    Checking[0m rustudio-account v1.0.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/crates/rustudio-account)
+crates/rustudio-account/src/quick_login.rs:16:17: [1m[33mwarning[0m: unused import: `SystemTime`
+[1m[92m    Checking[0m rbx_xml v3.0.1
+[1m[92m    Checking[0m rbx_binary v3.0.1
+[1m[92m    Checking[0m egui v0.36.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/vendor/egui)
+[1m[33mwarning[0m: `rustudio-account` (lib) generated 1 warning (run `cargo fix --lib -p rustudio-account` to apply 1 suggestion)
+[1m[92m    Checking[0m parry3d v0.31.1 (/home/runner/work/Rustudio-Android/Rustudio-Android/vendor/parry3d)
+[1m[92m    Checking[0m rustudio-core v1.0.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/crates/rustudio-core)
+vendor/egui/src/containers/scene.rs:79:42: [1m[33mwarning[0m: use of deprecated constant `std::f32::EPSILON`: replaced by the `EPSILON` associated constant on `f32`
+crates/rustudio-core/src/sim_clock.rs:25:17: [1m[33mwarning[0m: unused import: `SystemTime`
+crates/rustudio-core/src/load_trace.rs:10:17: [1m[33mwarning[0m: unused import: `SystemTime`
+crates/rustudio-core/src/assets.rs:989:60: [1m[33mwarning[0m: unnecessary parentheses around function argument
+[1m[92m   Compiling[0m mlua-sys v0.13.0 (/home/runner/work/Rustudio-Android/Rustudio-Android/vendor/mlua-sys)
+crates/rustudio-core/src/bench.rs:421:5: [1m[33mwarning[0m: unreachable expression: unreachable expression
+[1m[33mwarning[0m: `egui` (lib) generated 1 warning
+[1m[92m    Checking[0m egui-wgpu v0.36.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/vendor/egui-wgpu)
+crates/rustudio-core/src/doc.rs:2886:9: [1m[33mwarning[0m: variable does not need to be mutable
+[1m[92m    Checking[0m rapier3d v0.36.1 (/home/runner/work/Rustudio-Android/Rustudio-Android/vendor/rapier3d)
+[1m[92m   Compiling[0m rustudio-engine v1.0.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/crates/rustudio-engine)
+crates/rustudio-core/src/api.rs:68:4: [1m[33mwarning[0m: function `dump_path` is never used
+[1m[33mwarning[0m: `rustudio-core` (lib) generated 6 warnings (run `cargo fix --lib -p rustudio-core` to apply 4 suggestions)
+[1m[92m    Checking[0m rustudio-render v1.0.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/crates/rustudio-render)
+[1m[92m    Checking[0m egui_dock v0.21.1 (/home/runner/work/Rustudio-Android/Rustudio-Android/vendor/egui_dock)
+[1m[92m    Checking[0m eframe v0.36.2
+crates/rustudio-render/src/highlight.rs:402:18: [1m[33mwarning[0m: unused variable: `h`: help: if this is intentional, prefix it with an underscore: `_h`
+crates/rustudio-render/src/highlight.rs:292:5: [1m[33mwarning[0m: type `render::Mesh` is more private than the item `HighlightPass::draw`: method `HighlightPass::draw` is reachable at visibility `pub`
+crates/rustudio-render/src/render.rs:8693:15: [1m[33mwarning[0m: function `ball_outline_points` is never used
+[1m[33mwarning[0m: `rustudio-render` (lib) generated 3 warnings (run `cargo fix --lib -p rustudio-render` to apply 1 suggestion)
+vendor/rapier3d/src/geometry/contact_pair.rs:550:5: [1m[33mwarning[0m: missing documentation for a method
+[1m[33mwarning[0m: `rapier3d` (lib) generated 1 warning
+[1m[92m    Checking[0m rustudio-physics v1.0.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/crates/rustudio-physics)
+crates/rustudio-physics/src/solver/joints.rs:29:19: [1m[33mwarning[0m: unused import: `ctype`
+crates/rustudio-physics/src/physics_joints.rs:276:13: [1m[33mwarning[0m: variable does not need to be mutable
+crates/rustudio-physics/src/physics.rs:1268:5: [1m[33mwarning[0m: type `SjCache` is more private than the item `physics::Physics::sj_cache`: field `physics::Physics::sj_cache` is reachable at visibility `pub(crate)`
+crates/rustudio-physics/src/client_joints.rs:633:4: [1m[33mwarning[0m: function `find_rigs` is never used
+crates/rustudio-physics/src/physics.rs:1282:5: [1m[33mwarning[0m: field `controller` is never read
+crates/rustudio-physics/src/physics_client.rs:66:19: [1m[33mwarning[0m: method `physics_mut` is never used
+crates/rustudio-physics/src/physics.rs:3702:9: [1m[33mwarning[0m: calls to `std::mem::drop` with a value that implements `Copy` does nothing
+[1m[33mwarning[0m: `rustudio-physics` (lib) generated 7 warnings (run `cargo fix --lib -p rustudio-physics` to apply 2 suggestions)
+[1m[92m    Checking[0m mlua v0.12.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/vendor/mlua)
+vendor/mlua/src/luau/heap_dump.rs:58:9: [1m[33mwarning[0m: unreachable statement: unreachable statement
+[1m[33mwarning[0m: `mlua` (lib) generated 1 warning
+crates/rustudio-engine/src/runtime_ext.rs:2177:13: [1m[33mwarning[0m: unnecessary parentheses around block return value
+crates/rustudio-engine/src/domains/gui_input.rs:22:5: [1m[33mwarning[0m: unused import: `crate::ltypes::*`
+crates/rustudio-engine/src/domains/gui_input_path2d.rs:22:5: [1m[33mwarning[0m: unused import: `crate::ltypes::*`
+crates/rustudio-engine/src/globals_parity.rs:20:39: [1m[33mwarning[0m: unused import: `Thread`
+crates/rustudio-engine/src/dtmeta.rs:1947:37: [1m[33mwarning[0m: use of deprecated type alias `mlua::String`: use `mlua::LuaString` instead
+crates/rustudio-engine/src/domains/gui_input.rs:445:70: [1m[33mwarning[0m: use of deprecated type alias `mlua::String`: use `mlua::LuaString` instead
+crates/rustudio-engine/src/domains/assets_cloud_scene.rs:69:24: [1m[33mwarning[0m: use of deprecated type alias `mlua::String`: use `mlua::LuaString` instead
+crates/rustudio-engine/src/runtime_ext.rs:942:15: [1m[33mwarning[0m: unused variable: `lua`: help: if this is intentional, prefix it with an underscore: `_lua`
+crates/rustudio-engine/src/runtime_ext.rs:4990:65: [1m[33mwarning[0m: unused variable: `l`: help: if this is intentional, prefix it with an underscore: `_l`
+crates/rustudio-engine/src/runtime_ext.rs:4912:66: [1m[33mwarning[0m: unused variable: `l`: help: if this is intentional, prefix it with an underscore: `_l`
+crates/rustudio-engine/src/runtime_ext.rs:5314:40: [1m[33mwarning[0m: unused variable: `l`: help: if this is intentional, prefix it with an underscore: `_l`
+crates/rustudio-engine/src/editable_mesh.rs:707:13: [1m[33mwarning[0m: variable does not need to be mutable
+crates/rustudio-engine/src/editable_mesh.rs:891:8: [1m[33mwarning[0m: unused variable: `lua`: help: if this is intentional, prefix it with an underscore: `_lua`
+crates/rustudio-engine/src/runtime.rs:8016:21: [1m[33mwarning[0m: unused variable: `f`: help: if this is intentional, prefix it with an underscore: `_f`
+crates/rustudio-engine/src/runtime.rs:10353:12: [1m[33mwarning[0m: variable does not need to be mutable
+crates/rustudio-engine/src/dtmeta.rs:1110:5: [1m[33mwarning[0m: field `ty` is never read
+crates/rustudio-engine/src/gui_walk.rs:1443:8: [1m[33mwarning[0m: method `content_size` is never used
+crates/rustudio-engine/src/gui_walk.rs:1486:19: [1m[33mwarning[0m: method `content_size` is never used
+crates/rustudio-engine/src/domains/anim_ik.rs:627:8: [1m[33mwarning[0m: function `controls` is never used
+crates/rustudio-engine/src/domains/assets_cloud_web.rs:10:11: [1m[33mwarning[0m: constant `LUA_METHODS` is never used
+crates/rustudio-engine/src/security.rs:191:4: [1m[33mwarning[0m: function `dump_path` is never used
+[1m[33mwarning[0m: `rustudio-engine` (lib) generated 21 warnings (run `cargo fix --lib -p rustudio-engine` to apply 12 suggestions)
+[1m[92m    Checking[0m rustudio-profiler-ui v1.0.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/crates/rustudio-profiler-ui)
+[1m[92m    Checking[0m rustudio-player v1.0.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/crates/rustudio-player)
+crates/rustudio-player/src/player_app.rs:11:5: [1m[33mwarning[0m: unused imports: `EXIT_CODE`, `HarnessAction`, `HarnessInput`, and `offscreen`
+crates/rustudio-player/src/play.rs:3799:13: [1m[33mwarning[0m: variable `floor_changed` is assigned to, but never used
+crates/rustudio-player/src/play.rs:3910:13: [1m[33mwarning[0m: unused variable: `time`: help: if this is intentional, prefix it with an underscore: `_time`
+crates/rustudio-player/src/play.rs:3817:13: [1m[33mwarning[0m: value assigned to `floor_changed` is never read
+crates/rustudio-player/src/play.rs:4591:26: [1m[33mwarning[0m: variable does not need to be mutable
+crates/rustudio-player/src/play.rs:71:5: [1m[33mwarning[0m: fields `landed_for`, `hum_mode_left`, `wall`, `forced`, `forced_for`, and `last_move_speed` are never read
+crates/rustudio-player/src/play.rs:194:5: [1m[33mwarning[0m: field `local_input_edge` is never read
+crates/rustudio-player/src/player_app.rs:16:8: [1m[33mwarning[0m: struct `PlayerHost` is never constructed
+crates/rustudio-player/src/player_app.rs:26:8: [1m[33mwarning[0m: struct `PlayerApp` is never constructed
+crates/rustudio-player/src/player_app.rs:37:8: [1m[33mwarning[0m: associated items `new` and `frame` are never used
+crates/rustudio-player/src/player_app.rs:520:4: [1m[33mwarning[0m: function `window_arg` is never used
+[1m[33mwarning[0m: `rustudio-player` (lib) generated 11 warnings (run `cargo fix --lib -p rustudio-player` to apply 3 suggestions)
+[1m[92m    Finished[0m `dev` profile [optimized + debuginfo] target(s) in 1m 04s
+exit=0

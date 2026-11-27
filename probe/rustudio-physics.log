@@ -1,0 +1,34 @@
+[1m[92m    Updating[0m crates.io index
+[1m[92m    Checking[0m rbx_dom_weak v4.2.0 (/home/runner/work/Rustudio-Android/Rustudio-Android/vendor/rbx_dom_weak)
+[1m[92m    Checking[0m ureq-wasm v3.0.0 (/home/runner/work/Rustudio-Android/Rustudio-Android/shims/ureq)
+[1m[92m    Checking[0m rt-thread v0.1.0 (/home/runner/work/Rustudio-Android/Rustudio-Android/shims/thread)
+[1m[92m    Checking[0m parry3d v0.31.1 (/home/runner/work/Rustudio-Android/Rustudio-Android/vendor/parry3d)
+shims/ureq/src/lib.rs:244:5: [1m[33mwarning[0m: field `limit` is never read
+[1m[33mwarning[0m: `ureq-wasm` (lib) generated 1 warning
+[1m[92m    Checking[0m rustudio-account v1.0.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/crates/rustudio-account)
+crates/rustudio-account/src/quick_login.rs:16:17: [1m[33mwarning[0m: unused import: `SystemTime`
+[1m[92m    Checking[0m rbx_binary v3.0.1
+[1m[92m    Checking[0m rbx_xml v3.0.1
+[1m[33mwarning[0m: `rustudio-account` (lib) generated 1 warning (run `cargo fix --lib -p rustudio-account` to apply 1 suggestion)
+[1m[92m    Checking[0m rustudio-core v1.0.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/crates/rustudio-core)
+crates/rustudio-core/src/sim_clock.rs:25:17: [1m[33mwarning[0m: unused import: `SystemTime`
+crates/rustudio-core/src/load_trace.rs:10:17: [1m[33mwarning[0m: unused import: `SystemTime`
+crates/rustudio-core/src/assets.rs:989:60: [1m[33mwarning[0m: unnecessary parentheses around function argument
+crates/rustudio-core/src/bench.rs:421:5: [1m[33mwarning[0m: unreachable expression: unreachable expression
+[1m[92m    Checking[0m rapier3d v0.36.1 (/home/runner/work/Rustudio-Android/Rustudio-Android/vendor/rapier3d)
+crates/rustudio-core/src/doc.rs:2886:9: [1m[33mwarning[0m: variable does not need to be mutable
+crates/rustudio-core/src/api.rs:68:4: [1m[33mwarning[0m: function `dump_path` is never used
+[1m[33mwarning[0m: `rustudio-core` (lib) generated 6 warnings (run `cargo fix --lib -p rustudio-core` to apply 4 suggestions)
+vendor/rapier3d/src/geometry/contact_pair.rs:550:5: [1m[33mwarning[0m: missing documentation for a method
+[1m[33mwarning[0m: `rapier3d` (lib) generated 1 warning
+[1m[92m    Checking[0m rustudio-physics v1.0.2 (/home/runner/work/Rustudio-Android/Rustudio-Android/crates/rustudio-physics)
+crates/rustudio-physics/src/solver/joints.rs:29:19: [1m[33mwarning[0m: unused import: `ctype`
+crates/rustudio-physics/src/physics_joints.rs:276:13: [1m[33mwarning[0m: variable does not need to be mutable
+crates/rustudio-physics/src/physics.rs:1268:5: [1m[33mwarning[0m: type `SjCache` is more private than the item `physics::Physics::sj_cache`: field `physics::Physics::sj_cache` is reachable at visibility `pub(crate)`
+crates/rustudio-physics/src/client_joints.rs:633:4: [1m[33mwarning[0m: function `find_rigs` is never used
+crates/rustudio-physics/src/physics.rs:1282:5: [1m[33mwarning[0m: field `controller` is never read
+crates/rustudio-physics/src/physics_client.rs:66:19: [1m[33mwarning[0m: method `physics_mut` is never used
+crates/rustudio-physics/src/physics.rs:3702:9: [1m[33mwarning[0m: calls to `std::mem::drop` with a value that implements `Copy` does nothing
+[1m[33mwarning[0m: `rustudio-physics` (lib) generated 7 warnings (run `cargo fix --lib -p rustudio-physics` to apply 2 suggestions)
+[1m[92m    Finished[0m `dev` profile [optimized + debuginfo] target(s) in 10.56s
+exit=0

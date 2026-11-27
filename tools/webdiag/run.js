@@ -36,8 +36,9 @@ const race = (p, ms, tag) => Promise.race([p, new Promise(r => setTimeout(() => 
   await p.goto(URL, { waitUntil: 'commit', timeout: 60000 }).catch(e => add('goto: ' + e));
   for (let t = 10; t <= SECS; t += 10) {
     await new Promise(r => setTimeout(r, 10000));
+    if (t === 50 && process.env.PLAY) { await p.mouse.click(106, 38).catch(() => {}); add('[click] Play'); }
     if (t === 30) { await p.mouse.click(336, 243).catch(() => {}); add('[click] Baseplate'); }
-    if (t >= 40 && t <= 80 && t % 10 === 0) cdp.send('Debugger.pause').catch(() => {});
+    if (t >= (process.env.PLAY ? 60 : 40) && t <= 100 && t % 10 === 0) cdp.send('Debugger.pause').catch(() => {});
     const info = await race(p.evaluate(() => ({
       status: (document.getElementById('status') || {}).textContent || '',
       canvas: (() => { const c = document.querySelector('canvas'); return c ? `${c.width}x${c.height}` : 'none'; })(),

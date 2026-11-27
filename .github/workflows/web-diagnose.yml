@@ -9,6 +9,9 @@ on:
       url:
         description: Page to load
         default: https://mypenc.github.io/Rustudio-Android/
+      play:
+        description: Press Play
+        default: ''
       secs:
         description: Seconds to watch
         default: "150"
@@ -36,6 +39,7 @@ jobs:
         env:
           URL: ${{ inputs.url || 'https://mypenc.github.io/Rustudio-Android/' }}
           SECS: ${{ inputs.secs || '150' }}
+          PLAY: ${{ inputs.play || '' }}
         run: node run.js
       - name: Publish to ci-logs
         if: always()

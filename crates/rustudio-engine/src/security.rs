@@ -256,7 +256,13 @@ fn parse(text: &str) -> Option<Rules> {
 fn rules() -> Option<&'static Rules> {
     static RULES: OnceLock<Option<Rules>> = OnceLock::new();
     RULES
-        .get_or_init(|| parse(&std::fs::read_to_string(dump_path()).ok()?))
+        .get_or_init(|| parse(&{
+            // The browser build has no file system: the dump is embedded.
+            #[cfg(target_arch = "wasm32")]
+            { Some(include_str!("../../../api-dump.json").to_string()) }
+            #[cfg(not(target_arch = "wasm32"))]
+            { std::fs::read_to_string(dump_path()).ok() }
+        }?))
         .as_ref()
 }
 

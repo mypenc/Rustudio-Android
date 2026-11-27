@@ -71,7 +71,7 @@ impl fmt::Display for Error {
             Error::TooManyRedirects => f.write_str("too many redirects"),
             Error::RedirectFailed => f.write_str("redirect failed"),
             Error::InvalidProxyUrl => f.write_str("invalid proxy url"),
-            Error::ConnectionFailed => f.write_str("connection failed: the browser build has no network access to this host"),
+            Error::ConnectionFailed => f.write_str("can't reach Roblox from a web page (browsers block these requests and won't send a .ROBLOSECURITY cookie); sign-in, cloud and the Toolbox need the desktop or Android app"),
             Error::BodyExceedsLimit(n) => write!(f, "response body is larger than {n} bytes"),
             Error::Tls(s) => write!(f, "tls: {s}"),
             Error::Rustls(e) => write!(f, "rustls: {e}"),

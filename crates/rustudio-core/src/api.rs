@@ -75,7 +75,13 @@ fn dump_path() -> std::path::PathBuf {
 pub fn get() -> Option<&'static Api> {
     static API: OnceLock<Option<Api>> = OnceLock::new();
     API.get_or_init(|| {
-        let text = std::fs::read_to_string(dump_path()).ok()?;
+        let text = {
+            // The browser build has no file system: the dump is embedded.
+            #[cfg(target_arch = "wasm32")]
+            { Some(include_str!("../../../api-dump.json").to_string()) }
+            #[cfg(not(target_arch = "wasm32"))]
+            { std::fs::read_to_string(dump_path()).ok() }
+        }?;
         parse(&text)
     })
     .as_ref()

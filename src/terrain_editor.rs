@@ -777,7 +777,7 @@ impl Editor {
                 plane,
                 plane_y,
                 snapshot,
-                last: web_time::Instant::now() - std::time::Duration::from_secs(1),
+                last: web_time::Instant::now().checked_sub(std::time::Duration::from_secs(1)).unwrap_or_else(web_time::Instant::now),
                 state: brush::StrokeState::default(),
                 applied: false,
             });

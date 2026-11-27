@@ -286,7 +286,10 @@ pub fn depth_sample_type(device: &wgpu::Device) -> wgpu::TextureSampleType {
 pub fn shader_for(device: &wgpu::Device, src: &str) -> String {
     let src = if depth_loads_as_float(device) { gl_shader(src) } else { src.to_owned() };
     let src = if uniform_arrays(device) { num_levels_as_size(&uniform_array_shader(device, &src)) } else { src };
-    chunk_mat_params(device, &src)
+    let src = chunk_mat_params(device, &src);
+    // Browser WebGPU (Tint) rejects `textureSample` under non-uniform control flow, which naga's
+    // GLSL/SPIR-V/Metal paths accept. The shaders were written for those; waive the check.
+    if cfg!(target_arch = "wasm32") { format!("diagnostic(off, derivative_uniformity);\n{src}") } else { src }
 }
 
 /// WebGL2 (GLES 3.0) has no storage buffers: `max_storage_buffers_per_shader_stage`

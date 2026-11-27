@@ -358,7 +358,8 @@ impl Saver {
     pub fn new(loaded: Option<&Layout>) -> Self {
         Saver {
             last: loaded.and_then(|l| serde_json::to_string_pretty(l).ok()),
-            written: Instant::now() - SAVE_EVERY,
+            // (checked: a web page's clock starts at load, so "long ago" can be before the epoch)
+            written: Instant::now().checked_sub(SAVE_EVERY).unwrap_or_else(Instant::now),
             normal: loaded.and_then(|l| l.window),
         }
     }

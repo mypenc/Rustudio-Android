@@ -191,12 +191,37 @@ pub fn studio_superclass(class: &str) -> Option<String> {
 }
 
 /// The DataModel children Studio's Explorer lists (any order).
+/// Studio's ReflectionMetadata for the classes that decide what the Explorer lists and how it
+/// orders them (values as Studio ships them, measured in an offline Studio). Used when its
+/// `ReflectionMetadata.xml` cannot be read: the browser build, Android, no Studio installed.
+pub fn builtin_meta(class: &str) -> Option<Meta> {
+    let m = |o: Option<i32>, v: Option<i32>| Some(Meta { explorer_order: o, service_visibility: v });
+    match class {
+        "Workspace" => m(Some(5), None),
+        "Players" => m(Some(20), None),
+        "Lighting" | "MaterialService" | "ReplicatedFirst" | "ReplicatedStorage" | "ServerScriptService"
+        | "ServerStorage" | "StarterGui" | "StarterPack" | "StarterPlayer" | "CoreGui" | "PluginGuiService"
+        | "PluginDebugService" => m(Some(30), None),
+        "Teams" => m(Some(140), None),
+        "SoundService" => m(Some(500), None),
+        "Chat" => m(Some(510), Some(2)),
+        "TextChatService" => m(Some(511), None),
+        "VoiceChatService" => m(Some(520), Some(2)),
+        "LocalizationService" => m(Some(530), Some(2)),
+        "TestService" | "VRService" => m(Some(1000), Some(2)),
+        "Packages" => m(None, Some(1)),
+        // Workspace's own first two children.
+        "Camera" => m(Some(1), None),
+        "Terrain" => m(Some(2), None),
+        _ => None,
+    }
+}
+
 pub fn listed_root_children(doc: &Document, prefs: Prefs) -> Vec<Ref> {
     let lists = PlaceLists::of(doc);
     let root = doc.dom.root();
-    // Without Studio's ReflectionMetadata (content not installed yet, or
-    // RUSTUDIO_NO_STUDIO_FETCH) step 4 would hide every service: list all but
-    // the ones Studio forces off, plus StudioService.
+    // Without Studio's ReflectionMetadata (not installed, or the browser build) the built-in
+    // table above stands in, which lists Studio's default services.
     let have_meta = !crate::studio_panels::class_meta().is_empty();
     root.children()
         .iter()
@@ -206,7 +231,7 @@ pub fn listed_root_children(doc: &Document, prefs: Prefs) -> Vec<Ref> {
                 return visible(i.class.as_str(), !i.children().is_empty(), &lists, prefs, &studio_meta, &studio_superclass);
             }
             let c = i.class.as_str();
-            visible(c, !i.children().is_empty(), &lists, prefs, &|_| Some(Meta { explorer_order: Some(0), service_visibility: None }), &|_| None)
+            visible(c, !i.children().is_empty(), &lists, prefs, &builtin_meta, &|_| None)
                 && (prefs.show_hidden || c != "StudioService")
         })
         .map(|i| i.referent())

@@ -3868,7 +3868,9 @@ impl Renderer {
             || rustudio_core::rustudio_settings::performance_value("detail") == "low";
         // (not when the probe's set is the one-sample set already: OpenGL,
         // where it would be built twice)
-        if r.probe_samples != 1 && one_sample_likely && std::env::var_os("RUSTUDIO_NO_PIPELINE_PREBUILD").is_none() {
+        // (Not in the browser build: there is no worker thread, and `ensure_pipelines` would wait
+        // forever on the one that was never run.)
+        if !cfg!(target_arch = "wasm32") && r.probe_samples != 1 && one_sample_likely && std::env::var_os("RUSTUDIO_NO_PIPELINE_PREBUILD").is_none() {
             let (device, queue) = (device.clone(), queue.clone());
             let (g, t, gl, tr, reduced) = (r.globals_layout.clone(), r.tex_layout.clone(), r.glass_layout.clone(), r.terrain_layout.clone(), r.reduced);
             let (tx, rx) = std::sync::mpsc::channel();

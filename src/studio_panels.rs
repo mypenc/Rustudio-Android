@@ -74,7 +74,11 @@ pub fn class_meta() -> &'static HashMap<String, ClassMeta> {
 
 /// Studio's Explorer order for a class (lower first; classes without one last).
 pub fn explorer_order(class: &str) -> i32 {
-    class_meta().get(class).and_then(|m| m.explorer_order).unwrap_or(i32::MAX)
+    class_meta()
+        .get(class)
+        .and_then(|m| m.explorer_order)
+        .or_else(|| crate::service_visibility::builtin_meta(class).and_then(|m| m.explorer_order))
+        .unwrap_or(i32::MAX)
 }
 
 /// Per-member ReflectionMetadata: (PropertyOrder, Browsable), by (class, member).

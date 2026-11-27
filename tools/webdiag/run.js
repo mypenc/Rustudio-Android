@@ -37,7 +37,7 @@ const race = (p, ms, tag) => Promise.race([p, new Promise(r => setTimeout(() => 
   for (let t = 10; t <= SECS; t += 10) {
     await new Promise(r => setTimeout(r, 10000));
     const el = Date.now() - t0;
-    if (!global.playDone && process.env.PLAY && el > 70000) { global.playDone = true; await p.mouse.click(106, 38).catch(() => {}); add('[click] Play'); }
+    if (!global.playDone && process.env.PLAY && el > 70000) { global.playDone = true; add('[click] Play'); p.mouse.click(106, 38).catch(() => {}); }
     if (!global.baseDone && el > 25000) { global.baseDone = true; await p.mouse.click(336, 243).catch(() => {}); add('[click] Baseplate'); }
     if (el > (process.env.PLAY ? 90000 : 60000) && t % 10 === 0) cdp.send('Debugger.pause').catch(() => {});
     const info = await race(p.evaluate(() => ({

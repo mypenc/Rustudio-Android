@@ -20,6 +20,11 @@ impl PlayWorker {
         hooks: Box<dyn GameHost + Send>,
         init: impl FnOnce(&mut Game, &mut WorkerHost) + Send + 'static,
     ) -> io::Result<Self> {
+        // The browser has no threads to run a gameplay worker on: `start_play_threaded` falls back
+        // to stepping Play on the main thread.
+        if cfg!(target_arch = "wasm32") {
+            return Err(io::Error::new(io::ErrorKind::Unsupported, "no threads in the browser build"));
+        }
         let (jobs, queue) = mpsc::channel::<Job>();
         let thread = thread::Builder::new().name("rustudio-gameplay".into()).spawn(move || {
             let mut game = Game::new(None);
@@ -886,6 +891,9 @@ impl Game {
     /// thread. A `--fixed-dt` replay steps directly unless it is set to 1:
     /// the worker's GUI boxes reach scripts a step later than direct ones.
     pub fn use_gameplay_worker(&self) -> bool {
+        if cfg!(target_arch = "wasm32") {
+            return false; // (no threads in the browser build)
+        }
         match std::env::var("RUSTUDIO_PLAY_WORKER").as_deref() {
             Ok("0") => false,
             Ok("1") => true,

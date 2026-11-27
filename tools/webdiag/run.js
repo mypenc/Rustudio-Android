@@ -37,7 +37,7 @@ const race = (p, ms, tag) => Promise.race([p, new Promise(r => setTimeout(() => 
   for (let t = 10; t <= SECS; t += 10) {
     await new Promise(r => setTimeout(r, 10000));
     if (t === 30) { await p.mouse.click(336, 243).catch(() => {}); add('[click] Baseplate'); }
-    if (false && t >= 20 && t <= 80 && t % 10 === 0) cdp.send('Debugger.pause').catch(() => {});
+    if (t >= 40 && t <= 80 && t % 10 === 0) cdp.send('Debugger.pause').catch(() => {});
     const info = await race(p.evaluate(() => ({
       status: (document.getElementById('status') || {}).textContent || '',
       canvas: (() => { const c = document.querySelector('canvas'); return c ? `${c.width}x${c.height}` : 'none'; })(),

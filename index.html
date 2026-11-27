@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RusTudio (web)</title>
+  <!-- The wasm-bindgen glue does `import ... from "wasi_snapshot_preview1"`;
+       a bare specifier needs an import map, and it has to come before the
+       module script trunk injects. The shim below supplies the real functions. -->
+  <script type="importmap">
+  {"imports": {"wasi_snapshot_preview1": "data:text/javascript,const%20w%3D%28%29%3D%3EglobalThis.__wasi%7C%7C%7B%7D%3B%0Aexport%20const%20clock_time_get%3D%28...a%29%3D%3Ew%28%29.clock_time_get%28...a%29%3B%0Aexport%20const%20clock_res_get%3D%28...a%29%3D%3Ew%28%29.clock_res_get%28...a%29%3B%0Aexport%20const%20fd_write%3D%28...a%29%3D%3Ew%28%29.fd_write%28...a%29%3B%0Aexport%20const%20fd_close%3D%28...a%29%3D%3Ew%28%29.fd_close%28...a%29%3B%0Aexport%20const%20fd_seek%3D%28...a%29%3D%3Ew%28%29.fd_seek%28...a%29%3B%0Aexport%20const%20fd_fdstat_get%3D%28...a%29%3D%3Ew%28%29.fd_fdstat_get%28...a%29%3B%0Aexport%20const%20environ_sizes_get%3D%28...a%29%3D%3Ew%28%29.environ_sizes_get%28...a%29%3B%0Aexport%20const%20environ_get%3D%28...a%29%3D%3Ew%28%29.environ_get%28...a%29%3B%0Aexport%20const%20args_sizes_get%3D%28...a%29%3D%3Ew%28%29.args_sizes_get%28...a%29%3B%0Aexport%20const%20args_get%3D%28...a%29%3D%3Ew%28%29.args_get%28...a%29%3B%0Aexport%20const%20random_get%3D%28...a%29%3D%3Ew%28%29.random_get%28...a%29%3B%0Aexport%20const%20sched_yield%3D%28...a%29%3D%3Ew%28%29.sched_yield%28...a%29%3B%0Aexport%20const%20proc_exit%3D%28...a%29%3D%3Ew%28%29.proc_exit%28...a%29%3B%0A"}}
+  </script>
+  
+<script type="module">
+import init, * as bindings from '/Rustudio-Android/rustudio-6240b3c8cb354714.js';
+
+const wasm = await init({ module_or_path: '/Rustudio-Android/rustudio-889d44edfbea3e6a_bg.wasm' });
+
+
+window.wasmBindings = bindings;
+
+
+dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
+
+</script>
+  <link rel="icon" href="/Rustudio-Android/rustudio-32-59cea047a23fb0fe.png" integrity="sha384-dZHReGSeY4+wb97hIAoKkFfeWZ+Wa/fVh/x52Um8qEz8Js3IIrcEmqhr6Gqef+Ci"/>
+  <script>
+    // wasi shim: the C/C++ deps (Luau, zstd, ...) are built against wasi-sdk's
+    // libc, so the module imports a few wasi_snapshot_preview1 functions that
+    // wasm-bindgen's loader knows nothing about. Wrap instantiate() to supply
+    // them, reading the module's own import list; anything unimplemented
+    // answers ENOSYS (52) and is reported once on the console.
+    (function () {
+      let memory = null;
+      const warned = new Set();
+      const view = () => new DataView(memory.buffer);
+      const text = new TextDecoder();
+      let line = { 1: "", 2: "" };
+      const impl = {
+        clock_time_get(id, _prec, out) {
+          const ns = id === 0 ? Date.now() * 1e6 : performance.now() * 1e6;
+          view().setBigUint64(out, BigInt(Math.round(ns)), true);
+          return 0;
+        },
+        clock_res_get(_id, out) { view().setBigUint64(out, 1000000n, true); return 0; },
+        fd_write(fd, iovs, n, written) {
+          const v = view(); let total = 0, s = "";
+          for (let i = 0; i < n; i++) {
+            const ptr = v.getUint32(iovs + i * 8, true), len = v.getUint32(iovs + i * 8 + 4, true);
+            s += text.decode(new Uint8Array(memory.buffer, ptr, len)); total += len;
+          }
+          if (fd === 1 || fd === 2) {
+            line[fd] += s; const parts = line[fd].split("\n"); line[fd] = parts.pop();
+            for (const l of parts) (fd === 2 ? console.error : console.log)(l);
+          }
+          v.setUint32(written, total, true);
+          return 0;
+        },
+        fd_close() { return 0; },
+        fd_seek() { return 70; },
+        fd_fdstat_get() { return 8; },
+        environ_sizes_get(c, s) { const v = view(); v.setUint32(c, 0, true); v.setUint32(s, 0, true); return 0; },
+        environ_get() { return 0; },
+        args_sizes_get(c, s) { const v = view(); v.setUint32(c, 0, true); v.setUint32(s, 0, true); return 0; },
+        args_get() { return 0; },
+        random_get(ptr, len) { crypto.getRandomValues(new Uint8Array(memory.buffer, ptr, len)); return 0; },
+        sched_yield() { return 0; },
+        proc_exit(code) { throw new Error("wasi proc_exit(" + code + ")"); },
+      };
+      globalThis.__wasi = impl;
+      const rawInstantiate = WebAssembly.instantiate.bind(WebAssembly);
+      async function withWasi(module, imports) {
+        const needed = WebAssembly.Module.imports(module).filter(i => i.module === "wasi_snapshot_preview1");
+        if (needed.length) {
+          const ns = {};
+          for (const i of needed) {
+            ns[i.name] = impl[i.name] || (() => {
+              if (!warned.has(i.name)) { warned.add(i.name); console.warn("wasi: " + i.name + " is not implemented (ENOSYS)"); }
+              return 52;
+            });
+          }
+          imports = Object.assign({}, imports, { wasi_snapshot_preview1: ns });
+        }
+        const instance = await rawInstantiate(module, imports);
+        memory = instance.exports.memory || memory;
+        return instance;
+      }
+      WebAssembly.instantiate = async function (src, imports) {
+        if (src instanceof WebAssembly.Module) return withWasi(src, imports);
+        const module = await WebAssembly.compile(src);
+        return { module, instance: await withWasi(module, imports) };
+      };
+      WebAssembly.instantiateStreaming = async function (resp, imports) {
+        return WebAssembly.instantiate(await (await resp).arrayBuffer(), imports);
+      };
+    })();
+  </script>
+  <style>
+    html, body { margin: 0; height: 100%; background: #1e1e1e; overflow: hidden; }
+    canvas { width: 100%; height: 100%; display: block; outline: none; }
+  </style>
+<link rel="modulepreload" href="/Rustudio-Android/rustudio-6240b3c8cb354714.js" crossorigin="anonymous" integrity="sha384-N6kJmGC2hJGTYBZHcyZ17b5RYcsVjaibMh0OidrRlSm3j+3Fs2eQipzJbZToHaiL"><link rel="preload" href="/Rustudio-Android/rustudio-889d44edfbea3e6a_bg.wasm" crossorigin="anonymous" integrity="sha384-u2uV6foaYUUQnlBoOHSuaXhdgBTA2E5RkqSvzlDIdHkq/LQFiTdpCFbXdaeSI89F" as="fetch" type="application/wasm"></head>
+<body>
+  <div id="status" style="position:fixed;left:8px;top:8px;right:8px;color:#ccc;font:13px/1.4 monospace;white-space:pre-wrap;z-index:2;pointer-events:none">Loading RusTudio… (the first load downloads about 17 MB)</div>
+  <canvas id="the_canvas_id"></canvas>
+  <script>
+    // Show uncaught errors on the page, not only in the console.
+    (function () {
+      const s = () => document.getElementById("status");
+      const show = (m) => { const e = s(); if (e) { e.style.color = "#f66"; e.textContent += "\n" + m; } };
+      window.addEventListener("error", (ev) => show("error: " + (ev.message || ev.error)));
+      window.addEventListener("unhandledrejection", (ev) => show("rejected: " + (ev.reason && (ev.reason.stack || ev.reason))));
+      window.addEventListener("TrunkApplicationStarted", () => {
+        const e = s(); if (e) e.textContent = "RusTudio: module started, waiting for the first frame…";
+        // Nothing reports the first frame, so clear the notice once the app has had time to draw
+        // (an error message appended to it stays visible).
+        setTimeout(() => { const x = s(); if (x && x.textContent.indexOf("error") < 0) x.textContent = ""; }, 3000);
+      });
+    })();
+  </script>
+</body>
+</html>

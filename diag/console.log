@@ -1,0 +1,66 @@
+   0.2 url https://mypenc.github.io/Rustudio-Android/
+   0.3 [warning] The `integrity` attribute is currently ignored for preload destinations that do not support subresource integrity. See https://crbug.com/981419 for more information
+   2.4 [log] rustudio: web_start
+   2.4 [log] rustudio: canvas found, starting eframe
+   2.4 [debug] [eframe::web::app_runner] eframe-0.36.2/src/web/app_runner.rs:74: Using the wgpu renderer
+   2.4 [debug] [eframe::web::web_painter_wgpu] eframe-0.36.2/src/web/web_painter_wgpu.rs:85: Creating wgpu painter
+   2.4 [debug] [egui_wgpu::setup] egui-wgpu/src/setup.rs:119: Creating wgpu instance with backends Backends(VULKAN | GL | METAL | DX12 | BROWSER_WEBGPU)
+   2.4 [info] WebGPU is experimental on this platform. See https://github.com/gpuweb/gpuweb/wiki/Implementation-Status#implementation-status
+   2.5 [warning] WebGPU on Linux requires GLES compat, or command-line flag --enable-features=Vulkan, or command-line flag --enable-features=SkiaGraphite (and skia_use_dawn = true GN arg)
+   2.5 [warning] [egui_wgpu] egui-wgpu/src/lib.rs:498: Software rasterizer detected - loss of performance expected. backend: Gl, device_type: Cpu, name: "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)", driver_info: "WebGL 2.0 (OpenGL ES 3.0 Chromium)", subgroup_size: 4..=128, transient_saves_memory: None, limit_bucket: None
+   2.5 [debug] [eframe::web::web_painter_wgpu] eframe-0.36.2/src/web/web_painter_wgpu.rs:128: wgpu painter initialized.
+   2.5 [info] [rustudio::gpu] rustudio-render/src/gpu_health.rs:26: GPU: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver) (Gl, Cpu, driver  WebGL 2.0 (OpenGL ES 3.0 Chromium))
+   2.5 [info] [rustudio::gpu] rustudio-render/src/gpu_caps.rs:193: weak-GPU mode on (software adapter): Automatic quality from level 1 (no HBAO, sun or light shadows, clouds, grass, depth of field, bloom or scene probe until frame times allow); RUSTUDIO_LOWEND=0 turns it off
+   2.5 [info] [rustudio::gpu] rustudio-render/src/gpu_caps.rs:201: no sampled multisample textures (Gl): 3D view without MSAA
+   2.5 [info] [rustudio::gpu] rustudio-render/src/gpu_caps.rs:204: no compute shaders: skinned meshes drawn at rest
+   2.5 [info] [rustudio::gpu] rustudio-render/src/gpu_caps.rs:207: reduced shader bindings (Gl, 16 sampled textures per stage): no local light shadows, scene probe blending or BRDF table (analytic fit)
+   2.5 [info] [rustudio_render::pipeline_cache] rustudio-render/src/pipeline_cache.rs:65: pipeline cache: not kept (Gl has no PIPELINE_CACHE feature)
+   2.7 [debug] [rbx_reflection_database] rbx_reflection_database-3.0.1+roblox-741/src/lib.rs:58: Loading bundled reflection database
+   2.7 [info] [rustudio::editor] src/app.rs:783: rustudio 1.0.2 ready. Reflection database has 931 classes.
+   2.7 [info] [eframe::web::web_runner] eframe-0.36.2/src/web/web_runner.rs:94: event handlers installed.
+   2.7 [log] rustudio: eframe started
+   2.8 [warning] [eframe::web::app_runner] eframe-0.36.2/src/web/app_runner.rs:337: Unhandled egui viewport command: Title("Untitled place - rustudio") - not implemented in web backend
+   2.8 [warning] [eframe::web::app_runner] eframe-0.36.2/src/web/app_runner.rs:337: Unhandled egui viewport command: SetTheme(Dark) - not implemented in web backend
+  10.3 [probe] {"status":"","canvas":"1280x800","sab":"undefined","coi":false,"gpu":true}
+  20.3 [probe] {"status":"","canvas":"1280x800","sab":"undefined","coi":false,"gpu":true}
+  30.3 [click] Baseplate
+  30.3 [probe] {"status":"","canvas":"1280x800","sab":"undefined","coi":false,"gpu":true}
+  30.4 [info] [rustudio::editor] src/app.rs:783: New place from the Baseplate template (built in; not signed in to Roblox)
+  30.4 [warning] [epaint::text::fonts] epaint/src/text/fonts.rs:678: Failed to find replacement characters '◻' or '?'. Will use empty glyph.
+  30.5 [warning] [epaint::text::fonts] epaint/src/text/fonts.rs:678: Failed to find replacement characters '◻' or '?'. Will use empty glyph.
+  30.6 [warning] [wgpu_core::validation] wgpu-core-30.0.1/src/validation.rs:1693: Vertex shader with entry point vs_sky outputs a @builtin(position) without the @invariant attribute and is used in a pipeline with Equal. On some machines, this can cause bad artifacting as Equal assumes the values output from the vertex shader exactly match the value in the depth buffer. The @invariant attribute on the @builtin(position) vertex output ensures that the exact same pixel depths are used every render.
+  31.3 [warning] [eframe::web::app_runner] eframe-0.36.2/src/web/app_runner.rs:337: Unhandled egui viewport command: Title("Baseplate - rustudio") - not implemented in web backend
+  40.4 [probe] {"status":"","canvas":"1280x800","sab":"undefined","coi":false,"gpu":true}
+  57.7 [click] select part
+  57.9 [probe] {"status":"","canvas":"1280x800","sab":"undefined","coi":false,"gpu":true}
+  67.9 [PAUSED sample 1] reason=other
+   ? @74:0:0
+  67.9 [probe] {"status":"","canvas":"1280x800","sab":"undefined","coi":false,"gpu":true}
+  77.9 [PAUSED sample 2] reason=other
+   ? @81:0:0
+  77.9 [probe] {"status":"","canvas":"1280x800","sab":"undefined","coi":false,"gpu":true}
+  93.2 [PAUSED sample 3] reason=other
+   ? @109:0:0
+  93.2 [probe] {"status":"","canvas":"1280x800","sab":"undefined","coi":false,"gpu":true}
+ 108.6 [PAUSED sample 4] reason=other
+   ? @137:0:0
+ 108.6 [probe] {"status":"","canvas":"1280x800","sab":"undefined","coi":false,"gpu":true}
+ 118.6 [PAUSED sample 5] reason=other
+   ? @144:0:0
+ 118.6 [probe] {"status":"","canvas":"1280x800","sab":"undefined","coi":false,"gpu":true}
+ 128.6 [PAUSED sample 6] reason=other
+   ? @151:0:0
+ 128.6 [probe] {"status":"","canvas":"1280x800","sab":"undefined","coi":false,"gpu":true}
+ 138.6 [PAUSED sample 7] reason=other
+   ? @158:0:0
+ 138.6 [probe] {"status":"","canvas":"1280x800","sab":"undefined","coi":false,"gpu":true}
+ 154.9 [PAUSED sample 8] reason=other
+   ? @186:0:0
+ 154.9 [probe] {"status":"","canvas":"1280x800","sab":"undefined","coi":false,"gpu":true}
+ 164.9 [PAUSED sample 9] reason=other
+   ? @193:0:0
+ 165.0 [probe] {"status":"","canvas":"1280x800","sab":"undefined","coi":false,"gpu":true}
+ 175.0 [PAUSED sample 10] reason=other
+   ? @200:0:0
+ 175.0 [probe] {"status":"","canvas":"1280x800","sab":"undefined","coi":false,"gpu":true}
+ 175.0 [done]
